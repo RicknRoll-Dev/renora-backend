@@ -28,6 +28,8 @@ type RequestCodeInput struct {
 	Purpose        Purpose
 	ChallengeID    *string
 	AndroidAppHash string
+	// UserID is the signed-in caller, if any. A `sign` code needs one.
+	UserID string
 	// ClientIP is the caller's address, for the per-address limit.
 	ClientIP string
 }
@@ -47,20 +49,45 @@ var (
 	msgWrongCode   = i18n.T("That code is not right. Check WhatsApp and try again.",
 		"Kode itu salah. Cek WhatsApp lalu coba lagi.")
 	msgChallengeExpired = i18n.T("Ask for a new signing challenge.", "Minta tantangan tanda tangan baru.")
+	msgNoPhone          = i18n.T("This account has no phone number for codes.", "Akun ini tidak punya nomor HP untuk kode.")
 	msgRoleRequired     = i18n.T("This number is new to Renora. Choose home owner, contractor or shop.",
 		"Nomor ini baru di Renora. Pilih pemilik rumah, kontraktor, atau toko.")
 )
 
-// RequestCode sends a 6-digit sign-in code. Problems: invalid_input (phone),
+// RequestCode sends a 6-digit code: to sign in, or (purpose sign) to sign one
+// action as the fallback to the device key. Problems: invalid_input (phone),
 // challenge_expired (challengeId). Too many requests return RATE_LIMITED.
 func (s *Service) RequestCode(ctx context.Context, in RequestCodeInput) (Challenge, *problem.Problem, error) {
 	if !PhonePattern.MatchString(in.Phone) {
 		return Challenge{}, problem.Invalid("phone", "invalid_format", msgPhoneFormat), nil
 	}
+	var challengeID *string
 	if in.Purpose == PurposeSign {
-		// A signing code answers a signing challenge (createSigningChallenge), which
-		// does not exist yet: every challenge id is unknown.
-		return Challenge{}, problem.InvalidCode("challenge_expired", "challengeId", "expired", msgChallengeExpired), nil
+		// A signing code goes to the signer's own number, whatever was typed, and
+		// answers the signer's own challenge. Without a challenge it is sent but
+		// never signs (challenge_required at signing), as the contract says.
+		expired := problem.InvalidCode("challenge_expired", "challengeId", "expired", msgChallengeExpired)
+		if in.UserID == "" {
+			return Challenge{}, expired, nil
+		}
+		if in.ChallengeID != nil {
+			ok, err := signingChallengeOf(ctx, s.pool, *in.ChallengeID, in.UserID, s.now())
+			if err != nil {
+				return Challenge{}, nil, err
+			}
+			if !ok {
+				return Challenge{}, expired, nil
+			}
+			challengeID = in.ChallengeID
+		}
+		u, err := s.User(ctx, in.UserID)
+		if err != nil {
+			return Challenge{}, nil, err
+		}
+		if u.Phone == nil {
+			return Challenge{}, problem.Invalid("phone", "required", msgNoPhone), nil
+		}
+		in.Phone = *u.Phone
 	}
 	if err := s.allow(ctx,
 		check{limitResend, in.Phone},
@@ -83,9 +110,9 @@ func (s *Service) RequestCode(ctx context.Context, in RequestCodeInput) (Challen
 		ResendAt:    now.Add(ResendAfter),
 	}
 	if _, err := s.pool.Exec(ctx, `
-		INSERT INTO app.sign_in_codes (id, phone, purpose, channel, code_hash, expires_at, created_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-		ch.RequestID, in.Phone, in.Purpose, in.Channel, s.codeHash(ch.RequestID, code), ch.ExpiresAt, now,
+		INSERT INTO app.sign_in_codes (id, phone, purpose, channel, code_hash, expires_at, created_at, challenge_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+		ch.RequestID, in.Phone, in.Purpose, in.Channel, s.codeHash(ch.RequestID, code), ch.ExpiresAt, now, challengeID,
 	); err != nil {
 		return Challenge{}, nil, fmt.Errorf("store code: %w", err)
 	}

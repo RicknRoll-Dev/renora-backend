@@ -16,6 +16,10 @@ import (
 )
 
 func startSession(ctx context.Context, q querier, u User, role authn.Role, client authn.Client, label string, now time.Time) (authn.Session, string, error) {
+	return startSessionTTL(ctx, q, u, role, client, label, now, SessionTTL)
+}
+
+func startSessionTTL(ctx context.Context, q querier, u User, role authn.Role, client authn.Client, label string, now time.Time, ttl time.Duration) (authn.Session, string, error) {
 	token := ids.Token()
 	sess := authn.Session{
 		ID:        ids.New("ses"),
@@ -23,7 +27,7 @@ func startSession(ctx context.Context, q querier, u User, role authn.Role, clien
 		Role:      role,
 		Client:    client,
 		Language:  u.Language,
-		ExpiresAt: now.Add(SessionTTL),
+		ExpiresAt: now.Add(ttl),
 	}
 	var csrf *string
 	if client == authn.ClientWeb {
@@ -81,8 +85,17 @@ func (s *Service) Lookup(ctx context.Context, token string) (*authn.Session, err
 
 // SignOut ends a session; its token stops working at once.
 func (s *Service) SignOut(ctx context.Context, sessionID string) error {
-	if _, err := s.pool.Exec(ctx, `UPDATE app.sessions SET revoked_at = $2 WHERE id = $1 AND revoked_at IS NULL`, sessionID, s.now()); err != nil {
+	return pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error { return endSession(ctx, tx, sessionID, s.now()) })
+}
+
+// endSession revokes a session and the device keys it registered: a phone that
+// signed out signs nothing.
+func endSession(ctx context.Context, tx pgx.Tx, sessionID string, now time.Time) error {
+	if _, err := tx.Exec(ctx, `UPDATE app.sessions SET revoked_at = $2 WHERE id = $1 AND revoked_at IS NULL`, sessionID, now); err != nil {
 		return fmt.Errorf("sign out: %w", err)
+	}
+	if _, err := tx.Exec(ctx, `UPDATE app.device_keys SET revoked_at = $2 WHERE session_id = $1 AND revoked_at IS NULL`, sessionID, now); err != nil {
+		return fmt.Errorf("retire device keys: %w", err)
 	}
 	return nil
 }
@@ -120,17 +133,23 @@ var msgSessionNotFound = i18n.T("That device is already signed out.", "Perangkat
 // RevokeSession signs one of the user's devices out. Problems: not_found.
 func (s *Service) RevokeSession(ctx context.Context, userID, sessionID string) (*problem.Problem, error) {
 	now := s.now()
-	tag, err := s.pool.Exec(ctx, `
-		UPDATE app.sessions SET revoked_at = $3
-		WHERE id = $1 AND user_id = $2 AND revoked_at IS NULL AND expires_at > $3`,
-		sessionID, userID, now)
-	if err != nil {
-		return nil, fmt.Errorf("revoke session: %w", err)
-	}
-	if tag.RowsAffected() == 0 {
-		return problem.NotFound(msgSessionNotFound), nil
-	}
-	return nil, nil
+	var p *problem.Problem
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		var live bool
+		err := tx.QueryRow(ctx, `
+			SELECT true FROM app.sessions
+			WHERE id = $1 AND user_id = $2 AND revoked_at IS NULL AND expires_at > $3`,
+			sessionID, userID, now).Scan(&live)
+		if errors.Is(err, pgx.ErrNoRows) {
+			p = problem.NotFound(msgSessionNotFound)
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("revoke session: %w", err)
+		}
+		return endSession(ctx, tx, sessionID, now)
+	})
+	return p, err
 }
 
 // deviceLabel names a session for the signed-in devices list: "Chrome on Mac".

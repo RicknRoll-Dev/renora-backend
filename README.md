@@ -42,6 +42,7 @@ To use a Postgres or Redis you already run, skip `make deps` and point `DATABASE
 
 ```
 cmd/{api,worker,migrate}   entrypoints; wiring only
+cmd/staff                  adds ops staff and their authenticator (no API for it)
 internal/api               router, admin router
 internal/graph             resolvers, access rules (guard.go), GraphQL limits, error presenter
 internal/graph/schema      the contract's schema, vendored by `make contract-sync`; never edited here
@@ -87,6 +88,13 @@ Resolvers stay thin and call into them.
   httpOnly `renora_session` cookie plus `renora_csrf`; mobile gets a bearer token. Only hashes of codes and
   tokens are stored. A new number must pick `owner`, `contractor` or `supplier`; the code stays usable while it
   does. Ops sessions end after 30 minutes idle.
+- **Other sign-ins.** Web QR: `createQrSignIn` also sets an httpOnly `renora_qr` cookie, and only the browser
+  holding it collects the session after the phone approves, once (a photo of the QR signs nobody in). Staff:
+  email, then an authenticator code (TOTP, each code once); sessions last at most 12 hours.
+- **Signatures.** `createSigningChallenge` makes a nonce for one purpose and subject; the phone signs it with its
+  Ed25519 device key, or asks for a `sign` code bound to the challenge (sent to the account's own number).
+  Actions check a signature with `account.Sign` inside their transaction, so the challenge is used up only if
+  the action commits. A device key belongs to the session that registered it; signing out retires it.
 - **Ids** are a prefix and 16 Crockford base32 characters: `usr_7M2K9Q4XH1D8B3TW`.
 - **Money** is `int64` whole rupiah, rates are `int` basis points. **DateTime** goes out in Asia/Jakarta with
   its offset (`2026-11-11T10:00:00+07:00`).
@@ -133,6 +141,16 @@ Schemas cost nothing at query time. Queries name the schema explicitly (`app.job
 **Subscriptions** run over graphql-ws at `/graphql` (subprotocols `graphql-transport-ws` and `graphql-ws`). A
 load balancer in front must allow WebSocket upgrades and idle connections of at least a minute; the server
 pings every 25 s.
+
+**Staff accounts** are added from a machine with database access, using the api's `AUTH_SECRET`:
+
+```sh
+go run ./cmd/staff add -email arif@renora.id -name Arif -role lead -permissions read_money,decide_cases
+go run ./cmd/staff authenticator -email arif@renora.id   # prints an otpauth:// URI to scan
+```
+
+The image ships the same binary as `/app/staff`. Security keys (WebAuthn) are not supported yet: the contract has
+no step to register one.
 
 **CI** needs the secret `CONTRACT_DEPLOY_KEY`, a read-only deploy key on `renora-api-contract` (the same one the
 apps use), for the job that checks the vendored schema.

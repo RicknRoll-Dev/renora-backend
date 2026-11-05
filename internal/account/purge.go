@@ -20,7 +20,7 @@ type PurgeArgs struct{}
 
 func (PurgeArgs) Kind() string { return "account.purge" }
 
-// PurgeWorker deletes old sign-in codes and ended sessions.
+// PurgeWorker deletes old sign-in codes, QR and signing challenges, and ended sessions.
 type PurgeWorker struct {
 	river.WorkerDefaults[PurgeArgs]
 	Pool *pgxpool.Pool
@@ -31,6 +31,15 @@ func (w *PurgeWorker) Work(ctx context.Context, _ *river.Job[PurgeArgs]) error {
 		`DELETE FROM app.sign_in_codes WHERE expires_at < now() - make_interval(secs => $1)`,
 		codeRetention.Seconds()); err != nil {
 		return fmt.Errorf("purge sign-in codes: %w", err)
+	}
+	for _, q := range []string{
+		`DELETE FROM app.qr_sign_ins WHERE expires_at < now() - make_interval(secs => $1)`,
+		`DELETE FROM app.staff_challenges WHERE expires_at < now() - make_interval(secs => $1)`,
+		`DELETE FROM app.signing_challenges WHERE expires_at < now() - make_interval(secs => $1)`,
+	} {
+		if _, err := w.Pool.Exec(ctx, q, codeRetention.Seconds()); err != nil {
+			return fmt.Errorf("purge challenges: %w", err)
+		}
 	}
 	if _, err := w.Pool.Exec(ctx,
 		`DELETE FROM app.sessions WHERE LEAST(expires_at, COALESCE(revoked_at, 'infinity')) < now() - make_interval(secs => $1)`,

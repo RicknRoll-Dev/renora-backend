@@ -7,13 +7,11 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"time"
 
 	"github.com/renora/renora-api/internal/account"
-	"github.com/renora/renora-api/internal/apperr"
 	"github.com/renora/renora-api/internal/authn"
 	"github.com/renora/renora-api/internal/graph/model"
-	"github.com/renora/renora-api/internal/i18n"
 	"github.com/renora/renora-api/internal/platform/httpx"
 )
 
@@ -33,6 +31,9 @@ func (r *mutationResolver) RequestCode(ctx context.Context, input model.RequestC
 	in.ChallengeID = input.ChallengeID
 	if input.AndroidAppHash != nil {
 		in.AndroidAppHash = *input.AndroidAppHash
+	}
+	if sess := authn.From(ctx).Session; sess != nil {
+		in.UserID = sess.UserID
 	}
 	ch, p, err := r.Accounts.RequestCode(ctx, in)
 	if err != nil {
@@ -54,7 +55,7 @@ func (r *mutationResolver) VerifyCode(ctx context.Context, input model.VerifyCod
 	client := authn.Client(input.Client)
 	if client == authn.ClientWeb && !authn.CanSetCookies(ctx) {
 		// A web session lives in cookies, which only an HTTP response can set.
-		return nil, apperr.BadUserInput(i18n.T("Sign in over HTTP, not the WebSocket", "Masuk lewat HTTP, bukan WebSocket"))
+		return nil, errNeedsHTTP
 	}
 	v := authn.From(ctx)
 	in := account.VerifyCodeInput{
@@ -84,27 +85,102 @@ func (r *mutationResolver) VerifyCode(ctx context.Context, input model.VerifyCod
 }
 
 func (r *mutationResolver) CreateQRSignIn(ctx context.Context) (model.CreateQRSignInResult, error) {
-	panic(fmt.Errorf("not implemented: CreateQRSignIn - createQrSignIn"))
+	if !authn.CanSetCookies(ctx) {
+		return nil, errNeedsHTTP
+	}
+	q, secret, err := r.Accounts.CreateQRSignIn(ctx, httpx.ClientIPFrom(ctx))
+	if err != nil {
+		return nil, err
+	}
+	if err := authn.SetQRCookie(ctx, r.Cookies, secret, q.ExpiresAt.Add(5*time.Minute)); err != nil {
+		return nil, err
+	}
+	return &model.CreateQRSignInPayload{QRSignIn: toQRSignIn(q, nil)}, nil
 }
 
 func (r *mutationResolver) ApproveQRSignIn(ctx context.Context, input model.ApproveQRSignInInput) (model.ApproveQRSignInResult, error) {
-	panic(fmt.Errorf("not implemented: ApproveQRSignIn - approveQrSignIn"))
+	q, p, err := r.Accounts.ApproveQRSignIn(ctx, viewerSession(ctx), input.QRSignInID)
+	if err != nil {
+		return nil, err
+	}
+	if p != nil {
+		return problemResult[model.ApproveQRSignInResult](ctx, p), nil
+	}
+	return &model.ApproveQRSignInPayload{QRSignIn: toQRSignIn(q, nil)}, nil
 }
 
 func (r *mutationResolver) StartStaffSignIn(ctx context.Context, input model.StartStaffSignInInput) (model.StartStaffSignInResult, error) {
-	panic(fmt.Errorf("not implemented: StartStaffSignIn - startStaffSignIn"))
+	ch, p, err := r.Accounts.StartStaffSignIn(ctx, input.Email, httpx.ClientIPFrom(ctx))
+	if err != nil {
+		return nil, err
+	}
+	if p != nil {
+		return problemResult[model.StartStaffSignInResult](ctx, p), nil
+	}
+	methods := make([]model.StaffFactor, len(ch.Methods))
+	for i, m := range ch.Methods {
+		methods[i] = model.StaffFactor(m)
+	}
+	return &model.StartStaffSignInPayload{Challenge: &model.StaffChallenge{
+		ChallengeID:  ch.ID,
+		Methods:      methods,
+		SecurityKeys: []model.SecurityKey{}, // security keys need a registration step the contract does not have yet
+	}}, nil
 }
 
 func (r *mutationResolver) VerifyStaffSignIn(ctx context.Context, input model.VerifyStaffSignInInput) (model.VerifyStaffSignInResult, error) {
-	panic(fmt.Errorf("not implemented: VerifyStaffSignIn - verifyStaffSignIn"))
+	if !authn.CanSetCookies(ctx) {
+		return nil, errNeedsHTTP
+	}
+	in := account.VerifyStaffInput{
+		ChallengeID: input.ChallengeID,
+		Method:      account.StaffFactor(input.Method),
+		UserAgent:   authn.From(ctx).UserAgent,
+		ClientIP:    httpx.ClientIPFrom(ctx),
+	}
+	if input.Code != nil {
+		in.Code = *input.Code
+	}
+	st, p, err := r.Accounts.VerifyStaffSignIn(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	if p != nil {
+		return problemResult[model.VerifyStaffSignInResult](ctx, p), nil
+	}
+	if err := authn.SetSessionCookies(ctx, r.Cookies, st.Token, st.Session.CSRFToken, st.Session.ExpiresAt); err != nil {
+		return nil, err
+	}
+	return &model.VerifyStaffSignInPayload{Session: toSession(st)}, nil
 }
 
 func (r *mutationResolver) RegisterDeviceKey(ctx context.Context, input model.RegisterDeviceKeyInput) (model.RegisterDeviceKeyResult, error) {
-	panic(fmt.Errorf("not implemented: RegisterDeviceKey - registerDeviceKey"))
+	k, p, err := r.Accounts.RegisterDeviceKey(ctx, viewerSession(ctx), string(input.Platform), input.PublicKey, input.Label)
+	if err != nil {
+		return nil, err
+	}
+	if p != nil {
+		return problemResult[model.RegisterDeviceKeyResult](ctx, p), nil
+	}
+	return &model.RegisterDeviceKeyPayload{DeviceKey: &model.DeviceKey{
+		ID: k.ID, Platform: model.DevicePlatform(k.Platform), Label: k.Label, CreatedAt: k.CreatedAt,
+	}}, nil
 }
 
 func (r *mutationResolver) CreateSigningChallenge(ctx context.Context, input model.CreateSigningChallengeInput) (model.CreateSigningChallengeResult, error) {
-	panic(fmt.Errorf("not implemented: CreateSigningChallenge - createSigningChallenge"))
+	ch, err := r.Accounts.CreateSigningChallenge(ctx, viewerSession(ctx), string(input.Purpose), input.SubjectID)
+	if err != nil {
+		return nil, err
+	}
+	return &model.CreateSigningChallengePayload{Challenge: &model.SigningChallenge{
+		ID:                  ch.ID,
+		Purpose:             model.SigningPurpose(ch.Purpose),
+		SubjectID:           ch.SubjectID,
+		Nonce:               ch.Nonce,
+		ExpiresAt:           ch.ExpiresAt,
+		DeviceKeyRegistered: ch.DeviceKeyRegistered,
+		Fallback:            model.CodeChannel(ch.Fallback),
+	}}, nil
 }
 
 func (r *mutationResolver) SignOut(ctx context.Context) (model.SignOutResult, error) {
@@ -119,5 +195,16 @@ func (r *mutationResolver) SignOut(ctx context.Context) (model.SignOutResult, er
 }
 
 func (r *queryResolver) QRSignIn(ctx context.Context, id string) (*model.QRSignIn, error) {
-	panic(fmt.Errorf("not implemented: QRSignIn - qrSignIn"))
+	v := authn.From(ctx)
+	q, started, found, err := r.Accounts.PollQRSignIn(ctx, id, v.QRSecret, v.UserAgent)
+	if err != nil || !found {
+		return nil, err
+	}
+	if started != nil {
+		// The QR's browser collects its session: the same cookies as verifyCode.
+		if err := authn.SetSessionCookies(ctx, r.Cookies, started.Token, started.Session.CSRFToken, started.Session.ExpiresAt); err != nil {
+			return nil, err
+		}
+	}
+	return toQRSignIn(q, started), nil
 }

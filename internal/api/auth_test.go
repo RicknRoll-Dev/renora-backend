@@ -2,6 +2,10 @@ package api
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha1" //nolint:gosec // RFC 6238
+	"encoding/base32"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,6 +13,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"sync"
 	"testing"
 	"time"
@@ -39,6 +44,11 @@ func (p *phone) code(number string) string {
 }
 
 func newAuthServer(t *testing.T) (*httptest.Server, *phone) {
+	srv, inbox, _ := newAuthServerWith(t)
+	return srv, inbox
+}
+
+func newAuthServerWith(t *testing.T) (*httptest.Server, *phone, *account.Service) {
 	t.Helper()
 	inbox := &phone{codes: map[string]string{}}
 	accounts := account.New(account.Options{
@@ -48,7 +58,7 @@ func newAuthServer(t *testing.T) (*httptest.Server, *phone) {
 		Secret:  []byte("test-secret-test-secret-test-secret"),
 		Logger:  slog.New(slog.NewTextHandler(io.Discard, nil)),
 	})
-	return newTestServer(t, serverOpts{accounts: accounts}), inbox
+	return newTestServer(t, serverOpts{accounts: accounts}), inbox, accounts
 }
 
 func gqlBody(query string, vars map[string]any) string {
@@ -220,4 +230,89 @@ func TestVerifyCodeProblemsAreData(t *testing.T) {
 	if _, again := do(t, srv, call{rawBody: gqlBody(requestCode, map[string]any{"p": number})}); again.code() != "RATE_LIMITED" {
 		t.Errorf("resend: code = %v, want RATE_LIMITED", again.code())
 	}
+}
+
+func TestQRSignInOverHTTP(t *testing.T) {
+	srv, inbox := newAuthServer(t)
+	_, out := signIn(t, srv, inbox, "mobile", "")
+	token := field(t, out.Data, "verifyCode", "session", "token").(string)
+
+	// The web page: anonymous, gets the QR and the renora_qr cookie.
+	resp, created := do(t, srv, call{query: `mutation { createQrSignIn { ... on CreateQrSignInPayload { qrSignIn { id payload status } } } }`})
+	qr := cookieNamed(resp, authn.QRCookie)
+	if len(created.Errors) > 0 || qr == nil || !qr.HttpOnly {
+		t.Fatalf("createQrSignIn = %v %+v, cookie %+v", created.Data, created.Errors, qr)
+	}
+	id := field(t, created.Data, "createQrSignIn", "qrSignIn", "id").(string)
+	if field(t, created.Data, "createQrSignIn", "qrSignIn", "payload") != "renora://auth/qr/"+id {
+		t.Errorf("payload = %v", created.Data)
+	}
+
+	// The phone approves.
+	approve := fmt.Sprintf(`mutation { approveQrSignIn(input: { qrSignInId: %q }) { __typename } }`, id)
+	if _, r := do(t, srv, call{query: approve, bearer: token}); field(t, r.Data, "approveQrSignIn", "__typename") != "ApproveQrSignInPayload" {
+		t.Fatalf("approve = %v %+v", r.Data, r.Errors)
+	}
+
+	poll := fmt.Sprintf(`{ qrSignIn(id: %q) { status session { csrfToken viewer { roles } } } }`, id)
+	// Another browser that read the QR off the screen: status only.
+	if resp, r := do(t, srv, call{query: poll}); field(t, r.Data, "qrSignIn", "session") != nil || cookieNamed(resp, authn.SessionCookie) != nil {
+		t.Fatalf("poll without the QR cookie = %v", r.Data)
+	}
+	// The browser that showed it: the session and its cookies.
+	resp, r := do(t, srv, call{query: poll, cookies: []*http.Cookie{qr}})
+	sc := cookieNamed(resp, authn.SessionCookie)
+	if field(t, r.Data, "qrSignIn", "status") != "approved" || sc == nil || field(t, r.Data, "qrSignIn", "session", "csrfToken") == nil {
+		t.Fatalf("poll with the QR cookie = %v %+v", r.Data, r.Errors)
+	}
+	if _, me := do(t, srv, call{query: "{ me { roles } }", cookie: sc.Value}); len(me.Errors) > 0 {
+		t.Errorf("me on the QR session: %+v", me.Errors)
+	}
+}
+
+func TestStaffSignInOverHTTP(t *testing.T) {
+	srv, _, accounts := newAuthServerWith(t)
+	ctx := context.Background()
+	email := fmt.Sprintf("ops%d@renora.id", rand.IntN(1_000_000_000))
+	if _, err := accounts.AddStaff(ctx, account.NewStaff{Email: email, Name: "Arif", Role: "lead", Permissions: []string{"read_money"}}); err != nil {
+		t.Fatal(err)
+	}
+	uri, err := accounts.EnrollAuthenticator(ctx, email)
+	if err != nil {
+		t.Fatal(err)
+	}
+	u, _ := url.Parse(uri)
+	secret, _ := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(u.Query().Get("secret"))
+
+	_, started := do(t, srv, call{query: fmt.Sprintf(`mutation { startStaffSignIn(input: { email: %q }) {
+		... on StartStaffSignInPayload { challenge { challengeId methods securityKeys { label } } } } }`, email)})
+	ch := field(t, started.Data, "startStaffSignIn", "challenge").(map[string]any)
+	if fmt.Sprint(ch["methods"]) != "[authenticator]" {
+		t.Errorf("methods = %v", ch["methods"])
+	}
+
+	resp, out := do(t, srv, call{query: fmt.Sprintf(`mutation { verifyStaffSignIn(input: { challengeId: %q, method: authenticator, code: %q }) {
+		... on VerifyStaffSignInPayload { session { csrfToken } } } }`, ch["challengeId"], totpNow(secret))})
+	sc := cookieNamed(resp, authn.SessionCookie)
+	if len(out.Errors) > 0 || sc == nil {
+		t.Fatalf("verifyStaffSignIn = %v %+v", out.Data, out.Errors)
+	}
+	// Staff reach @allow(roles: [ops]) fields; their own profile says what they may do.
+	_, me := do(t, srv, call{query: "{ me { roles phone staff { staffRole permissions } } }", cookie: sc.Value})
+	if len(me.Errors) > 0 || field(t, me.Data, "me", "staff", "staffRole") != "lead" || field(t, me.Data, "me", "phone") != nil {
+		t.Errorf("me = %v %+v", me.Data, me.Errors)
+	}
+	if _, r := do(t, srv, call{query: "{ opsOverview { activeJobs } }", cookie: sc.Value}); r.code() == "FORBIDDEN" {
+		t.Error("an ops session must pass @allow(roles: [ops])")
+	}
+}
+
+func totpNow(secret []byte) string {
+	var msg [8]byte
+	binary.BigEndian.PutUint64(msg[:], uint64(time.Now().Unix()/30)) //nolint:gosec
+	m := hmac.New(sha1.New, secret)
+	m.Write(msg[:])
+	sum := m.Sum(nil)
+	off := sum[len(sum)-1] & 0x0f
+	return fmt.Sprintf("%06d", (binary.BigEndian.Uint32(sum[off:off+4])&0x7fffffff)%1_000_000)
 }

@@ -122,6 +122,7 @@ type call struct {
 	csrf    string
 	lang    string
 	rawBody string
+	cookies []*http.Cookie
 }
 
 func do(t *testing.T, srv *httptest.Server, c call) (*http.Response, gqlResponse) {
@@ -138,6 +139,9 @@ func do(t *testing.T, srv *httptest.Server, c call) (*http.Response, gqlResponse
 	}
 	if c.cookie != "" {
 		req.AddCookie(&http.Cookie{Name: authn.SessionCookie, Value: c.cookie})
+	}
+	for _, ck := range c.cookies {
+		req.AddCookie(&http.Cookie{Name: ck.Name, Value: ck.Value})
 	}
 	if c.csrf != "" {
 		req.Header.Set(authn.CSRFHeader, c.csrf)

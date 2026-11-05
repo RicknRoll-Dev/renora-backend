@@ -47,7 +47,15 @@ func (r *meResolver) Shops(ctx context.Context, obj *model.Me) ([]model.ShopMemb
 }
 
 func (r *meResolver) Staff(ctx context.Context, obj *model.Me) (*model.StaffProfile, error) {
-	panic(fmt.Errorf("not implemented: Staff - staff"))
+	sp, err := r.Accounts.Staff(ctx, obj.ID)
+	if err != nil || sp == nil {
+		return nil, err
+	}
+	perms := make([]model.StaffPermission, len(sp.Permissions))
+	for i, p := range sp.Permissions {
+		perms[i] = model.StaffPermission(p)
+	}
+	return &model.StaffProfile{StaffRole: model.StaffRole(sp.Role), Permissions: perms}, nil
 }
 
 func (r *meResolver) NotificationSettings(ctx context.Context, obj *model.Me) (*model.NotificationSettings, error) {

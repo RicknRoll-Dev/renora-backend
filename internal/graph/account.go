@@ -3,6 +3,9 @@ package graph
 import (
 	"context"
 
+	"github.com/renora/renora-api/internal/apperr"
+	"github.com/renora/renora-api/internal/i18n"
+
 	"github.com/renora/renora-api/internal/account"
 	"github.com/renora/renora-api/internal/authn"
 	"github.com/renora/renora-api/internal/graph/model"
@@ -82,4 +85,22 @@ func toSession(st account.Started) *model.Session {
 // run only for signed-in callers (guardRoot), so it is never nil there.
 func viewerSession(ctx context.Context) authn.Session {
 	return *authn.From(ctx).Session
+}
+
+// errNeedsHTTP refuses a sign-in over the WebSocket: web sessions live in
+// cookies, which only an HTTP response can set.
+var errNeedsHTTP = apperr.BadUserInput(i18n.T("Sign in over HTTP, not the WebSocket", "Masuk lewat HTTP, bukan WebSocket"))
+
+// toQRSignIn maps a QR sign-in. The payload is shown only while it waits; the
+// session only on the poll that collected it.
+func toQRSignIn(q account.QRSignIn, started *account.Started) *model.QRSignIn {
+	out := &model.QRSignIn{ID: q.ID, Status: model.QRStatus(q.Status), ExpiresAt: q.ExpiresAt}
+	if q.Status == account.QRWaiting {
+		payload := q.Payload()
+		out.Payload = &payload
+	}
+	if started != nil {
+		out.Session = toSession(*started)
+	}
+	return out
 }

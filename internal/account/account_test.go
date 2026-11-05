@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/renora/renora-api/internal/account"
 	"github.com/renora/renora-api/internal/apperr"
@@ -54,6 +55,7 @@ func (c *clock) add(d time.Duration) { c.mu.Lock(); defer c.mu.Unlock(); c.t = c
 
 type harness struct {
 	pool  *pgxpool.Pool
+	rdb   *redis.Client
 	svc   *account.Service
 	inbox *inbox
 	clock *clock
@@ -65,6 +67,7 @@ func newHarness(t *testing.T) harness {
 	rdb := testdb.Redis(t)
 	h := harness{
 		pool:  pool,
+		rdb:   rdb,
 		inbox: &inbox{codes: map[string]account.Code{}},
 		// The real time, so rows written with now() defaults and this clock agree.
 		clock: &clock{t: time.Now().Truncate(time.Microsecond)},
@@ -206,7 +209,7 @@ func TestNewNumberChoosesRole(t *testing.T) {
 	}
 
 	// Next time the number is known: the role is ignored.
-	h.waitResend(t, phone)
+	h.waitResend(ctx, t, phone)
 	ch = h.request(t, phone)
 	st2, p, err := h.verify(ctx, ch.RequestID, h.inbox.last(t, phone), authn.ClientWeb, role(authn.RoleOwner))
 	if err != nil || p != "" || st2.User.ID != st.User.ID || st2.Session.Role != authn.RoleContractor {
@@ -218,12 +221,11 @@ func TestNewNumberChoosesRole(t *testing.T) {
 }
 
 // waitResend lets the number ask for another code at once.
-func (h harness) waitResend(t *testing.T, phone string) {
+func (h harness) waitResend(ctx context.Context, t *testing.T, phone string) {
 	t.Helper()
-	// The resend limit lives in Redis with a real expiry; tests cannot move
-	// Redis's clock, so clear the key instead.
-	rdb := testdb.Redis(t)
-	if err := rdb.Del(context.Background(), "rl:code.resend:"+phone).Err(); err != nil {
+	// The limits live in Redis with real expiries; tests cannot move Redis's
+	// clock, so clear the number's keys instead.
+	if err := h.rdb.Del(ctx, "rl:code.resend:"+phone, "rl:code.phone:"+phone).Err(); err != nil {
 		t.Fatal(err)
 	}
 }

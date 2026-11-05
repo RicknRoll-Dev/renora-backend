@@ -24,6 +24,8 @@ const (
 	SessionCookie = "renora_session"
 	CSRFCookie    = "renora_csrf"
 	CSRFHeader    = "X-CSRF-Token"
+	// QRCookie ties a web QR sign-in to the browser that shows the QR.
+	QRCookie = "renora_qr"
 )
 
 // Role is a contract `Role` wire value: the role a session signed in as.
@@ -73,6 +75,8 @@ type Viewer struct {
 	CSRF string
 	// UserAgent names the device in the person's list of signed-in sessions.
 	UserAgent string
+	// QRSecret is the renora_qr cookie, when a QR sign-in is waiting in this browser.
+	QRSecret string
 }
 
 // SignedIn reports whether the request carries a live session.
@@ -109,6 +113,9 @@ var ErrUnavailable = errors.New("session store unavailable")
 func Resolve(ctx context.Context, store SessionStore, r *http.Request) (Viewer, error) {
 	token, viaCookie := credentials(r)
 	v := Viewer{CSRF: r.Header.Get(CSRFHeader), UserAgent: r.UserAgent()}
+	if c, err := r.Cookie(QRCookie); err == nil {
+		v.QRSecret = c.Value
+	}
 	if token == "" {
 		return v, nil
 	}

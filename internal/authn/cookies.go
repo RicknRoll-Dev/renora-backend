@@ -48,6 +48,16 @@ func SetSessionCookies(ctx context.Context, cfg CookieConfig, token, csrf string
 	return nil
 }
 
+// SetQRCookie binds a QR sign-in to this browser (see account.CreateQRSignIn).
+func SetQRCookie(ctx context.Context, cfg CookieConfig, secret string, expires time.Time) error {
+	w, ok := ctx.Value(responseKey{}).(http.ResponseWriter)
+	if !ok {
+		return ErrNoResponse
+	}
+	http.SetCookie(w, cookie(cfg, QRCookie, secret, expires, true))
+	return nil
+}
+
 // ClearSessionCookies ends a web session in the browser.
 func ClearSessionCookies(ctx context.Context, cfg CookieConfig) {
 	w, ok := ctx.Value(responseKey{}).(http.ResponseWriter)

@@ -1,0 +1,222 @@
+extend type Query {
+  """
+  The caller's threads, latest first. Renora chat is the record (R8); WhatsApp is only the doorbell. Only
+  threads started by the clock, on a job and order that exist by then.
+  """
+  threads(jobId: ID, q: String, first: Int = 20, after: String): ThreadConnection!
+  "Null before the thread started, as in `threads`."
+  thread(id: ID!): Thread
+}
+
+extend type Mutation {
+  createThread(input: CreateThreadInput!): CreateThreadResult!
+  """
+  Offline-queued: a replay with the same `clientRef` returns the first message. `askAi` adds an AI answer
+  that cites the agreement and the record. Ops staff may post in an issue thread (a case's `issue.thread`,
+  with both parties and the mediator), which adds them to it. Problems: `invalid_input` (empty message).
+  """
+  sendMessage(input: SendMessageInput!): SendMessageResult!
+  markThreadRead(input: MarkThreadReadInput!): MarkThreadReadResult!
+}
+
+extend type Subscription {
+  "New messages in a thread the caller can read (replaces polling every 5 s)."
+  messageAdded(threadId: ID!): Message!
+}
+
+enum ThreadKind {
+  job
+  order
+  issue
+  bid
+  support
+  crew
+}
+
+type LastMessage {
+  text: String
+  at: DateTime!
+  authorName: String
+  "Null for Renora's own system lines."
+  author: Person
+  "Who has read it, and when, as on the message: the caller's own last message shows read once another person has."
+  readBy: [MessageRead!]!
+}
+
+extend type Job {
+  "The job's own thread with both parties (kind `job`); null before it starts, as in `threads`."
+  thread: Thread
+}
+
+type Thread {
+  id: ID!
+  kind: ThreadKind!
+  job: Job
+  order: Order
+  issue: Issue
+  title: String!
+  participants: [Person!]!
+  lastMessage: LastMessage
+  unreadCount: Int!
+  updatedAt: DateTime!
+  "Newest first. Only messages up to now; nothing from the future."
+  messages(first: Int = 30, after: String): MessageConnection!
+}
+
+type ThreadConnection {
+  edges: [ThreadEdge!]!
+  nodes: [Thread!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ThreadEdge {
+  cursor: String!
+  node: Thread!
+}
+
+enum CardType {
+  stage_submitted
+  stage_released
+  change_order
+  decision
+  issue
+  delivery
+  order
+  funding
+  clause
+  report
+}
+
+"A record shown in the thread. Push previews never carry amounts; cards in the thread may."
+type MessageCard {
+  type: CardType!
+  refId: ID!
+  "The order an `order` or `delivery` card belongs to, so a buyer opens the order."
+  orderId: ID
+  title: String!
+  subtitle: String
+}
+
+"What a citation points at, so a client routes on it instead of on the shape of `refId`."
+enum CitationType {
+  agreement
+  change_order
+  stage
+  decision
+  issue
+  job
+}
+
+type Citation {
+  type: CitationType!
+  label: String!
+  refId: ID
+}
+
+enum MessageKind {
+  text
+  voice
+  photo
+  card
+  system
+  ai_answer
+}
+
+enum MessageVia {
+  app
+  whatsapp_relay
+  whatsapp_forward
+}
+
+type MessageRead {
+  person: Person!
+  at: DateTime!
+}
+
+type Message {
+  id: ID!
+  thread: Thread!
+  clientRef: ID
+  author: Person!
+  kind: MessageKind!
+  text: UserText
+  media: [Media!]!
+  card: MessageCard
+  "AI answers cite their sources and are not binding. An AI answer's `ai.source.ref` is the question it answers."
+  citations: [Citation!]!
+  ai: AiSuggestion
+  via: MessageVia!
+  createdAt: DateTime!
+  "Who has read it, and when."
+  readBy: [MessageRead!]!
+}
+
+type MessageConnection {
+  edges: [MessageEdge!]!
+  nodes: [Message!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type MessageEdge {
+  cursor: String!
+  node: Message!
+}
+
+enum NewThreadKind {
+  support
+  job
+  crew
+}
+
+input CreateThreadInput {
+  kind: NewThreadKind!
+  jobId: ID
+  subject: String
+  text: String
+}
+
+type CreateThreadPayload {
+  thread: Thread!
+}
+
+union CreateThreadResult = CreateThreadPayload | NotFound | InvalidInput
+
+enum AttachableCard {
+  clause
+  report
+  issue
+}
+
+input CardRefInput {
+  type: AttachableCard!
+  refId: ID!
+}
+
+input SendMessageInput {
+  clientRef: ID!
+  threadId: ID!
+  text: String
+  mediaIds: [ID!]
+  forwardedFromWhatsapp: Boolean
+  askAi: Boolean
+  card: CardRefInput
+}
+
+type SendMessagePayload {
+  message: Message!
+}
+
+union SendMessageResult = SendMessagePayload | NotFound | InvalidInput
+
+input MarkThreadReadInput {
+  threadId: ID!
+  upToMessageId: ID
+}
+
+type MarkThreadReadPayload {
+  thread: Thread!
+}
+
+union MarkThreadReadResult = MarkThreadReadPayload | NotFound

@@ -8,14 +8,4705 @@ import (
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/renora/renora-api/internal/graph/scalar"
 )
 
-// An object with a globally unique ID that can be refetched.
-type Node interface {
-	IsNode()
+type AcceptOrderResult interface {
+	IsAcceptOrderResult()
 }
 
-// Cursor pagination info (Relay connection spec).
+type AcknowledgeReportResult interface {
+	IsAcknowledgeReportResult()
+}
+
+type AddBankAccountResult interface {
+	IsAddBankAccountResult()
+}
+
+type AddCartItemResult interface {
+	IsAddCartItemResult()
+}
+
+type AddDriverResult interface {
+	IsAddDriverResult()
+}
+
+type AddIssueMediaResult interface {
+	IsAddIssueMediaResult()
+}
+
+type AddOutsidePurchaseResult interface {
+	IsAddOutsidePurchaseResult()
+}
+
+type AddPortfolioItemResult interface {
+	IsAddPortfolioItemResult()
+}
+
+type AddPriceBookSourceResult interface {
+	IsAddPriceBookSourceResult()
+}
+
+type AddShopStaffResult interface {
+	IsAddShopStaffResult()
+}
+
+type AnswerBidQuestionResult interface {
+	IsAnswerBidQuestionResult()
+}
+
+type AnswerDecisionResult interface {
+	IsAnswerDecisionResult()
+}
+
+type AnswerMediatorSuggestionResult interface {
+	IsAnswerMediatorSuggestionResult()
+}
+
+type AnswerStockProposalResult interface {
+	IsAnswerStockProposalResult()
+}
+
+type ApproveQRSignInResult interface {
+	IsApproveQRSignInResult()
+}
+
+type ApproveStageResult interface {
+	IsApproveStageResult()
+}
+
+type AskAboutQuoteResult interface {
+	IsAskAboutQuoteResult()
+}
+
+type AskBidQuestionResult interface {
+	IsAskBidQuestionResult()
+}
+
+type AssignCaseResult interface {
+	IsAssignCaseResult()
+}
+
+type BulkUpdateProductsResult interface {
+	IsBulkUpdateProductsResult()
+}
+
+type CheckInStageResult interface {
+	IsCheckInStageResult()
+}
+
+type CheckoutCartResult interface {
+	IsCheckoutCartResult()
+}
+
+type ChooseBidResult interface {
+	IsChooseBidResult()
+}
+
+type ClaimBriefResult interface {
+	IsClaimBriefResult()
+}
+
+type ClaimFundingPaidResult interface {
+	IsClaimFundingPaidResult()
+}
+
+type CloseAccountResult interface {
+	IsCloseAccountResult()
+}
+
+type CloseBriefResult interface {
+	IsCloseBriefResult()
+}
+
+type ConfirmDeliveryResult interface {
+	IsConfirmDeliveryResult()
+}
+
+type CreateAgreementVersionResult interface {
+	IsCreateAgreementVersionResult()
+}
+
+type CreateBriefResult interface {
+	IsCreateBriefResult()
+}
+
+type CreateChangeOrderResult interface {
+	IsCreateChangeOrderResult()
+}
+
+type CreateDecisionResult interface {
+	IsCreateDecisionResult()
+}
+
+type CreateJobExportResult interface {
+	IsCreateJobExportResult()
+}
+
+type CreateJobImportResult interface {
+	IsCreateJobImportResult()
+}
+
+type CreateJobResult interface {
+	IsCreateJobResult()
+}
+
+type CreateProgressCountResult interface {
+	IsCreateProgressCountResult()
+}
+
+type CreateQRSignInResult interface {
+	IsCreateQRSignInResult()
+}
+
+type CreateQuoteCheckResult interface {
+	IsCreateQuoteCheckResult()
+}
+
+type CreateRecommendationResult interface {
+	IsCreateRecommendationResult()
+}
+
+type CreateReportResult interface {
+	IsCreateReportResult()
+}
+
+type CreateShopResult interface {
+	IsCreateShopResult()
+}
+
+type CreateSigningChallengeResult interface {
+	IsCreateSigningChallengeResult()
+}
+
+type CreateThreadResult interface {
+	IsCreateThreadResult()
+}
+
+type CreateUploadResult interface {
+	IsCreateUploadResult()
+}
+
+type CreateWarrantyClaimResult interface {
+	IsCreateWarrantyClaimResult()
+}
+
+type CrewLinkResult interface {
+	IsCrewLinkResult()
+}
+
+type CrewMemberResult interface {
+	IsCrewMemberResult()
+}
+
+type DecideCaseResult interface {
+	IsDecideCaseResult()
+}
+
+type DecideVerificationResult interface {
+	IsDecideVerificationResult()
+}
+
+type DeclineChangeOrderResult interface {
+	IsDeclineChangeOrderResult()
+}
+
+type DeclineOrderResult interface {
+	IsDeclineOrderResult()
+}
+
+type DeleteChangeOrderResult interface {
+	IsDeleteChangeOrderResult()
+}
+
+type DeleteProductResult interface {
+	IsDeleteProductResult()
+}
+
+type DispatchOrderResult interface {
+	IsDispatchOrderResult()
+}
+
+type DriverTripResult interface {
+	IsDriverTripResult()
+}
+
+type ExtendStageReviewResult interface {
+	IsExtendStageReviewResult()
+}
+
+type FundChangeOrderResult interface {
+	IsFundChangeOrderResult()
+}
+
+type FundFromLinkResult interface {
+	IsFundFromLinkResult()
+}
+
+type FundStageResult interface {
+	IsFundStageResult()
+}
+
+type GenerateLookResult interface {
+	IsGenerateLookResult()
+}
+
+type InviteContractorResult interface {
+	IsInviteContractorResult()
+}
+
+type InviteOwnerResult interface {
+	IsInviteOwnerResult()
+}
+
+type InviteTeamMemberResult interface {
+	IsInviteTeamMemberResult()
+}
+
+type MarkBidQuestionReadResult interface {
+	IsMarkBidQuestionReadResult()
+}
+
+type MarkNotificationsReadResult interface {
+	IsMarkNotificationsReadResult()
+}
+
+type MarkThreadReadResult interface {
+	IsMarkThreadReadResult()
+}
+
+type NeedsYouSubject interface {
+	IsNeedsYouSubject()
+}
+
+type PackOrderResult interface {
+	IsPackOrderResult()
+}
+
+type PriceListImportResult interface {
+	IsPriceListImportResult()
+}
+
+// A domain problem returned as data. Select `... on Problem { code message }` on any mutation result.
+type Problem interface {
+	IsProblem()
+}
+
+type ProductResult interface {
+	IsProductResult()
+}
+
+type ProposeEndJobResult interface {
+	IsProposeEndJobResult()
+}
+
+type ProposePartialReleaseResult interface {
+	IsProposePartialReleaseResult()
+}
+
+type ProposeStockChangeResult interface {
+	IsProposeStockChangeResult()
+}
+
+type PublishBriefResult interface {
+	IsPublishBriefResult()
+}
+
+type PublishShopResult interface {
+	IsPublishShopResult()
+}
+
+type RaiseIssueResult interface {
+	IsRaiseIssueResult()
+}
+
+type RecordAdvanceResult interface {
+	IsRecordAdvanceResult()
+}
+
+type RecordCrewAnswerResult interface {
+	IsRecordCrewAnswerResult()
+}
+
+type RecordHandoverItemResult interface {
+	IsRecordHandoverItemResult()
+}
+
+type RecordWagePaymentResult interface {
+	IsRecordWagePaymentResult()
+}
+
+type RegisterDeviceKeyResult interface {
+	IsRegisterDeviceKeyResult()
+}
+
+type RegisterPushDeviceResult interface {
+	IsRegisterPushDeviceResult()
+}
+
+type RemindOwnerResult interface {
+	IsRemindOwnerResult()
+}
+
+type RemindOwnerToFundResult interface {
+	IsRemindOwnerToFundResult()
+}
+
+type RemoveCartItemResult interface {
+	IsRemoveCartItemResult()
+}
+
+type RemoveShopRecordResult interface {
+	IsRemoveShopRecordResult()
+}
+
+type RemoveTeamMemberResult interface {
+	IsRemoveTeamMemberResult()
+}
+
+type RenewCrewLinkResult interface {
+	IsRenewCrewLinkResult()
+}
+
+type ReplyToIssueResult interface {
+	IsReplyToIssueResult()
+}
+
+type ReportDeliveryProblemResult interface {
+	IsReportDeliveryProblemResult()
+}
+
+type ReportMismatchedPaperResult interface {
+	IsReportMismatchedPaperResult()
+}
+
+type ReportRunningLateResult interface {
+	IsReportRunningLateResult()
+}
+
+type RequestCodeResult interface {
+	IsRequestCodeResult()
+}
+
+type RequestDataExportResult interface {
+	IsRequestDataExportResult()
+}
+
+type RequestMediationResult interface {
+	IsRequestMediationResult()
+}
+
+type RequestNewLinkResult interface {
+	IsRequestNewLinkResult()
+}
+
+type RequestReverificationResult interface {
+	IsRequestReverificationResult()
+}
+
+type RequestSiteVisitResult interface {
+	IsRequestSiteVisitResult()
+}
+
+type RerouteOrderResult interface {
+	IsRerouteOrderResult()
+}
+
+type ResolveIssueResult interface {
+	IsResolveIssueResult()
+}
+
+type RespondToBidInviteResult interface {
+	IsRespondToBidInviteResult()
+}
+
+type RetryPayoutInstructionResult interface {
+	IsRetryPayoutInstructionResult()
+}
+
+type ReviewClauseResult interface {
+	IsReviewClauseResult()
+}
+
+type RevokeSessionResult interface {
+	IsRevokeSessionResult()
+}
+
+type SaveBidResult interface {
+	IsSaveBidResult()
+}
+
+type SaveContractorProfileResult interface {
+	IsSaveContractorProfileResult()
+}
+
+type SaveWorkListResult interface {
+	IsSaveWorkListResult()
+}
+
+type SendCrewQuestionResult interface {
+	IsSendCrewQuestionResult()
+}
+
+type SendLinkMessageResult interface {
+	IsSendLinkMessageResult()
+}
+
+type SendMaterialsListResult interface {
+	IsSendMaterialsListResult()
+}
+
+type SendMessageResult interface {
+	IsSendMessageResult()
+}
+
+type SendPauseNoticeResult interface {
+	IsSendPauseNoticeResult()
+}
+
+type SendSitePhotoReminderResult interface {
+	IsSendSitePhotoReminderResult()
+}
+
+type SetRecordVisibilityResult interface {
+	IsSetRecordVisibilityResult()
+}
+
+type ShareBidAnswerResult interface {
+	IsShareBidAnswerResult()
+}
+
+type SignAgreementVersionResult interface {
+	IsSignAgreementVersionResult()
+}
+
+type SignChangeOrderResult interface {
+	IsSignChangeOrderResult()
+}
+
+type SignEndJobResult interface {
+	IsSignEndJobResult()
+}
+
+type SignHandoverResult interface {
+	IsSignHandoverResult()
+}
+
+type SignOutResult interface {
+	IsSignOutResult()
+}
+
+type SignPartialReleaseResult interface {
+	IsSignPartialReleaseResult()
+}
+
+type StartLinkSessionResult interface {
+	IsStartLinkSessionResult()
+}
+
+type StartStaffSignInResult interface {
+	IsStartStaffSignInResult()
+}
+
+type SubmitBidResult interface {
+	IsSubmitBidResult()
+}
+
+type SubmitStageResult interface {
+	IsSubmitStageResult()
+}
+
+type SubmitVerificationResult interface {
+	IsSubmitVerificationResult()
+}
+
+type SuggestWorkListResult interface {
+	IsSuggestWorkListResult()
+}
+
+type SupportTicketResult interface {
+	IsSupportTicketResult()
+}
+
+type UpdateAgreementVersionResult interface {
+	IsUpdateAgreementVersionResult()
+}
+
+type UpdateBriefResult interface {
+	IsUpdateBriefResult()
+}
+
+type UpdateBudgetResult interface {
+	IsUpdateBudgetResult()
+}
+
+type UpdateCartItemResult interface {
+	IsUpdateCartItemResult()
+}
+
+type UpdateCartResult interface {
+	IsUpdateCartResult()
+}
+
+type UpdateChangeOrderResult interface {
+	IsUpdateChangeOrderResult()
+}
+
+type UpdateConsentsResult interface {
+	IsUpdateConsentsResult()
+}
+
+type UpdateHandoverResult interface {
+	IsUpdateHandoverResult()
+}
+
+type UpdateJobImportResult interface {
+	IsUpdateJobImportResult()
+}
+
+type UpdateJobResult interface {
+	IsUpdateJobResult()
+}
+
+type UpdateMaterialLineResult interface {
+	IsUpdateMaterialLineResult()
+}
+
+type UpdateMeResult interface {
+	IsUpdateMeResult()
+}
+
+type UpdateNotificationSettingsResult interface {
+	IsUpdateNotificationSettingsResult()
+}
+
+type UpdateReportResult interface {
+	IsUpdateReportResult()
+}
+
+type UpdateShopResult interface {
+	IsUpdateShopResult()
+}
+
+type UpdateSiteTaskResult interface {
+	IsUpdateSiteTaskResult()
+}
+
+type UpdateSiteVisitResult interface {
+	IsUpdateSiteVisitResult()
+}
+
+type UpdateTeamMemberResult interface {
+	IsUpdateTeamMemberResult()
+}
+
+type UpdateWarrantyClaimResult interface {
+	IsUpdateWarrantyClaimResult()
+}
+
+type VerifyCodeResult interface {
+	IsVerifyCodeResult()
+}
+
+type VerifyStaffSignInResult interface {
+	IsVerifyStaffSignInResult()
+}
+
+type WithdrawBidResult interface {
+	IsWithdrawBidResult()
+}
+
+type AcceptOrderInput struct {
+	OrderID string       `json:"orderId"`
+	Scope   *AcceptScope `json:"scope,omitempty"`
+}
+
+type AcknowledgeReportInput struct {
+	ReportID string `json:"reportId"`
+}
+
+type AcknowledgeReportPayload struct {
+	Report *Report `json:"report"`
+}
+
+func (AcknowledgeReportPayload) IsAcknowledgeReportResult() {}
+
+type ActivityConnection struct {
+	Edges      []ActivityEdge `json:"edges"`
+	Nodes      []ActivityItem `json:"nodes"`
+	PageInfo   *PageInfo      `json:"pageInfo"`
+	TotalCount int            `json:"totalCount"`
+}
+
+type ActivityEdge struct {
+	Cursor string        `json:"cursor"`
+	Node   *ActivityItem `json:"node"`
+}
+
+type ActivityItem struct {
+	ID       string       `json:"id"`
+	Kind     ActivityKind `json:"kind"`
+	Title    string       `json:"title"`
+	At       time.Time    `json:"at"`
+	NeedsYou bool         `json:"needsYou"`
+	RefID    *string      `json:"refId,omitempty"`
+	Read     bool         `json:"read"`
+}
+
+type AddBankAccountInput struct {
+	Bank          Bank   `json:"bank"`
+	AccountNumber string `json:"accountNumber"`
+	AccountName   string `json:"accountName"`
+	// A shop's payout account (the shop's owner only); without it, the signed-in user's own.
+	ShopID *string `json:"shopId,omitempty"`
+	// Money step-up: required. Problems: `invalid_input` (`signature`, `required`), `wrong_code`.
+	Signature *SignatureInput `json:"signature,omitempty"`
+}
+
+type AddBankAccountPayload struct {
+	BankAccount *BankAccount `json:"bankAccount"`
+}
+
+func (AddBankAccountPayload) IsAddBankAccountResult() {}
+
+type AddCartItemInput struct {
+	JobID          string  `json:"jobId"`
+	ProductID      string  `json:"productId"`
+	Quantity       float64 `json:"quantity"`
+	MaterialLineID *string `json:"materialLineId,omitempty"`
+}
+
+type AddDriverInput struct {
+	ShopID  string `json:"shopId"`
+	Name    string `json:"name"`
+	Phone   string `json:"phone"`
+	Plate   string `json:"plate"`
+	Vehicle string `json:"vehicle"`
+}
+
+type AddDriverPayload struct {
+	Driver *Driver `json:"driver"`
+}
+
+func (AddDriverPayload) IsAddDriverResult() {}
+
+type AddIssueMediaInput struct {
+	IssueID  string   `json:"issueId"`
+	MediaIds []string `json:"mediaIds"`
+}
+
+type AddIssueMediaPayload struct {
+	Issue *Issue `json:"issue"`
+}
+
+func (AddIssueMediaPayload) IsAddIssueMediaResult() {}
+
+type AddOutsidePurchaseInput struct {
+	JobID          string      `json:"jobId"`
+	Description    string      `json:"description"`
+	ShopName       *string     `json:"shopName,omitempty"`
+	Amount         int64       `json:"amount"`
+	Date           scalar.Date `json:"date"`
+	StageNo        *int        `json:"stageNo,omitempty"`
+	ReceiptMediaID *string     `json:"receiptMediaId,omitempty"`
+}
+
+type AddOutsidePurchasePayload struct {
+	Budget *Budget `json:"budget"`
+}
+
+func (AddOutsidePurchasePayload) IsAddOutsidePurchaseResult() {}
+
+type AddPortfolioItemInput struct {
+	MediaID  string    `json:"mediaId"`
+	Label    string    `json:"label"`
+	Area     *string   `json:"area,omitempty"`
+	RoomType *RoomType `json:"roomType,omitempty"`
+}
+
+type AddPortfolioItemPayload struct {
+	Item *PortfolioItem `json:"item"`
+}
+
+func (AddPortfolioItemPayload) IsAddPortfolioItemResult() {}
+
+type AddPriceBookSourceInput struct {
+	RowID     string             `json:"rowId"`
+	Type      NewPriceSourceType `json:"type"`
+	ShopName  *string            `json:"shopName,omitempty"`
+	Area      *string            `json:"area,omitempty"`
+	Price     int64              `json:"price"`
+	PriceDate scalar.Date        `json:"priceDate"`
+	// The price-list photo or nota, uploaded with `createUpload` first.
+	MediaID *string `json:"mediaId,omitempty"`
+}
+
+type AddPriceBookSourcePayload struct {
+	Row *PriceBookRow `json:"row"`
+}
+
+func (AddPriceBookSourcePayload) IsAddPriceBookSourceResult() {}
+
+type AddShopStaffInput struct {
+	ShopID      string           `json:"shopId"`
+	Name        string           `json:"name"`
+	Phone       string           `json:"phone"`
+	Permissions []ShopPermission `json:"permissions"`
+	Channel     StepChannel      `json:"channel"`
+}
+
+type AddShopStaffPayload struct {
+	Staff *ShopStaff `json:"staff"`
+}
+
+func (AddShopStaffPayload) IsAddShopStaffResult() {}
+
+type Advance struct {
+	ID         string      `json:"id"`
+	CrewMember *CrewMember `json:"crewMember"`
+	Amount     int64       `json:"amount"`
+	Date       scalar.Date `json:"date"`
+	Note       *string     `json:"note,omitempty"`
+}
+
+// What a public check code proves. No owner limit, no fees, no names in full.
+type AgreementCheck struct {
+	CheckCode    string               `json:"checkCode"`
+	CodeKind     CheckCodeKind        `json:"codeKind"`
+	Match        CheckMatch           `json:"match"`
+	VersionLabel string               `json:"versionLabel"`
+	Job          *CheckedJob          `json:"job"`
+	Signers      []CheckSigner        `json:"signers"`
+	LockedAt     *time.Time           `json:"lockedAt,omitempty"`
+	EMeterai     *bool                `json:"eMeterai,omitempty"`
+	Price        *int64               `json:"price,omitempty"`
+	StageShares  []int                `json:"stageShares"`
+	Retention    *Retention           `json:"retention,omitempty"`
+	StartDate    *scalar.Date         `json:"startDate,omitempty"`
+	FinishDate   *scalar.Date         `json:"finishDate,omitempty"`
+	DurationDays *int                 `json:"durationDays,omitempty"`
+	TermsWritten *int                 `json:"termsWritten,omitempty"`
+	ChangeOrders []CheckedChangeOrder `json:"changeOrders"`
+	JobStatus    *string              `json:"jobStatus,omitempty"`
+	AsOf         time.Time            `json:"asOf"`
+	// For draft or older codes, the version that replaced it.
+	ReplacedBy *ReplacedBy `json:"replacedBy,omitempty"`
+}
+
+type AgreementEditInput struct {
+	Price          *int64            `json:"price,omitempty"`
+	StartDate      *scalar.Date      `json:"startDate,omitempty"`
+	FinishDate     *scalar.Date      `json:"finishDate,omitempty"`
+	WarrantyMonths *int              `json:"warrantyMonths,omitempty"`
+	MaterialsBuyer *MaterialsBuyer   `json:"materialsBuyer,omitempty"`
+	WorkItems      []WorkItemInput   `json:"workItems,omitempty"`
+	Stages         []StagePlanInput  `json:"stages,omitempty"`
+	Retention      *RetentionInput   `json:"retention,omitempty"`
+	Clauses        []ClauseEditInput `json:"clauses,omitempty"`
+}
+
+// One version of the agreement. Both sign the same version, then it locks (R2). The signed text is Bahasa
+// Indonesia with an English translation.
+type AgreementVersion struct {
+	ID          string                 `json:"id"`
+	Job         *Job                   `json:"job"`
+	Label       string                 `json:"label"`
+	Status      AgreementVersionStatus `json:"status"`
+	CheckCode   string                 `json:"checkCode"`
+	CodeKind    CheckCodeKind          `json:"codeKind"`
+	LockedAt    *time.Time             `json:"lockedAt,omitempty"`
+	ChangeOrder *ChangeOrder           `json:"changeOrder,omitempty"`
+	PDFURL      *string                `json:"pdfUrl,omitempty"`
+	// Full hash of the locked text; the check code is its short form.
+	TextSha256     *string         `json:"textSha256,omitempty"`
+	Price          int64           `json:"price"`
+	StartDate      *scalar.Date    `json:"startDate,omitempty"`
+	FinishDate     *scalar.Date    `json:"finishDate,omitempty"`
+	DurationDays   *int            `json:"durationDays,omitempty"`
+	WarrantyMonths *int            `json:"warrantyMonths,omitempty"`
+	MaterialsBuyer *MaterialsBuyer `json:"materialsBuyer,omitempty"`
+	WorkItems      []WorkItem      `json:"workItems"`
+	Stages         []StagePlan     `json:"stages"`
+	Retention      *Retention      `json:"retention,omitempty"`
+	Clauses        []Clause        `json:"clauses"`
+	TermsCheck     *TermsCheck     `json:"termsCheck"`
+	Signatures     []Signature     `json:"signatures"`
+	EMeterai       *EMeterai       `json:"eMeterai,omitempty"`
+	// Plain-words AI summary of the whole version, written for the reader. Not binding: the clauses are.
+	Summary    *string           `json:"summary,omitempty"`
+	SummaryAi  *AiSuggestion     `json:"summaryAi,omitempty"`
+	Supersedes *AgreementVersion `json:"supersedes,omitempty"`
+	CreatedAt  *time.Time        `json:"createdAt,omitempty"`
+}
+
+func (AgreementVersion) IsNeedsYouSubject() {}
+
+type AiGuardEvent struct {
+	ID       string    `json:"id"`
+	At       time.Time `json:"at"`
+	Feature  AiFeature `json:"feature"`
+	Guard    AiGuard   `json:"guard"`
+	Job      *Job      `json:"job,omitempty"`
+	JobTitle *string   `json:"jobTitle,omitempty"`
+	Context  *string   `json:"context,omitempty"`
+	AiWrote  string    `json:"aiWrote"`
+	// What the AI read or left out.
+	AiContext *string     `json:"aiContext,omitempty"`
+	PeopleSaw string      `json:"peopleSaw"`
+	Reason    *string     `json:"reason,omitempty"`
+	Review    GuardReview `json:"review"`
+}
+
+type AiGuardEventConnection struct {
+	Edges      []AiGuardEventEdge `json:"edges"`
+	Nodes      []AiGuardEvent     `json:"nodes"`
+	PageInfo   *PageInfo          `json:"pageInfo"`
+	TotalCount int                `json:"totalCount"`
+}
+
+type AiGuardEventEdge struct {
+	Cursor string        `json:"cursor"`
+	Node   *AiGuardEvent `json:"node"`
+}
+
+type AiGuardStatus struct {
+	Fired      int          `json:"fired"`
+	Total      int          `json:"total"`
+	ByGuard    []GuardCount `json:"byGuard"`
+	Models     []ModelPin   `json:"models"`
+	Quotas     []AiQuota    `json:"quotas"`
+	ImagePilot *ImagePilot  `json:"imagePilot,omitempty"`
+}
+
+type AiQuota struct {
+	Feature AiFeature `json:"feature"`
+	Used    int       `json:"used"`
+	Limit   int       `json:"limit"`
+}
+
+// Provenance of a value the AI produced (R1: AI proposes, code checks, a person confirms). The AI server is
+// called only by the backend; clients only ever read its results through fields like this one. Show it
+// labelled "AI suggestion" and "not binding" until `status` is `confirmed`.
+type AiSuggestion struct {
+	// Set on free-standing suggestions that a person accepts one by one (a chat import).
+	ID *string `json:"id,omitempty"`
+	// What the suggestion is for, on free-standing suggestions.
+	Field *string `json:"field,omitempty"`
+	// The suggested value as text, when the value is not already a typed field beside this one.
+	Value      *string       `json:"value,omitempty"`
+	Status     AiStatus      `json:"status"`
+	Confidence *AiConfidence `json:"confidence,omitempty"`
+	// What the AI read: the quote, the photo or the voice note.
+	Source *Provenance `json:"source,omitempty"`
+	// The model version that produced it.
+	Model *string `json:"model,omitempty"`
+	// Always true while `status` is `suggested`: nothing an AI suggests enters the record until a person confirms it.
+	NotBinding bool `json:"notBinding"`
+}
+
+type AnswerBidQuestionInput struct {
+	QuestionID string `json:"questionId"`
+	Text       string `json:"text"`
+	Extra      *int64 `json:"extra,omitempty"`
+}
+
+type AnswerCrewQuestionInput struct {
+	QuestionID string          `json:"questionId"`
+	Value      CrewAnswerValue `json:"value"`
+	PhotoID    *string         `json:"photoId,omitempty"`
+	Note       *string         `json:"note,omitempty"`
+	ClientRef  *string         `json:"clientRef,omitempty"`
+}
+
+type AnswerDecisionInput struct {
+	DecisionID string  `json:"decisionId"`
+	OptionID   string  `json:"optionId"`
+	ClientRef  *string `json:"clientRef,omitempty"`
+}
+
+type AnswerDecisionPayload struct {
+	Decision *Decision `json:"decision"`
+}
+
+func (AnswerDecisionPayload) IsAnswerDecisionResult() {}
+
+type AnswerMediatorSuggestionInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	IssueID        string `json:"issueId"`
+	Accept         bool   `json:"accept"`
+	// Required to accept a release or a refund.
+	Signature *SignatureInput `json:"signature,omitempty"`
+	Note      *string         `json:"note,omitempty"`
+}
+
+type AnswerMediatorSuggestionPayload struct {
+	Issue *Issue `json:"issue"`
+}
+
+func (AnswerMediatorSuggestionPayload) IsAnswerMediatorSuggestionResult() {}
+
+type AnswerRate struct {
+	OnTime int `json:"onTime"`
+	Total  int `json:"total"`
+}
+
+type AnswerStockProposalInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	OrderID        string `json:"orderId"`
+	Approve        bool   `json:"approve"`
+}
+
+type ApproveQRSignInInput struct {
+	QRSignInID string `json:"qrSignInId"`
+}
+
+type ApproveQRSignInPayload struct {
+	QRSignIn *QRSignIn `json:"qrSignIn"`
+}
+
+func (ApproveQRSignInPayload) IsApproveQRSignInResult() {}
+
+type ApproveStageInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	StageID        string `json:"stageId"`
+	// Optional step-up before money moves.
+	StepUp *SignatureInput `json:"stepUp,omitempty"`
+}
+
+type ApproveStagePayload struct {
+	Stage  *Stage  `json:"stage"`
+	Payout *Payout `json:"payout,omitempty"`
+}
+
+func (ApproveStagePayload) IsApproveStageResult() {}
+
+type AskAboutQuoteInput struct {
+	QuoteCheckID string   `json:"quoteCheckId"`
+	Questions    []string `json:"questions"`
+}
+
+type AskAboutQuotePayload struct {
+	ShareCard *ShareCard `json:"shareCard"`
+}
+
+func (AskAboutQuotePayload) IsAskAboutQuoteResult() {}
+
+type AskBidQuestionInput struct {
+	BriefID string `json:"briefId"`
+	Text    string `json:"text"`
+	// Some bidders only; all when left out.
+	BidIds []string `json:"bidIds,omitempty"`
+}
+
+type AssignCaseInput struct {
+	CaseID  string `json:"caseId"`
+	StaffID string `json:"staffId"`
+}
+
+type Attempt struct {
+	N      int       `json:"n"`
+	At     time.Time `json:"at"`
+	Result string    `json:"result"`
+	// Staff who retried it, for manual retries.
+	By *Person `json:"by,omitempty"`
+}
+
+type BankAccount struct {
+	ID                 string             `json:"id"`
+	Bank               Bank               `json:"bank"`
+	NumberMasked       string             `json:"numberMasked"`
+	AccountName        string             `json:"accountName"`
+	Purpose            BankAccountPurpose `json:"purpose"`
+	NameCheck          NameCheck          `json:"nameCheck"`
+	CheckedAt          *time.Time         `json:"checkedAt,omitempty"`
+	PayoutsPausedUntil *time.Time         `json:"payoutsPausedUntil,omitempty"`
+	IsDefault          bool               `json:"isDefault"`
+}
+
+type BankAccountMasked struct {
+	Bank         Bank   `json:"bank"`
+	NumberMasked string `json:"numberMasked"`
+	AccountName  string `json:"accountName"`
+}
+
+type Bid struct {
+	ID                     string       `json:"id"`
+	Invite                 *BidInvite   `json:"invite"`
+	Contractor             *Contractor  `json:"contractor"`
+	Status                 BidStatus    `json:"status"`
+	SubmittedAt            *time.Time   `json:"submittedAt,omitempty"`
+	Lines                  []BidLine    `json:"lines"`
+	StartDate              *scalar.Date `json:"startDate,omitempty"`
+	DurationDays           int          `json:"durationDays"`
+	FinishDate             *scalar.Date `json:"finishDate,omitempty"`
+	Stages                 []StagePlan  `json:"stages"`
+	Retention              *Retention   `json:"retention"`
+	WarrantyMonths         int          `json:"warrantyMonths"`
+	NotIncluded            []string     `json:"notIncluded"`
+	Clauses                []BidClause  `json:"clauses"`
+	PriceHoldsAfterMeasure *bool        `json:"priceHoldsAfterMeasure,omitempty"`
+	Total                  int64        `json:"total"`
+	DownPayment            int          `json:"downPayment"`
+	TermsCheck             *TermsCheck  `json:"termsCheck"`
+	// Code check that every line and the total add up.
+	AddsUp    bool       `json:"addsUp"`
+	Coverage  []Coverage `json:"coverage"`
+	Visited   bool       `json:"visited"`
+	VisitedAt *time.Time `json:"visitedAt,omitempty"`
+	// Every page the owner reads carries it; no export before she chooses.
+	Watermark *string `json:"watermark,omitempty"`
+}
+
+type BidAnswer struct {
+	ID             string    `json:"id"`
+	Bid            *Bid      `json:"bid"`
+	ContractorName string    `json:"contractorName"`
+	Text           *UserText `json:"text"`
+	At             time.Time `json:"at"`
+	Extra          *int64    `json:"extra,omitempty"`
+	AttachedToBid  bool      `json:"attachedToBid"`
+	SharedWithAll  bool      `json:"sharedWithAll"`
+	// When the owner read it; null while it is still to read.
+	ReadAt *time.Time `json:"readAt,omitempty"`
+}
+
+type BidClause struct {
+	KeyTerm    KeyTerm `json:"keyTerm"`
+	TextBahasa string  `json:"textBahasa"`
+}
+
+type BidClauseInput struct {
+	KeyTerm    KeyTerm `json:"keyTerm"`
+	TextBahasa string  `json:"textBahasa"`
+}
+
+// Bids side by side against her work list, most complete first. Never sorted by cheapest (R9).
+type BidComparison struct {
+	ClosesAt *time.Time      `json:"closesAt,omitempty"`
+	Bids     []ComparedBid   `json:"bids"`
+	Rows     []ComparisonRow `json:"rows"`
+	Band     *BudgetBand     `json:"band,omitempty"`
+	Sort     string          `json:"sort"`
+	Flags    []BidFlag       `json:"flags"`
+}
+
+// Found by code; worded by the AI as a question to ask, never as a fault.
+type BidFlag struct {
+	Bid       *Bid           `json:"bid"`
+	Kind      BidFlagKind    `json:"kind"`
+	BriefItem *BriefWorkItem `json:"briefItem,omitempty"`
+	Question  string         `json:"question"`
+	Note      *string        `json:"note,omitempty"`
+}
+
+type BidInput struct {
+	Lines                  []BidLineInput   `json:"lines,omitempty"`
+	StartDate              *scalar.Date     `json:"startDate,omitempty"`
+	DurationDays           *int             `json:"durationDays,omitempty"`
+	Stages                 []StagePlanInput `json:"stages,omitempty"`
+	Retention              *RetentionInput  `json:"retention,omitempty"`
+	WarrantyMonths         *int             `json:"warrantyMonths,omitempty"`
+	NotIncluded            []string         `json:"notIncluded,omitempty"`
+	Clauses                []BidClauseInput `json:"clauses,omitempty"`
+	PriceHoldsAfterMeasure *bool            `json:"priceHoldsAfterMeasure,omitempty"`
+}
+
+type BidInvite struct {
+	ID         string          `json:"id"`
+	Contractor *Contractor     `json:"contractor"`
+	Status     BidInviteStatus `json:"status"`
+	Backup     bool            `json:"backup"`
+	SentAt     *time.Time      `json:"sentAt,omitempty"`
+	SeenAt     *time.Time      `json:"seenAt,omitempty"`
+	JoinedAt   *time.Time      `json:"joinedAt,omitempty"`
+	// 24 h after sending; silence counts as a decline.
+	AnswerByAt    *time.Time        `json:"answerByAt,omitempty"`
+	DeclineReason *DeclineReasonBid `json:"declineReason,omitempty"`
+	WhyYou        *string           `json:"whyYou,omitempty"`
+	// The brief as bidders see it.
+	Brief *ContractorBriefView `json:"brief"`
+	// The brief's area, first part only, e.g. "Bintaro".
+	AreaShort *string   `json:"areaShort,omitempty"`
+	MatchFee  *MatchFee `json:"matchFee,omitempty"`
+	// Contractors bidding on the brief, this one included.
+	BiddersCount   int        `json:"biddersCount"`
+	Bid            *Bid       `json:"bid,omitempty"`
+	BidSubmittedAt *time.Time `json:"bidSubmittedAt,omitempty"`
+	ChosenAt       *time.Time `json:"chosenAt,omitempty"`
+	Job            *Job       `json:"job,omitempty"`
+	// The owner's reason chip, for a bid not chosen.
+	LossReason *ChoiceReason `json:"lossReason,omitempty"`
+	// This contractor's site visit for the brief, if he asked for one.
+	SiteVisit *SiteVisit `json:"siteVisit,omitempty"`
+}
+
+type BidInviteConnection struct {
+	Edges      []BidInviteEdge `json:"edges"`
+	Nodes      []BidInvite     `json:"nodes"`
+	PageInfo   *PageInfo       `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+type BidInviteEdge struct {
+	Cursor string     `json:"cursor"`
+	Node   *BidInvite `json:"node"`
+}
+
+type BidInvitePayload struct {
+	Invite *BidInvite `json:"invite"`
+}
+
+func (BidInvitePayload) IsInviteContractorResult() {}
+
+func (BidInvitePayload) IsRespondToBidInviteResult() {}
+
+type BidLine struct {
+	ID        string         `json:"id"`
+	BriefItem *BriefWorkItem `json:"briefItem,omitempty"`
+	Code      string         `json:"code"`
+	Title     string         `json:"title"`
+	Quantity  float64        `json:"quantity"`
+	Unit      Unit           `json:"unit"`
+	UnitPrice int64          `json:"unitPrice"`
+	// quantity × unitPrice, checked by code.
+	Amount int64     `json:"amount"`
+	Scope  LineScope `json:"scope"`
+	// Required for `unit: lot`.
+	LotContents    *string         `json:"lotContents,omitempty"`
+	Exclusions     *string         `json:"exclusions,omitempty"`
+	PriceReason    *string         `json:"priceReason,omitempty"`
+	QuantitySource *QuantitySource `json:"quantitySource,omitempty"`
+	// The AI's volume from photos, until he measures or confirms it.
+	QuantityAi    *AiSuggestion `json:"quantityAi,omitempty"`
+	BriefQuantity *float64      `json:"briefQuantity,omitempty"`
+	// His own past job the unit price was carried over from.
+	UnitPriceFrom *PastJobRef `json:"unitPriceFrom,omitempty"`
+	// Per-item check: only with 5+ sources from 2+ types, never the bidder's own.
+	Check *PriceCheck `json:"check,omitempty"`
+}
+
+type BidLineInput struct {
+	ID             *string         `json:"id,omitempty"`
+	BriefItemID    *string         `json:"briefItemId,omitempty"`
+	Code           string          `json:"code"`
+	Title          string          `json:"title"`
+	Quantity       float64         `json:"quantity"`
+	Unit           Unit            `json:"unit"`
+	UnitPrice      int64           `json:"unitPrice"`
+	Scope          LineScope       `json:"scope"`
+	LotContents    *string         `json:"lotContents,omitempty"`
+	Exclusions     *string         `json:"exclusions,omitempty"`
+	PriceReason    *string         `json:"priceReason,omitempty"`
+	QuantitySource *QuantitySource `json:"quantitySource,omitempty"`
+}
+
+type BidPayload struct {
+	Bid *Bid `json:"bid"`
+}
+
+func (BidPayload) IsSaveBidResult() {}
+
+func (BidPayload) IsSubmitBidResult() {}
+
+func (BidPayload) IsWithdrawBidResult() {}
+
+type BidQuestion struct {
+	ID      string    `json:"id"`
+	Text    string    `json:"text"`
+	AskedAt time.Time `json:"askedAt"`
+	ToAll   bool      `json:"toAll"`
+	// A bidder asked it (the owner answers); false when the owner asked the bidders.
+	FromBidder bool `json:"fromBidder"`
+	// The caller asked it: a bidder sees his own questions marked.
+	Mine bool `json:"mine"`
+	// Bidders read only their own answer and the ones shared with all.
+	Answers []BidAnswer `json:"answers"`
+	// Who still owes an answer; owner and ops only.
+	Waiting []BidWaiting `json:"waiting"`
+	// The owner's answer to a bidder's question, shared with every bidder.
+	OwnerAnswer     *UserText  `json:"ownerAnswer,omitempty"`
+	OwnerAnsweredAt *time.Time `json:"ownerAnsweredAt,omitempty"`
+}
+
+type BidQuestionPayload struct {
+	Question *BidQuestion `json:"question"`
+}
+
+func (BidQuestionPayload) IsAskBidQuestionResult() {}
+
+func (BidQuestionPayload) IsAnswerBidQuestionResult() {}
+
+func (BidQuestionPayload) IsShareBidAnswerResult() {}
+
+func (BidQuestionPayload) IsMarkBidQuestionReadResult() {}
+
+type BidRules struct {
+	MaxBidders int `json:"maxBidders"`
+	MaxInvites int `json:"maxInvites"`
+	// Bidding closes this long after publishing, at 21:00 WIB on that day.
+	CloseAfterHours int `json:"closeAfterHours"`
+	// Fewer than 2 bids at the close: bidding stays open this much longer, once.
+	ExtensionHours int `json:"extensionHours"`
+	// The owner chooses within this many days of the close.
+	ChooseWithinDays int `json:"chooseWithinDays"`
+	// The most a bid's down payment may be: 20% when she buys the materials, 30% when the contractor does.
+	DownPaymentCap      int  `json:"downPaymentCap"`
+	AnswerWithinHours   int  `json:"answerWithinHours"`
+	SiteVisitsFree      bool `json:"siteVisitsFree"`
+	AnswersToAllBidders bool `json:"answersToAllBidders"`
+	AllTermsRequired    bool `json:"allTermsRequired"`
+}
+
+type BidWaiting struct {
+	Bid            *Bid       `json:"bid"`
+	ContractorName string     `json:"contractorName"`
+	SeenAt         *time.Time `json:"seenAt,omitempty"`
+}
+
+// The owner's brief. Owner and ops only; bidders read `ContractorBriefView`.
+type Brief struct {
+	ID           string        `json:"id"`
+	Status       BriefStatus   `json:"status"`
+	RoomType     RoomType      `json:"roomType"`
+	Photos       []Media       `json:"photos"`
+	LengthM      *float64      `json:"lengthM,omitempty"`
+	WidthM       *float64      `json:"widthM,omitempty"`
+	AreaM2       *float64      `json:"areaM2,omitempty"`
+	Observations []Observation `json:"observations"`
+	Changes      []string      `json:"changes"`
+	Keep         []string      `json:"keep"`
+	VoiceNote    *Media        `json:"voiceNote,omitempty"`
+	Transcript   *string       `json:"transcript,omitempty"`
+	Area         *string       `json:"area,omitempty"`
+	// The area's first part, e.g. "Bintaro".
+	AreaShort *string `json:"areaShort,omitempty"`
+	// Private until a contractor is chosen.
+	Address      *string      `json:"address,omitempty"`
+	StartAfter   *scalar.Date `json:"startAfter,omitempty"`
+	FinishBefore *scalar.Date `json:"finishBefore,omitempty"`
+	// Composed from `hours`, in the reader's language.
+	WorkingHours *string       `json:"workingHours,omitempty"`
+	Hours        *WorkingHours `json:"hours,omitempty"`
+	// Her limit. Private: contractors never see it.
+	Limit          *int64          `json:"limit,omitempty"`
+	MaterialsBuyer *MaterialsBuyer `json:"materialsBuyer,omitempty"`
+	Contingency    *int            `json:"contingency,omitempty"`
+	// The required band contractors see, "a range, not a target".
+	BudgetBand *BudgetBand `json:"budgetBand,omitempty"`
+	// The band she starts from, already within the band rules: our price-book range rounded out to Rp 5.000.000,
+	// at least Rp 10.000.000 or 20% wide (from Rp 0 for a smaller job), never above her limit. With no estimate yet,
+	// the band one step under her limit. Null with neither. Never shown to contractors.
+	SuggestedBand *BudgetBand `json:"suggestedBand,omitempty"`
+	// How bidders are found: she picks them, or Renora invites the best-matched for her (at publish).
+	Matching     *Matching     `json:"matching,omitempty"`
+	BandWarnings []BandWarning `json:"bandWarnings,omitempty"`
+	MoodBoard    *MoodBoard    `json:"moodBoard,omitempty"`
+	// The saved look she keeps as her reference. Only she sees it; it never enters the bids or the agreement.
+	Look         *Look        `json:"look,omitempty"`
+	Finishes     []Finish     `json:"finishes"`
+	PermitCheck  *PermitCheck `json:"permitCheck,omitempty"`
+	ClosesAt     *time.Time   `json:"closesAt,omitempty"`
+	WorkList     *WorkList    `json:"workList,omitempty"`
+	DesignArm    *DesignArm   `json:"designArm,omitempty"`
+	PublishedAt  *time.Time   `json:"publishedAt,omitempty"`
+	ExtendedOnce bool         `json:"extendedOnce"`
+	BidRules     *BidRules    `json:"bidRules"`
+	BidsIn       int          `json:"bidsIn"`
+	ChosenBid    *Bid         `json:"chosenBid,omitempty"`
+	Job          *Job         `json:"job,omitempty"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	// When the anonymous draft was saved to her account.
+	ClaimedAt        *time.Time   `json:"claimedAt,omitempty"`
+	FinishesPickedAt *time.Time   `json:"finishesPickedAt,omitempty"`
+	RoughBudget      *RoughBudget `json:"roughBudget,omitempty"`
+	Looks            []Look       `json:"looks,omitempty"`
+	Invites          []BidInvite  `json:"invites"`
+	// Sent bids only, most complete first (never cheapest first, R9).
+	Bids []Bid `json:"bids"`
+	// The sent bids side by side, from the first bid in, also while bidding is still open: only the bids received
+	// so far and the answers given by now. Most complete first, never cheapest first; the AI never picks (R9).
+	// Null until a bid is in.
+	Comparison *BidComparison `json:"comparison,omitempty"`
+	Questions  []BidQuestion  `json:"questions"`
+	SiteVisits []SiteVisit    `json:"siteVisits"`
+}
+
+type BriefInput struct {
+	RoomType     *RoomType          `json:"roomType,omitempty"`
+	PhotoIds     []string           `json:"photoIds,omitempty"`
+	LengthM      *float64           `json:"lengthM,omitempty"`
+	WidthM       *float64           `json:"widthM,omitempty"`
+	Observations []ObservationInput `json:"observations,omitempty"`
+	Changes      []string           `json:"changes,omitempty"`
+	Keep         []string           `json:"keep,omitempty"`
+	VoiceNoteID  *string            `json:"voiceNoteId,omitempty"`
+	Transcript   *string            `json:"transcript,omitempty"`
+	Area         *string            `json:"area,omitempty"`
+	Address      *string            `json:"address,omitempty"`
+	StartAfter   *scalar.Date       `json:"startAfter,omitempty"`
+	FinishBefore *scalar.Date       `json:"finishBefore,omitempty"`
+	// Free text; send `hours` instead, which sets `workingHours` too.
+	WorkingHours   *string            `json:"workingHours,omitempty"`
+	Hours          *WorkingHoursInput `json:"hours,omitempty"`
+	Limit          *int64             `json:"limit,omitempty"`
+	MaterialsBuyer *MaterialsBuyer    `json:"materialsBuyer,omitempty"`
+	Contingency    *int               `json:"contingency,omitempty"`
+	BudgetBand     *BudgetBandInput   `json:"budgetBand,omitempty"`
+	MoodBoardID    *string            `json:"moodBoardId,omitempty"`
+	LookID         *string            `json:"lookId,omitempty"`
+	Finishes       []FinishInput      `json:"finishes,omitempty"`
+	PermitCheck    *PermitCheckInput  `json:"permitCheck,omitempty"`
+}
+
+type BriefPayload struct {
+	Brief *Brief `json:"brief"`
+}
+
+func (BriefPayload) IsUpdateBriefResult() {}
+
+func (BriefPayload) IsClaimBriefResult() {}
+
+func (BriefPayload) IsPublishBriefResult() {}
+
+func (BriefPayload) IsChooseBidResult() {}
+
+func (BriefPayload) IsCloseBriefResult() {}
+
+type BriefWorkItem struct {
+	ID string `json:"id"`
+	// W1… for brief lines, `+` for often-forgotten ones; none on assumed lines.
+	Code           *string  `json:"code,omitempty"`
+	Title          string   `json:"title"`
+	Description    *string  `json:"description,omitempty"`
+	ApproxQuantity *float64 `json:"approxQuantity,omitempty"`
+	Unit           *Unit    `json:"unit,omitempty"`
+	// The rough size in words when it is not one quantity.
+	RoughSize *string       `json:"roughSize,omitempty"`
+	Kind      BriefItemKind `json:"kind"`
+	// For often-forgotten lines: the line it goes with.
+	RelatedTo *RelatedItem    `json:"relatedTo,omitempty"`
+	Status    BriefItemStatus `json:"status"`
+	Sources   []Provenance    `json:"sources"`
+}
+
+type BriefWorkItemInput struct {
+	ID             string        `json:"id"`
+	Code           *string       `json:"code,omitempty"`
+	Title          string        `json:"title"`
+	Description    *string       `json:"description,omitempty"`
+	ApproxQuantity *float64      `json:"approxQuantity,omitempty"`
+	Unit           *Unit         `json:"unit,omitempty"`
+	Kind           BriefItemKind `json:"kind"`
+	// For often-forgotten lines: the line it goes with.
+	RelatedTo *RelatedItemInput `json:"relatedTo,omitempty"`
+	Status    BriefItemStatus   `json:"status"`
+	// Where the line came from, as the app shows it. The server keeps only sources it can verify against its own
+	// records (the same `kind` and `ref` on the item already), so a client can't invent provenance (R1). A line
+	// she adds (an id the server hasn't seen) is sourced to her: `form`, her name and the time.
+	Sources []ProvenanceInput `json:"sources,omitempty"`
+}
+
+// Owner only. Three groups (the agreement, signed change orders, materials she buys), each Planned / Released
+// / Safe at partner / To pay. Planned materials count from signing, so a checkout never moves the forecast.
+// The protection fee sits below the total and is not in the limit check.
+type Budget struct {
+	AsOf          time.Time     `json:"asOf"`
+	Groups        []BudgetGroup `json:"groups"`
+	Total         *BudgetCell   `json:"total"`
+	Limit         int64         `json:"limit"`
+	PlanAtSigning *int64        `json:"planAtSigning,omitempty"`
+	// Signed: forecast minus limit; negative means under the limit.
+	OverLimit     int64        `json:"overLimit"`
+	Contingency   *Contingency `json:"contingency"`
+	ProtectionFee *BudgetFee   `json:"protectionFee"`
+	AllIn         *int64       `json:"allIn,omitempty"`
+}
+
+// The band rules (Q4), checked by the server on every save and at publish: from Rp 0 up, the top never above
+// her limit, and at least Rp 10.000.000 or 20% of the top wide (a band from Rp 0 is wide enough).
+type BudgetBand struct {
+	Low  int64 `json:"low"`
+	High int64 `json:"high"`
+}
+
+type BudgetBandInput struct {
+	Low  int64 `json:"low"`
+	High int64 `json:"high"`
+}
+
+type BudgetCell struct {
+	Planned       int64 `json:"planned"`
+	Released      int64 `json:"released"`
+	SafeAtPartner int64 `json:"safeAtPartner"`
+	ToPay         int64 `json:"toPay"`
+}
+
+type BudgetFee struct {
+	Total int64 `json:"total"`
+	Paid  int64 `json:"paid"`
+	ToPay int64 `json:"toPay"`
+}
+
+type BudgetGroup struct {
+	Kind          BudgetGroupKind `json:"kind"`
+	Label         string          `json:"label"`
+	Planned       int64           `json:"planned"`
+	Released      int64           `json:"released"`
+	SafeAtPartner int64           `json:"safeAtPartner"`
+	ToPay         int64           `json:"toPay"`
+	Lines         []BudgetLine    `json:"lines"`
+}
+
+type BudgetLine struct {
+	Label    string          `json:"label"`
+	ShopName *string         `json:"shopName,omitempty"`
+	Amount   int64           `json:"amount"`
+	State    BudgetLineState `json:"state"`
+	RefID    *string         `json:"refId,omitempty"`
+}
+
+type BulkUpdateProductsInput struct {
+	ShopID     string   `json:"shopId"`
+	ProductIds []string `json:"productIds"`
+	// Signed basis points, −5000 to 5000.
+	PriceChange *int  `json:"priceChange,omitempty"`
+	Stock       *int  `json:"stock,omitempty"`
+	Visible     *bool `json:"visible,omitempty"`
+}
+
+type BulkUpdateProductsPayload struct {
+	Products []Product `json:"products"`
+}
+
+func (BulkUpdateProductsPayload) IsBulkUpdateProductsResult() {}
+
+type CandidateReplay struct {
+	Cases            int `json:"cases"`
+	SameResult       int `json:"sameResult"`
+	FaultNamingSlips int `json:"faultNamingSlips"`
+}
+
+type CannedAnswer struct {
+	ID       string   `json:"id"`
+	Title    string   `json:"title"`
+	Audience Audience `json:"audience"`
+	Text     string   `json:"text"`
+}
+
+type CardRefInput struct {
+	Type  AttachableCard `json:"type"`
+	RefID string         `json:"refId"`
+}
+
+type Cart struct {
+	Job   *Job       `json:"job"`
+	Items []CartItem `json:"items"`
+	Total int64      `json:"total"`
+	// Always 0; shops pay 2%.
+	BuyerFee int64  `json:"buyerFee"`
+	Shops    []Shop `json:"shops"`
+	// Delivery slot chosen for checkout (`updateCart`); null while the cart is empty.
+	Slot *TimeWindow `json:"slot,omitempty"`
+	// Who receives the delivery on site.
+	ReceiverName *string   `json:"receiverName,omitempty"`
+	Plan         *CartPlan `json:"plan,omitempty"`
+}
+
+type CartItem struct {
+	ID           string        `json:"id"`
+	MaterialLine *MaterialLine `json:"materialLine,omitempty"`
+	// Null once the shop no longer lists it.
+	Product   *Product `json:"product,omitempty"`
+	Shop      *Shop    `json:"shop"`
+	Name      string   `json:"name"`
+	Quantity  float64  `json:"quantity"`
+	Unit      Unit     `json:"unit"`
+	UnitPrice int64    `json:"unitPrice"`
+	Amount    int64    `json:"amount"`
+}
+
+type CartPayload struct {
+	Cart *Cart `json:"cart"`
+}
+
+func (CartPayload) IsAddCartItemResult() {}
+
+func (CartPayload) IsUpdateCartItemResult() {}
+
+func (CartPayload) IsUpdateCartResult() {}
+
+func (CartPayload) IsRemoveCartItemResult() {}
+
+// "Already in your budget plan".
+type CartPlan struct {
+	Planned       int64  `json:"planned"`
+	ForecastAfter *int64 `json:"forecastAfter,omitempty"`
+}
+
+// An issue as the mediator works it: holds, both positions, the evidence chain and the suggestion.
+type Case struct {
+	ID string `json:"id"`
+	// The owner's claim in her words, e.g. "The tile row near the window isn't straight" (`Issue.title` stays short).
+	Title      string            `json:"title"`
+	Issue      *Issue            `json:"issue"`
+	Job        *Job              `json:"job"`
+	JobTitle   string            `json:"jobTitle"`
+	Area       *string           `json:"area,omitempty"`
+	Owner      *Person           `json:"owner"`
+	Contractor *Person           `json:"contractor"`
+	Agreement  *AgreementVersion `json:"agreement,omitempty"`
+	// Text of the clause the issue is raised on.
+	ClauseText       *string           `json:"clauseText,omitempty"`
+	Stage            *Stage            `json:"stage,omitempty"`
+	Media            []Media           `json:"media"`
+	Assignee         *StaffMember      `json:"assignee,omitempty"`
+	AssignedAt       *time.Time        `json:"assignedAt,omitempty"`
+	Holds            []Hold            `json:"holds"`
+	Positions        []Position        `json:"positions"`
+	Evidence         []JobEvent        `json:"evidence"`
+	Suggestion       *MediatorDecision `json:"suggestion,omitempty"`
+	AuditChainIntact bool              `json:"auditChainIntact"`
+	Audit            *CaseAudit        `json:"audit,omitempty"`
+}
+
+type CaseAudit struct {
+	// Entries in this case's audit trail.
+	EntryCount int        `json:"entryCount"`
+	CheckedAt  time.Time  `json:"checkedAt"`
+	Latest     []JobEvent `json:"latest"`
+}
+
+type CaseConnection struct {
+	Edges      []CaseEdge  `json:"edges"`
+	Nodes      []Case      `json:"nodes"`
+	PageInfo   *PageInfo   `json:"pageInfo"`
+	TotalCount int         `json:"totalCount"`
+	Counts     *CaseCounts `json:"counts,omitempty"`
+}
+
+type CaseCounts struct {
+	ResolvedThisWeek       int `json:"resolvedThisWeek"`
+	ResolvedFixAccepted    int `json:"resolvedFixAccepted"`
+	ResolvedPartialRelease int `json:"resolvedPartialRelease"`
+}
+
+type CaseEdge struct {
+	Cursor string `json:"cursor"`
+	Node   *Case  `json:"node"`
+}
+
+type CasePayload struct {
+	Case *Case `json:"case"`
+}
+
+func (CasePayload) IsAssignCaseResult() {}
+
+func (CasePayload) IsDecideCaseResult() {}
+
+type CategoryCount struct {
+	Category ProductCategory `json:"category"`
+	Count    int             `json:"count"`
+}
+
+// A change she can tick for her room.
+type ChangeOption struct {
+	ID       string   `json:"id"`
+	RoomType RoomType `json:"roomType"`
+	Label    string   `json:"label"`
+}
+
+// Extra or changed work, signed by both (R2); priced changes are funded before the work.
+type ChangeOrder struct {
+	ID     string `json:"id"`
+	Job    *Job   `json:"job"`
+	Number int    `json:"number"`
+	Title  string `json:"title"`
+	// Short label for list rows.
+	ShortTitle    *string   `json:"shortTitle,omitempty"`
+	Description   *UserText `json:"description,omitempty"`
+	WorkItemCodes []string  `json:"workItemCodes"`
+	// The part of the job it touches.
+	AreaLabel *string `json:"areaLabel,omitempty"`
+	// The stage it is done and released with.
+	StageNo *int              `json:"stageNo,omitempty"`
+	Lines   []ChangeOrderLine `json:"lines"`
+	// Required before the contractor signs and sends it; a draft may have none.
+	Reason *ChangeReason `json:"reason,omitempty"`
+	// Signed change in price.
+	PriceDelta int64             `json:"priceDelta"`
+	DaysDelta  int               `json:"daysDelta"`
+	Status     ChangeOrderStatus `json:"status"`
+	Fee        int64             `json:"fee"`
+	// True when the price change is above Rp 0; funded before the work starts.
+	FundingRequired       bool       `json:"fundingRequired"`
+	Funding               *Funding   `json:"funding,omitempty"`
+	FundedAt              *time.Time `json:"fundedAt,omitempty"`
+	ReleasedAt            *time.Time `json:"releasedAt,omitempty"`
+	AgreementVersionLabel *string    `json:"agreementVersionLabel,omitempty"`
+	// The signed change order as a PDF, once both have signed.
+	PDFURL    *string `json:"pdfUrl,omitempty"`
+	VoiceNote *Media  `json:"voiceNote,omitempty"`
+	// What it is now.
+	CurrentState *string `json:"currentState,omitempty"`
+	Media        []Media `json:"media"`
+	// The owner's forecast after this change.
+	ForecastAfter *int64 `json:"forecastAfter,omitempty"`
+	// The owner's contingency left after this change.
+	ContingencyLeftAfter *int64      `json:"contingencyLeftAfter,omitempty"`
+	Signatures           []Signature `json:"signatures"`
+	Decision             *Decision   `json:"decision,omitempty"`
+	CreatedBy            *Person     `json:"createdBy,omitempty"`
+	CreatedAt            time.Time   `json:"createdAt"`
+}
+
+func (ChangeOrder) IsNeedsYouSubject() {}
+
+type ChangeOrderFeeRule struct {
+	FreeUpTo  int `json:"freeUpTo"`
+	RateAbove int `json:"rateAbove"`
+}
+
+type ChangeOrderLine struct {
+	Label          string     `json:"label"`
+	Quantity       float64    `json:"quantity"`
+	Unit           Unit       `json:"unit"`
+	UnitPrice      int64      `json:"unitPrice"`
+	Amount         int64      `json:"amount"`
+	MaterialsBuyer *LineBuyer `json:"materialsBuyer,omitempty"`
+	// Set when the AI split the description into lines; `suggested` until the contractor checks the line.
+	Ai *AiSuggestion `json:"ai,omitempty"`
+}
+
+type ChangeOrderLineInput struct {
+	Label          string     `json:"label"`
+	Quantity       float64    `json:"quantity"`
+	Unit           Unit       `json:"unit"`
+	UnitPrice      int64      `json:"unitPrice"`
+	Amount         int64      `json:"amount"`
+	MaterialsBuyer *LineBuyer `json:"materialsBuyer,omitempty"`
+}
+
+type CheckInStageInput struct {
+	IdempotencyKey string         `json:"idempotencyKey"`
+	StageID        string         `json:"stageId"`
+	Location       *GeoPointInput `json:"location"`
+	// At least 3.
+	BeforePhotoIds []string `json:"beforePhotoIds"`
+}
+
+type CheckInStagePayload struct {
+	Stage *Stage `json:"stage"`
+}
+
+func (CheckInStagePayload) IsCheckInStageResult() {}
+
+type CheckSigner struct {
+	Role PartyRole `json:"role"`
+	// Masked, for a public page: `Pak J*** S******`.
+	MaskedName string `json:"maskedName"`
+	// The contractor's registered business name.
+	BusinessName *string    `json:"businessName,omitempty"`
+	SignedAt     *time.Time `json:"signedAt,omitempty"`
+}
+
+type CheckedChangeOrder struct {
+	Number int    `json:"number"`
+	Title  string `json:"title"`
+	// Signed change in price.
+	PriceDelta int64      `json:"priceDelta"`
+	SignedAt   *time.Time `json:"signedAt,omitempty"`
+}
+
+type CheckedJob struct {
+	Title         string `json:"title"`
+	Area          string `json:"area"`
+	WorkItemCount *int   `json:"workItemCount,omitempty"`
+}
+
+type CheckoutCartInput struct {
+	IdempotencyKey string           `json:"idempotencyKey"`
+	JobID          string           `json:"jobId"`
+	Slot           *TimeWindowInput `json:"slot"`
+	ReceiverName   *string          `json:"receiverName,omitempty"`
+	SiteNote       *string          `json:"siteNote,omitempty"`
+	Bank           Bank             `json:"bank"`
+}
+
+type CheckoutCartPayload struct {
+	Orders  []Order  `json:"orders"`
+	Funding *Funding `json:"funding"`
+}
+
+func (CheckoutCartPayload) IsCheckoutCartResult() {}
+
+type Checkpoint struct {
+	Day   int `json:"day"`
+	Value int `json:"value"`
+}
+
+type ChooseBidInput struct {
+	BriefID         string        `json:"briefId"`
+	BidID           string        `json:"bidId"`
+	ReasonForOthers *ChoiceReason `json:"reasonForOthers,omitempty"`
+}
+
+type Citation struct {
+	Type  CitationType `json:"type"`
+	Label string       `json:"label"`
+	RefID *string      `json:"refId,omitempty"`
+}
+
+type ClaimBriefInput struct {
+	BriefID    string `json:"briefId"`
+	DraftToken string `json:"draftToken"`
+}
+
+type ClaimFundingPaidInput struct {
+	FundingID string `json:"fundingId"`
+}
+
+type ClaimFundingPaidPayload struct {
+	Funding *Funding `json:"funding"`
+}
+
+func (ClaimFundingPaidPayload) IsClaimFundingPaidResult() {}
+
+type Clause struct {
+	ID      string     `json:"id"`
+	Number  string     `json:"number"`
+	Part    ClausePart `json:"part"`
+	KeyTerm *KeyTerm   `json:"keyTerm,omitempty"`
+	Title   string     `json:"title"`
+	// Plain-words summary, written by the AI and confirmed.
+	Summary   *string       `json:"summary,omitempty"`
+	SummaryAi *AiSuggestion `json:"summaryAi,omitempty"`
+	// The signed text, in Bahasa Indonesia.
+	TextBahasa string `json:"textBahasa"`
+	// English translation; the Bahasa text is binding.
+	TextEnglish string `json:"textEnglish"`
+	// The latest source.
+	Source *Provenance `json:"source,omitempty"`
+	// Every source, oldest first, when the clause has more than one.
+	Sources []Provenance `json:"sources"`
+	Changed bool         `json:"changed"`
+	// The latest review: marked right, or a change asked for (with its note). Editing the clause clears it.
+	Review *ClauseReview `json:"review,omitempty"`
+}
+
+// One clause to change, named by `clauseId` or by its `keyTerm` (the Work clause has none: use its id). The Bahasa
+// text binds; `textEnglish` is its translation. `useDefault` puts back Renora's standard text (extra work,
+// cancellation).
+type ClauseEditInput struct {
+	ClauseID    *string  `json:"clauseId,omitempty"`
+	KeyTerm     *KeyTerm `json:"keyTerm,omitempty"`
+	TextBahasa  *string  `json:"textBahasa,omitempty"`
+	TextEnglish *string  `json:"textEnglish,omitempty"`
+	UseDefault  *bool    `json:"useDefault,omitempty"`
+}
+
+type ClauseReview struct {
+	Verdict ClauseVerdict `json:"verdict"`
+	Text    *string       `json:"text,omitempty"`
+	By      *Person       `json:"by"`
+	At      time.Time     `json:"at"`
+}
+
+type Clock struct {
+	ID   string    `json:"id"`
+	Kind ClockKind `json:"kind"`
+	Job  *Job      `json:"job,omitempty"`
+	// Set instead of `job` while it is still a brief.
+	Brief    *Brief  `json:"brief,omitempty"`
+	JobTitle string  `json:"jobTitle"`
+	Area     *string `json:"area,omitempty"`
+	// Where the clock sits in the job.
+	Context   *string   `json:"context,omitempty"`
+	StartedAt time.Time `json:"startedAt"`
+	// What started the clock.
+	StartEvent *string   `json:"startEvent,omitempty"`
+	DueAt      time.Time `json:"dueAt"`
+	// When work paused on this job.
+	PausedAt *time.Time  `json:"pausedAt,omitempty"`
+	Amount   *int64      `json:"amount,omitempty"`
+	NextStep string      `json:"nextStep"`
+	Status   ClockStatus `json:"status"`
+}
+
+type ClockConnection struct {
+	Edges      []ClockEdge `json:"edges"`
+	Nodes      []Clock     `json:"nodes"`
+	PageInfo   *PageInfo   `json:"pageInfo"`
+	TotalCount int         `json:"totalCount"`
+}
+
+type ClockEdge struct {
+	Cursor string `json:"cursor"`
+	Node   *Clock `json:"node"`
+}
+
+type CloseAccountPayload struct {
+	ClosesAt time.Time `json:"closesAt"`
+}
+
+func (CloseAccountPayload) IsCloseAccountResult() {}
+
+type CloseBriefInput struct {
+	BriefID string      `json:"briefId"`
+	Reason  CloseReason `json:"reason"`
+	Note    *string     `json:"note,omitempty"`
+}
+
+// A closed period, both days included.
+type ClosedDays struct {
+	From scalar.Date `json:"from"`
+	To   scalar.Date `json:"to"`
+	// Why the shop is closed, e.g. Lebaran (`ClosedDaysInput.reason`).
+	Label *string `json:"label,omitempty"`
+}
+
+// A closed period, both days included.
+type ClosedDaysInput struct {
+	From scalar.Date `json:"from"`
+	To   scalar.Date `json:"to"`
+	// Shown to buyers, e.g. Lebaran.
+	Reason *string `json:"reason,omitempty"`
+}
+
+type CodeAnswerInput struct {
+	RequestID string `json:"requestId"`
+	Code      string `json:"code"`
+}
+
+type CodeChallenge struct {
+	RequestID   string      `json:"requestId"`
+	Channel     CodeChannel `json:"channel"`
+	PhoneMasked string      `json:"phoneMasked"`
+	// 10 minutes after sending.
+	ExpiresAt time.Time `json:"expiresAt"`
+	ResendAt  time.Time `json:"resendAt"`
+}
+
+type CodeCheck struct {
+	LinesRead     int `json:"linesRead"`
+	LinesShown    int `json:"linesShown"`
+	NumericPrices int `json:"numericPrices"`
+}
+
+type CommitPriceListImportInput struct {
+	ImportID string `json:"importId"`
+}
+
+type ComparedBid struct {
+	Bid               *Bid   `json:"bid"`
+	ContractorName    string `json:"contractorName"`
+	VerifiedHandovers *int   `json:"verifiedHandovers,omitempty"`
+	Total             int64  `json:"total"`
+	// The total with every gap filled from the bidder's answers.
+	GapsFilledTotal *int64     `json:"gapsFilledTotal,omitempty"`
+	DurationDays    int        `json:"durationDays"`
+	DownPayment     int        `json:"downPayment"`
+	StageCount      int        `json:"stageCount"`
+	WarrantyMonths  int        `json:"warrantyMonths"`
+	Visited         bool       `json:"visited"`
+	VisitedAt       *time.Time `json:"visitedAt,omitempty"`
+	TermsWritten    int        `json:"termsWritten"`
+}
+
+type ComparisonCell struct {
+	Bid      *Bid        `json:"bid"`
+	Amount   *int64      `json:"amount,omitempty"`
+	Coverage *Coverage   `json:"coverage"`
+	Check    *PriceCheck `json:"check,omitempty"`
+}
+
+type ComparisonRow struct {
+	BriefItem  *BriefWorkItem   `json:"briefItem,omitempty"`
+	Code       string           `json:"code"`
+	Title      string           `json:"title"`
+	Scope      *LineScope       `json:"scope,omitempty"`
+	Exclusions *string          `json:"exclusions,omitempty"`
+	Cells      []ComparisonCell `json:"cells"`
+}
+
+type Completion struct {
+	FinishedInDays          *int   `json:"finishedInDays,omitempty"`
+	DaysEarly               *int   `json:"daysEarly,omitempty"`
+	FinalCost               *int64 `json:"finalCost,omitempty"`
+	ContingencyUnused       *int64 `json:"contingencyUnused,omitempty"`
+	PhotoCount              *int   `json:"photoCount,omitempty"`
+	VerifiedHandoversBefore *int   `json:"verifiedHandoversBefore,omitempty"`
+	VerifiedHandoversAfter  *int   `json:"verifiedHandoversAfter,omitempty"`
+}
+
+type ConfirmDeliveryInput struct {
+	IdempotencyKey string         `json:"idempotencyKey"`
+	DeliveryID     string         `json:"deliveryId"`
+	SitePhotoID    string         `json:"sitePhotoId"`
+	Location       *GeoPointInput `json:"location,omitempty"`
+}
+
+type ConfirmWagesInput struct {
+	WeekStart scalar.Date `json:"weekStart"`
+	Received  bool        `json:"received"`
+	Note      *string     `json:"note,omitempty"`
+}
+
+// The thing is in a state that does not allow this (already funded, locked, extension used, key reused).
+type Conflict struct {
+	Code    ProblemCode `json:"code"`
+	Message string      `json:"message"`
+}
+
+func (Conflict) IsUpdateAgreementVersionResult() {}
+
+func (Conflict) IsSignAgreementVersionResult() {}
+
+func (Conflict) IsApproveQRSignInResult() {}
+
+func (Conflict) IsUpdateBriefResult() {}
+
+func (Conflict) IsSaveWorkListResult() {}
+
+func (Conflict) IsPublishBriefResult() {}
+
+func (Conflict) IsInviteContractorResult() {}
+
+func (Conflict) IsRespondToBidInviteResult() {}
+
+func (Conflict) IsSaveBidResult() {}
+
+func (Conflict) IsSubmitBidResult() {}
+
+func (Conflict) IsWithdrawBidResult() {}
+
+func (Conflict) IsChooseBidResult() {}
+
+func (Conflict) IsCloseBriefResult() {}
+
+func (Conflict) IsUpdateChangeOrderResult() {}
+
+func (Conflict) IsDeleteChangeOrderResult() {}
+
+func (Conflict) IsSignChangeOrderResult() {}
+
+func (Conflict) IsDeclineChangeOrderResult() {}
+
+func (Conflict) IsFundChangeOrderResult() {}
+
+func (Conflict) IsRecordAdvanceResult() {}
+
+func (Conflict) IsRecordWagePaymentResult() {}
+
+func (Conflict) IsAnswerDecisionResult() {}
+
+func (Conflict) IsCreateRecommendationResult() {}
+
+func (Conflict) IsRecordHandoverItemResult() {}
+
+func (Conflict) IsSignHandoverResult() {}
+
+func (Conflict) IsAddIssueMediaResult() {}
+
+func (Conflict) IsReplyToIssueResult() {}
+
+func (Conflict) IsResolveIssueResult() {}
+
+func (Conflict) IsRequestMediationResult() {}
+
+func (Conflict) IsAnswerMediatorSuggestionResult() {}
+
+func (Conflict) IsSendLinkMessageResult() {}
+
+func (Conflict) IsFundFromLinkResult() {}
+
+func (Conflict) IsCrewLinkResult() {}
+
+func (Conflict) IsDriverTripResult() {}
+
+func (Conflict) IsUpdateMaterialLineResult() {}
+
+func (Conflict) IsAddCartItemResult() {}
+
+func (Conflict) IsCheckoutCartResult() {}
+
+func (Conflict) IsCloseAccountResult() {}
+
+func (Conflict) IsInviteTeamMemberResult() {}
+
+func (Conflict) IsDecideCaseResult() {}
+
+func (Conflict) IsRetryPayoutInstructionResult() {}
+
+func (Conflict) IsAcceptOrderResult() {}
+
+func (Conflict) IsDeclineOrderResult() {}
+
+func (Conflict) IsRerouteOrderResult() {}
+
+func (Conflict) IsAnswerStockProposalResult() {}
+
+func (Conflict) IsPackOrderResult() {}
+
+func (Conflict) IsDispatchOrderResult() {}
+
+func (Conflict) IsConfirmDeliveryResult() {}
+
+func (Conflict) IsProblem() {}
+
+func (Conflict) IsFundStageResult() {}
+
+func (Conflict) IsClaimFundingPaidResult() {}
+
+func (Conflict) IsCheckInStageResult() {}
+
+func (Conflict) IsSubmitStageResult() {}
+
+func (Conflict) IsApproveStageResult() {}
+
+func (Conflict) IsExtendStageReviewResult() {}
+
+func (Conflict) IsProposePartialReleaseResult() {}
+
+func (Conflict) IsSignPartialReleaseResult() {}
+
+func (Conflict) IsSendPauseNoticeResult() {}
+
+func (Conflict) IsProposeEndJobResult() {}
+
+func (Conflict) IsSignEndJobResult() {}
+
+func (Conflict) IsPublishShopResult() {}
+
+func (Conflict) IsRemoveShopRecordResult() {}
+
+func (Conflict) IsPriceListImportResult() {}
+
+func (Conflict) IsCreateWarrantyClaimResult() {}
+
+type Consents struct {
+	// AI may read my chats, photos and voice notes (processed outside Indonesia under a data agreement).
+	AiProcessing   bool       `json:"aiProcessing"`
+	AiProcessingAt *time.Time `json:"aiProcessingAt,omitempty"`
+	// Use my photos to improve Renora's AI. Default off.
+	AiTrainingPhotos bool `json:"aiTrainingPhotos"`
+	// Contractor: share my signed jobs' prices with the price book, without my name. Default off.
+	PriceBookSharing bool `json:"priceBookSharing"`
+}
+
+// The owner's own reserve: never funded, never shown to contractors. Change orders draw on it.
+type Contingency struct {
+	Tier        *ContingencyTier `json:"tier,omitempty"`
+	Rate        int              `json:"rate"`
+	Amount      int64            `json:"amount"`
+	Used        int64            `json:"used"`
+	Left        int64            `json:"left"`
+	FoundOnSite int64            `json:"foundOnSite"`
+	OwnerChoice int64            `json:"ownerChoice"`
+}
+
+type ContingencyOption struct {
+	Tier ContingencyTier `json:"tier"`
+	Rate int             `json:"rate"`
+	Low  int64           `json:"low"`
+	High int64           `json:"high"`
+}
+
+// A contractor's business in the directory, as owners see it.
+type Contractor struct {
+	ID string `json:"id"`
+	// Where he is based, rounded to about 1 km, for a map pin; never his address.
+	ApproxLocation *GeoPoint `json:"approxLocation,omitempty"`
+	// The person behind the business; null for a firm listed under its name only.
+	Name         *string `json:"name,omitempty"`
+	BusinessName string  `json:"businessName"`
+	// How owners address him (Pak Joko), or the business name for a firm.
+	DisplayName string   `json:"displayName"`
+	Initials    string   `json:"initials"`
+	Slug        string   `json:"slug"`
+	DistanceKm  *float64 `json:"distanceKm,omitempty"`
+	// Items accepted on lists both sides signed. No stars (R3).
+	VerifiedHandovers int      `json:"verifiedHandovers"`
+	OnTimeRate        *int     `json:"onTimeRate,omitempty"`
+	ReplyHours        *float64 `json:"replyHours,omitempty"`
+	Badges            []Badge  `json:"badges"`
+	SbuCode           *string  `json:"sbuCode,omitempty"`
+	Areas             []string `json:"areas"`
+	Skills            []string `json:"skills"`
+	WhyYouSee         *string  `json:"whyYouSee,omitempty"`
+	LastJob           *LastJob `json:"lastJob,omitempty"`
+	NewOnRenora       *bool    `json:"newOnRenora,omitempty"`
+	// The person, when the business has one on Renora.
+	Person *Person           `json:"person,omitempty"`
+	Record *ContractorRecord `json:"record,omitempty"`
+}
+
+// The brief as bidders see it: no limit, no AI estimate, no contingency, no AI picture, no exact address.
+type ContractorBriefView struct {
+	ID               string   `json:"id"`
+	OwnerDisplayName string   `json:"ownerDisplayName"`
+	RoomType         RoomType `json:"roomType"`
+	Area             *string  `json:"area,omitempty"`
+	// The area's first part, e.g. "Bintaro".
+	AreaShort      *string         `json:"areaShort,omitempty"`
+	AreaM2         *float64        `json:"areaM2,omitempty"`
+	Photos         []Media         `json:"photos"`
+	MoodBoard      *MoodBoard      `json:"moodBoard,omitempty"`
+	Keep           []string        `json:"keep"`
+	WorkList       []BriefWorkItem `json:"workList"`
+	Finishes       []Finish        `json:"finishes"`
+	Band           *BudgetBand     `json:"band,omitempty"`
+	StartAfter     *scalar.Date    `json:"startAfter,omitempty"`
+	FinishBefore   *scalar.Date    `json:"finishBefore,omitempty"`
+	WorkingHours   *string         `json:"workingHours,omitempty"`
+	Hours          *WorkingHours   `json:"hours,omitempty"`
+	MaterialsBuyer *MaterialsBuyer `json:"materialsBuyer,omitempty"`
+	ClosesAt       *time.Time      `json:"closesAt,omitempty"`
+	// The brief's bidding rules, the same as `Brief.bidRules`: the down-payment cap and the windows.
+	BidRules *BidRules `json:"bidRules"`
+	// Questions on this brief a bidder may read: the owner's to him or to all, and bidders' with her answers.
+	Questions []BidQuestion `json:"questions"`
+}
+
+type ContractorConnection struct {
+	Edges      []ContractorEdge `json:"edges"`
+	Nodes      []Contractor     `json:"nodes"`
+	PageInfo   *PageInfo        `json:"pageInfo"`
+	TotalCount int              `json:"totalCount"`
+}
+
+type ContractorEdge struct {
+	Cursor string      `json:"cursor"`
+	Node   *Contractor `json:"node"`
+}
+
+// The contractor's own business profile. Only he and ops read it; others read `Contractor`.
+type ContractorProfile struct {
+	ID           string   `json:"id"`
+	Name         string   `json:"name"`
+	BusinessName string   `json:"businessName"`
+	Slug         string   `json:"slug"`
+	Areas        []string `json:"areas"`
+	Skills       []Skill  `json:"skills"`
+	About        *string  `json:"about,omitempty"`
+	CrewSize     *int     `json:"crewSize,omitempty"`
+	PublicRecord bool     `json:"publicRecord"`
+	// Joined in the pilot; the 3% first-job match fee is waived until `foundingWaiverUntil`.
+	FoundingContractor  bool                 `json:"foundingContractor"`
+	FoundingWaiverUntil *scalar.Date         `json:"foundingWaiverUntil,omitempty"`
+	Seats               *Seats               `json:"seats,omitempty"`
+	Checklist           []SetupChecklistItem `json:"checklist"`
+	Listing             *Contractor          `json:"listing"`
+}
+
+type ContractorProfileInput struct {
+	Name         string   `json:"name"`
+	BusinessName string   `json:"businessName"`
+	Areas        []string `json:"areas,omitempty"`
+	Skills       []Skill  `json:"skills,omitempty"`
+	About        *string  `json:"about,omitempty"`
+	CrewSize     *int     `json:"crewSize,omitempty"`
+	PublicRecord *bool    `json:"publicRecord,omitempty"`
+}
+
+// The public record: verified handovers only (R3). The public lists only jobs the owner agreed to show; the
+// contractor himself also sees jobs kept private and jobs in progress.
+type ContractorRecord struct {
+	Contractor *Contractor      `json:"contractor"`
+	AsOf       time.Time        `json:"asOf"`
+	URL        *string          `json:"url,omitempty"`
+	Stats      *RecordStats     `json:"stats"`
+	Checks     []RecordCheck    `json:"checks"`
+	Handovers  []RecordHandover `json:"handovers"`
+	Issues     []RecordIssue    `json:"issues"`
+	Portfolio  []PortfolioItem  `json:"portfolio"`
+}
+
+// How the bid covers one brief item, in the bid's own words (AI tag, quoted).
+type Coverage struct {
+	BriefItem *BriefWorkItem `json:"briefItem,omitempty"`
+	// The brief item, or the part of it, this entry covers.
+	Label  *string        `json:"label,omitempty"`
+	Status CoverageStatus `json:"status"`
+	// The bid line that covers it, for `in_other_line`.
+	LineCode *string `json:"lineCode,omitempty"`
+	Quote    *string `json:"quote,omitempty"`
+	Extra    *int64  `json:"extra,omitempty"`
+	// The bidder's answer this coverage comes from.
+	AnswerID   *string    `json:"answerId,omitempty"`
+	AnsweredAt *time.Time `json:"answeredAt,omitempty"`
+}
+
+type CreateAgreementVersionInput struct {
+	JobID string              `json:"jobId"`
+	Edit  *AgreementEditInput `json:"edit"`
+}
+
+type CreateAgreementVersionPayload struct {
+	Version *AgreementVersion `json:"version"`
+}
+
+func (CreateAgreementVersionPayload) IsCreateAgreementVersionResult() {}
+
+type CreateBriefPayload struct {
+	Brief *Brief `json:"brief"`
+	// Only when created without a session: keep it to edit and claim the draft.
+	DraftToken *string `json:"draftToken,omitempty"`
+}
+
+func (CreateBriefPayload) IsCreateBriefResult() {}
+
+type CreateChangeOrderInput struct {
+	JobID         string                 `json:"jobId"`
+	Title         string                 `json:"title"`
+	Description   *string                `json:"description,omitempty"`
+	VoiceNoteID   *string                `json:"voiceNoteId,omitempty"`
+	MediaIds      []string               `json:"mediaIds,omitempty"`
+	WorkItemCodes []string               `json:"workItemCodes,omitempty"`
+	AreaLabel     *string                `json:"areaLabel,omitempty"`
+	StageNo       *int                   `json:"stageNo,omitempty"`
+	Lines         []ChangeOrderLineInput `json:"lines,omitempty"`
+	Reason        *ChangeReason          `json:"reason,omitempty"`
+	DaysDelta     int                    `json:"daysDelta"`
+}
+
+type CreateChangeOrderPayload struct {
+	ChangeOrder *ChangeOrder `json:"changeOrder"`
+}
+
+func (CreateChangeOrderPayload) IsCreateChangeOrderResult() {}
+
+type CreateDecisionInput struct {
+	JobID       string      `json:"jobId"`
+	Title       string      `json:"title"`
+	Description *string     `json:"description,omitempty"`
+	StageNo     *int        `json:"stageNo,omitempty"`
+	NeededBy    scalar.Date `json:"neededBy"`
+	// At least 2.
+	Options []DecisionOptionInput `json:"options"`
+}
+
+type CreateDecisionPayload struct {
+	Decision *Decision `json:"decision"`
+}
+
+func (CreateDecisionPayload) IsCreateDecisionResult() {}
+
+type CreateJobExportInput struct {
+	JobID string     `json:"jobId"`
+	Kind  ExportKind `json:"kind"`
+}
+
+type CreateJobExportPayload struct {
+	Export *Export `json:"export"`
+}
+
+func (CreateJobExportPayload) IsCreateJobExportResult() {}
+
+type CreateJobImportInput struct {
+	Source ImportSource `json:"source"`
+	// Uploaded chat export, RAB photo or voice note. A voice note drafts the work items as AI suggestions with
+	// the quote and the second it was said; each stays `suggested` and not binding until he accepts it (R1).
+	MediaIds []string `json:"mediaIds,omitempty"`
+}
+
+type CreateJobImportPayload struct {
+	JobImport *JobImport `json:"jobImport"`
+}
+
+func (CreateJobImportPayload) IsCreateJobImportResult() {}
+
+type CreateJobInput struct {
+	Title string `json:"title"`
+	// A confirmed job import. Its work items and the suggestions he accepted (price, start date, duration, stages,
+	// warranty) become agreement v1; a suggestion he did not accept stays out, empty for him to fill (R1).
+	ImportID   *string   `json:"importId,omitempty"`
+	RoomType   *RoomType `json:"roomType,omitempty"`
+	Area       *string   `json:"area,omitempty"`
+	OwnerPhone *string   `json:"ownerPhone,omitempty"`
+	OwnerName  *string   `json:"ownerName,omitempty"`
+}
+
+type CreateJobPayload struct {
+	Job *Job `json:"job"`
+}
+
+func (CreateJobPayload) IsCreateJobResult() {}
+
+type CreatePriceListImportInput struct {
+	ShopID string `json:"shopId"`
+	// Photos of the pages, or one uploaded `document` (CSV or XLSX) for a spreadsheet.
+	MediaIds []string         `json:"mediaIds"`
+	Source   *PriceListSource `json:"source,omitempty"`
+}
+
+type CreateProductInput struct {
+	ShopID  string        `json:"shopId"`
+	Product *ProductInput `json:"product"`
+}
+
+type CreateProgressCountInput struct {
+	JobID string              `json:"jobId"`
+	Date  scalar.Date         `json:"date"`
+	Items []ProgressItemInput `json:"items"`
+}
+
+type CreateProgressCountPayload struct {
+	ProgressCount *ProgressCount `json:"progressCount"`
+}
+
+func (CreateProgressCountPayload) IsCreateProgressCountResult() {}
+
+type CreateQRSignInPayload struct {
+	QRSignIn *QRSignIn `json:"qrSignIn"`
+}
+
+func (CreateQRSignInPayload) IsCreateQRSignInResult() {}
+
+type CreateQuoteCheckInput struct {
+	Text     *string  `json:"text,omitempty"`
+	MediaIds []string `json:"mediaIds,omitempty"`
+	// Required true when media is sent.
+	AiConsent *bool   `json:"aiConsent,omitempty"`
+	Area      *string `json:"area,omitempty"`
+}
+
+type CreateQuoteCheckPayload struct {
+	QuoteCheck *QuoteCheck `json:"quoteCheck"`
+}
+
+func (CreateQuoteCheckPayload) IsCreateQuoteCheckResult() {}
+
+type CreateQuoteUploadInput struct {
+	// `image/jpeg`, `image/png` or `application/pdf`.
+	ContentType string  `json:"contentType"`
+	ByteSize    int     `json:"byteSize"`
+	FileName    *string `json:"fileName,omitempty"`
+}
+
+type CreateRecommendationInput struct {
+	JobID   string  `json:"jobId"`
+	Message *string `json:"message,omitempty"`
+}
+
+type CreateRecommendationPayload struct {
+	ShareCard *ShareCard `json:"shareCard"`
+}
+
+func (CreateRecommendationPayload) IsCreateRecommendationResult() {}
+
+type CreateReportInput struct {
+	ClientRef  string           `json:"clientRef"`
+	JobID      string           `json:"jobId"`
+	Kind       CreateReportKind `json:"kind"`
+	CapturedAt time.Time        `json:"capturedAt"`
+	MediaIds   []string         `json:"mediaIds,omitempty"`
+	// Photos and voice notes still in the upload queue, by their `clientRef`.
+	MediaClientRefs       []string      `json:"mediaClientRefs,omitempty"`
+	Text                  *string       `json:"text,omitempty"`
+	NoWorkReason          *NoWorkReason `json:"noWorkReason,omitempty"`
+	CrewCount             *int          `json:"crewCount,omitempty"`
+	ForwardedFromWhatsapp *bool         `json:"forwardedFromWhatsapp,omitempty"`
+}
+
+type CreateReportPayload struct {
+	Report *Report `json:"report"`
+}
+
+func (CreateReportPayload) IsCreateReportResult() {}
+
+type CreateShopInput struct {
+	Settings *ShopSettingsInput `json:"settings"`
+	// From the "Claim your shop" link after a first WhatsApp order.
+	ClaimToken *string `json:"claimToken,omitempty"`
+}
+
+type CreateSigningChallengeInput struct {
+	Purpose SigningPurpose `json:"purpose"`
+	// What is being signed: the agreement version, change order, job (handover, end), partial release, stage, the
+	// issue (mediation), the user or shop whose payout account is added, or the team member given the owner seat.
+	// A challenge signs only this purpose and subject, once, for the user who asked for it; anything else returns
+	// `invalid_input` (`signature.device`, `wrong_subject`).
+	SubjectID string `json:"subjectId"`
+}
+
+type CreateSigningChallengePayload struct {
+	Challenge *SigningChallenge `json:"challenge"`
+}
+
+func (CreateSigningChallengePayload) IsCreateSigningChallengeResult() {}
+
+type CreateThreadInput struct {
+	Kind    NewThreadKind `json:"kind"`
+	JobID   *string       `json:"jobId,omitempty"`
+	Subject *string       `json:"subject,omitempty"`
+	Text    *string       `json:"text,omitempty"`
+}
+
+type CreateThreadPayload struct {
+	Thread *Thread `json:"thread"`
+}
+
+func (CreateThreadPayload) IsCreateThreadResult() {}
+
+type CreateUploadInput struct {
+	Kind MediaKind `json:"kind"`
+	// MIME type the PUT will carry: `image/*`, `audio/*`, `video/*` or `application/*` (PDF, a zipped WhatsApp
+	// export, an XLSX price list); a `document` may also be `text/plain` (a WhatsApp chat export) or `text/csv` (a
+	// price list). Problems: `invalid_input` (`invalid_format`).
+	ContentType string `json:"contentType"`
+	ByteSize    *int   `json:"byteSize,omitempty"`
+	// The file's name on the phone, e.g. "WhatsApp Chat with Bu Dewi.txt".
+	FileName *string `json:"fileName,omitempty"`
+	// When the photo was taken: the shutter time for `camera`, the photo's own time (EXIF, else the file's) for
+	// `gallery`. Never the time of upload. Without it a camera photo takes the server's time and a gallery photo
+	// has none.
+	CapturedAt *time.Time `json:"capturedAt,omitempty"`
+	// Where the photo was taken (EXIF for `gallery`); `onSite` is checked against the job's site point.
+	Location  *GeoPointInput `json:"location,omitempty"`
+	Job       *string        `json:"job,omitempty"`
+	Source    *MediaSource   `json:"source,omitempty"`
+	ClientRef *string        `json:"clientRef,omitempty"`
+}
+
+type CreateUploadPayload struct {
+	Upload *Upload `json:"upload"`
+}
+
+func (CreateUploadPayload) IsCreateUploadResult() {}
+
+type CreateWarrantyClaimInput struct {
+	JobID       string        `json:"jobId"`
+	Area        ClaimArea     `json:"area"`
+	StartedWhen *ClaimStarted `json:"startedWhen,omitempty"`
+	Text        string        `json:"text"`
+	VoiceNoteID *string       `json:"voiceNoteId,omitempty"`
+	// At least 1.
+	MediaIds []string `json:"mediaIds"`
+}
+
+type CreateWarrantyClaimPayload struct {
+	Claim *WarrantyClaim `json:"claim"`
+}
+
+func (CreateWarrantyClaimPayload) IsCreateWarrantyClaimResult() {}
+
+type CrewDailyNote struct {
+	Date         scalar.Date   `json:"date"`
+	TukangCount  *int          `json:"tukangCount,omitempty"`
+	KenekCount   *int          `json:"kenekCount,omitempty"`
+	WorkDone     []string      `json:"workDone"`
+	NoWorkReason *NoWorkReason `json:"noWorkReason,omitempty"`
+	SentAt       time.Time     `json:"sentAt"`
+}
+
+type CrewDailyNoteInput struct {
+	Date         scalar.Date   `json:"date"`
+	TukangCount  *int          `json:"tukangCount,omitempty"`
+	KenekCount   *int          `json:"kenekCount,omitempty"`
+	WorkDone     []string      `json:"workDone,omitempty"`
+	NoWorkReason *NoWorkReason `json:"noWorkReason,omitempty"`
+	ClientRef    *string       `json:"clientRef,omitempty"`
+}
+
+// Crew on this job by role, no names or rates; prefills today's note.
+type CrewHeadcount struct {
+	Tukang int `json:"tukang"`
+	Kenek  int `json:"kenek"`
+}
+
+type CrewLink struct {
+	CrewName  string             `json:"crewName"`
+	JobTitle  string             `json:"jobTitle"`
+	IssuedBy  string             `json:"issuedBy"`
+	Questions []CrewLinkQuestion `json:"questions"`
+	Wages     *CrewLinkWages     `json:"wages,omitempty"`
+	CrewCount *CrewHeadcount     `json:"crewCount,omitempty"`
+	// Today's note as he sent it (server clock, WIB); null until he sends it. Sending again replaces it.
+	TodayNote  *CrewDailyNote `json:"todayNote,omitempty"`
+	ExpiresAt  time.Time      `json:"expiresAt"`
+	TrustStrip string         `json:"trustStrip"`
+}
+
+type CrewLinkAnswer struct {
+	Value            CrewAnswerOnLink `json:"value"`
+	At               time.Time        `json:"at"`
+	NotifiedAt       *time.Time       `json:"notifiedAt,omitempty"`
+	SeenByContractor bool             `json:"seenByContractor"`
+	Photo            *Media           `json:"photo,omitempty"`
+}
+
+type CrewLinkDay struct {
+	Date   scalar.Date `json:"date"`
+	Worked bool        `json:"worked"`
+}
+
+type CrewLinkPayload struct {
+	CrewLink *CrewLink `json:"crewLink"`
+}
+
+func (CrewLinkPayload) IsCrewLinkResult() {}
+
+type CrewLinkQuestion struct {
+	ID    string           `json:"id"`
+	Index int              `json:"index"`
+	Total int              `json:"total"`
+	Kind  CrewQuestionKind `json:"kind"`
+	Text  string           `json:"text"`
+	// Short subject for lists.
+	Label        *string         `json:"label,omitempty"`
+	YesMeaning   *string         `json:"yesMeaning,omitempty"`
+	ContextPhoto *Media          `json:"contextPhoto,omitempty"`
+	Answer       *CrewLinkAnswer `json:"answer,omitempty"`
+}
+
+// His own wages only: his rate is his to see.
+type CrewLinkWages struct {
+	WeekStart    scalar.Date      `json:"weekStart"`
+	WeekEnd      scalar.Date      `json:"weekEnd"`
+	Days         []CrewLinkDay    `json:"days"`
+	DaysWorked   float64          `json:"daysWorked"`
+	DayRate      int64            `json:"dayRate"`
+	Wages        int64            `json:"wages"`
+	Advances     int64            `json:"advances"`
+	Net          int64            `json:"net"`
+	PaidOn       *scalar.Date     `json:"paidOn,omitempty"`
+	Confirmation WageConfirmation `json:"confirmation"`
+	ConfirmedAt  *time.Time       `json:"confirmedAt,omitempty"`
+}
+
+type CrewMember struct {
+	ID            string     `json:"id"`
+	Name          string     `json:"name"`
+	DisplayName   string     `json:"displayName"`
+	Initials      string     `json:"initials"`
+	Role          CrewRole   `json:"role"`
+	DayRate       *int64     `json:"dayRate,omitempty"`
+	PhoneMasked   *string    `json:"phoneMasked,omitempty"`
+	Phone         *string    `json:"phone,omitempty"`
+	Active        bool       `json:"active"`
+	LinkExpiresAt *time.Time `json:"linkExpiresAt,omitempty"`
+}
+
+type CrewMemberInput struct {
+	Name    string   `json:"name"`
+	Role    CrewRole `json:"role"`
+	DayRate int64    `json:"dayRate"`
+	Phone   *string  `json:"phone,omitempty"`
+}
+
+type CrewMemberPayload struct {
+	CrewMember *CrewMember `json:"crewMember"`
+}
+
+func (CrewMemberPayload) IsCrewMemberResult() {}
+
+type CrewQuestion struct {
+	ID   string           `json:"id"`
+	Job  *Job             `json:"job"`
+	Kind CrewQuestionKind `json:"kind"`
+	Text string           `json:"text"`
+	// Short subject for lists.
+	Label        *string `json:"label,omitempty"`
+	WorkItemCode *string `json:"workItemCode,omitempty"`
+	// Repeating question, sent every day at this time (WIB, HH:MM).
+	DailyAt    *string         `json:"dailyAt,omitempty"`
+	CreatedAt  time.Time       `json:"createdAt"`
+	Recipients []CrewRecipient `json:"recipients"`
+}
+
+type CrewQuestionConnection struct {
+	Edges      []CrewQuestionEdge `json:"edges"`
+	Nodes      []CrewQuestion     `json:"nodes"`
+	PageInfo   *PageInfo          `json:"pageInfo"`
+	TotalCount int                `json:"totalCount"`
+}
+
+type CrewQuestionEdge struct {
+	Cursor string        `json:"cursor"`
+	Node   *CrewQuestion `json:"node"`
+}
+
+type CrewRecipient struct {
+	CrewMember *CrewMember        `json:"crewMember"`
+	Name       string             `json:"name"`
+	LinkURL    string             `json:"linkUrl"`
+	Status     CrewQuestionStatus `json:"status"`
+	Answer     *CrewAnswerValue   `json:"answer,omitempty"`
+	AnsweredAt *time.Time         `json:"answeredAt,omitempty"`
+	Photo      *Media             `json:"photo,omitempty"`
+}
+
+type DecideCaseInput struct {
+	IdempotencyKey string          `json:"idempotencyKey"`
+	CaseID         string          `json:"caseId"`
+	Outcome        MediatorOutcome `json:"outcome"`
+	FixBy          *scalar.Date    `json:"fixBy,omitempty"`
+	Release        *int64          `json:"release,omitempty"`
+	Refund         *int64          `json:"refund,omitempty"`
+	Text           string          `json:"text"`
+	// `draft` saves it; `sent` sends it to both sides.
+	State DecisionState `json:"state"`
+}
+
+type DecideVerificationInput struct {
+	VerificationID string `json:"verificationId"`
+	Approve        bool   `json:"approve"`
+	// Required when not approving.
+	Reason *VerificationRejectReason `json:"reason,omitempty"`
+	Note   *string                   `json:"note,omitempty"`
+}
+
+type Decision struct {
+	ID    string `json:"id"`
+	Job   *Job   `json:"job"`
+	Title string `json:"title"`
+	// Why the contractor needs it by that date.
+	Description  *string          `json:"description,omitempty"`
+	StageNo      *int             `json:"stageNo,omitempty"`
+	NeededBy     scalar.Date      `json:"neededBy"`
+	Status       DecisionStatus   `json:"status"`
+	Options      []DecisionOption `json:"options"`
+	ChosenOption *DecisionOption  `json:"chosenOption,omitempty"`
+	AnsweredAt   *time.Time       `json:"answeredAt,omitempty"`
+	// The change order the answer created, when it changes the price.
+	ChangeOrder *ChangeOrder `json:"changeOrder,omitempty"`
+}
+
+func (Decision) IsNeedsYouSubject() {}
+
+type DecisionOption struct {
+	ID          string  `json:"id"`
+	Label       string  `json:"label"`
+	Description *string `json:"description,omitempty"`
+	// Signed change in price against the agreement.
+	PriceDelta int64 `json:"priceDelta"`
+	// The owner's forecast with this option.
+	Forecast *int64 `json:"forecast,omitempty"`
+	// The owner's contingency left with this option.
+	ContingencyLeft *int64 `json:"contingencyLeft,omitempty"`
+	Photo           *Media `json:"photo,omitempty"`
+}
+
+type DecisionOptionInput struct {
+	Label       string  `json:"label"`
+	Description *string `json:"description,omitempty"`
+	PriceDelta  int64   `json:"priceDelta"`
+	MediaID     *string `json:"mediaId,omitempty"`
+}
+
+type DeclineChangeOrderInput struct {
+	ChangeOrderID string  `json:"changeOrderId"`
+	Reason        *string `json:"reason,omitempty"`
+}
+
+type DeclineChangeOrderPayload struct {
+	ChangeOrder *ChangeOrder `json:"changeOrder"`
+}
+
+func (DeclineChangeOrderPayload) IsDeclineChangeOrderResult() {}
+
+type DeclineOrderInput struct {
+	OrderID string        `json:"orderId"`
+	Reason  DeclineReason `json:"reason"`
+	Note    *string       `json:"note,omitempty"`
+}
+
+type DeleteChangeOrderInput struct {
+	ChangeOrderID string `json:"changeOrderId"`
+}
+
+type DeleteChangeOrderPayload struct {
+	DeletedID string `json:"deletedId"`
+}
+
+func (DeleteChangeOrderPayload) IsDeleteChangeOrderResult() {}
+
+type DeleteProductInput struct {
+	ProductID string `json:"productId"`
+}
+
+type DeleteProductPayload struct {
+	DeletedID string `json:"deletedId"`
+}
+
+func (DeleteProductPayload) IsDeleteProductResult() {}
+
+type Delivery struct {
+	ID           string         `json:"id"`
+	Order        *Order         `json:"order"`
+	OrderRef     string         `json:"orderRef"`
+	TripNo       int            `json:"tripNo"`
+	Status       DeliveryStatus `json:"status"`
+	Slot         *TimeWindow    `json:"slot"`
+	Driver       *Driver        `json:"driver"`
+	Eta          *TimeWindow    `json:"eta,omitempty"`
+	RemainingKm  *float64       `json:"remainingKm,omitempty"`
+	LastPosition *GeoPoint      `json:"lastPosition,omitempty"`
+	StartedAt    *time.Time     `json:"startedAt,omitempty"`
+	ArrivedAt    *time.Time     `json:"arrivedAt,omitempty"`
+	DropOffPhoto *Media         `json:"dropOffPhoto,omitempty"`
+	SitePhoto    *Media         `json:"sitePhoto,omitempty"`
+	ConfirmedAt  *time.Time     `json:"confirmedAt,omitempty"`
+	// 24 h after the drop-off photo unless a problem is reported.
+	AutoReleaseAt *time.Time `json:"autoReleaseAt,omitempty"`
+	// AI count of what arrived against the order.
+	ItemsCheck  *ItemsCheck       `json:"itemsCheck,omitempty"`
+	RunningLate *RunningLate      `json:"runningLate,omitempty"`
+	Problems    []DeliveryProblem `json:"problems"`
+	Payout      *Payout           `json:"payout,omitempty"`
+}
+
+type DeliveryConnection struct {
+	Edges      []DeliveryEdge `json:"edges"`
+	Nodes      []Delivery     `json:"nodes"`
+	PageInfo   *PageInfo      `json:"pageInfo"`
+	TotalCount int            `json:"totalCount"`
+}
+
+type DeliveryEdge struct {
+	Cursor string    `json:"cursor"`
+	Node   *Delivery `json:"node"`
+}
+
+type DeliveryPayload struct {
+	Delivery *Delivery `json:"delivery"`
+}
+
+func (DeliveryPayload) IsReportRunningLateResult() {}
+
+func (DeliveryPayload) IsConfirmDeliveryResult() {}
+
+func (DeliveryPayload) IsReportDeliveryProblemResult() {}
+
+func (DeliveryPayload) IsSendSitePhotoReminderResult() {}
+
+type DeliveryProblem struct {
+	OrderLine *OrderLine  `json:"orderLine,omitempty"`
+	Kind      ProblemKind `json:"kind"`
+	Quantity  *float64    `json:"quantity,omitempty"`
+	Note      *string     `json:"note,omitempty"`
+	Media     []Media     `json:"media"`
+}
+
+type DeliveryProblemInput struct {
+	OrderLineID string      `json:"orderLineId"`
+	Kind        ProblemKind `json:"kind"`
+	Quantity    *float64    `json:"quantity,omitempty"`
+	Note        *string     `json:"note,omitempty"`
+	MediaIds    []string    `json:"mediaIds,omitempty"`
+}
+
+type DeliverySlot struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
+
+// Replaces the shop's delivery slots, `HH:MM` in Asia/Jakarta.
+type DeliverySlotInput struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
+
+// A `createSigningChallenge` nonce signed by the device key after Face ID, fingerprint or the device PIN.
+type DeviceAssertionInput struct {
+	ChallengeID string `json:"challengeId"`
+	// The `DeviceKey.id` from `registerDeviceKey`.
+	KeyID string `json:"keyId"`
+	// Ed25519 signature (64 bytes) over the challenge nonce's UTF-8 bytes, base64url without padding.
+	Assertion string `json:"assertion"`
+}
+
+type DeviceKey struct {
+	ID        string         `json:"id"`
+	Platform  DevicePlatform `json:"platform"`
+	Label     *string        `json:"label,omitempty"`
+	CreatedAt time.Time      `json:"createdAt"`
+}
+
+type DiaryEntry struct {
+	Date         scalar.Date     `json:"date"`
+	Crew         []DiaryPresence `json:"crew"`
+	WorkDone     []string        `json:"workDone"`
+	NoWorkReason *NoWorkReason   `json:"noWorkReason,omitempty"`
+	Reports      []Report        `json:"reports"`
+}
+
+type DiaryPresence struct {
+	CrewMember *CrewMember     `json:"crewMember,omitempty"`
+	Name       string          `json:"name"`
+	Role       CrewRole        `json:"role"`
+	Present    bool            `json:"present"`
+	Source     *PresenceSource `json:"source,omitempty"`
+}
+
+type DispatchOrderInput struct {
+	OrderID  string `json:"orderId"`
+	DriverID string `json:"driverId"`
+	TripNo   *int   `json:"tripNo,omitempty"`
+}
+
+type DispatchOrderPayload struct {
+	Order    *Order    `json:"order"`
+	Delivery *Delivery `json:"delivery"`
+}
+
+func (DispatchOrderPayload) IsDispatchOrderResult() {}
+
+type Driver struct {
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	PhoneMasked *string `json:"phoneMasked,omitempty"`
+	// Dialable, for a call only: the shop, the buyer side and ops read it.
+	Phone     *string       `json:"phone,omitempty"`
+	Plate     string        `json:"plate"`
+	Vehicle   string        `json:"vehicle"`
+	Status    *DriverStatus `json:"status,omitempty"`
+	FreeUntil *time.Time    `json:"freeUntil,omitempty"`
+}
+
+type DriverTrip struct {
+	OrderRef     string         `json:"orderRef"`
+	Driver       *Driver        `json:"driver"`
+	From         *TripPlace     `json:"from"`
+	To           *TripPlace     `json:"to"`
+	Slot         *TimeWindow    `json:"slot"`
+	Items        []TripItem     `json:"items"`
+	Status       DeliveryStatus `json:"status"`
+	StartedAt    *time.Time     `json:"startedAt,omitempty"`
+	ArrivedAt    *time.Time     `json:"arrivedAt,omitempty"`
+	DropOffPhoto *Media         `json:"dropOffPhoto,omitempty"`
+	// The shop is paid then unless the buyer reports a problem.
+	AutoReleaseAt *time.Time `json:"autoReleaseAt,omitempty"`
+	TrustStrip    string     `json:"trustStrip"`
+}
+
+type DriverTripPayload struct {
+	Trip *DriverTrip `json:"trip"`
+}
+
+func (DriverTripPayload) IsDriverTripResult() {}
+
+type DropOffInput struct {
+	PhotoID  string         `json:"photoId"`
+	Location *GeoPointInput `json:"location,omitempty"`
+}
+
+type EMeterai struct {
+	Applied bool   `json:"applied"`
+	Amount  *int64 `json:"amount,omitempty"`
+	// Renora pays the stamp duty: one per priced version.
+	PaidBy *string `json:"paidBy,omitempty"`
+}
+
+type EndRequest struct {
+	ID         string           `json:"id"`
+	Reason     EndReason        `json:"reason"`
+	ProposedBy PartyRole        `json:"proposedBy"`
+	Status     EndRequestStatus `json:"status"`
+	Settlement *Settlement      `json:"settlement"`
+	Signatures []Signature      `json:"signatures"`
+}
+
+type EveningDigest struct {
+	Enabled bool `json:"enabled"`
+	// HH:MM, WIB.
+	Time *string `json:"time,omitempty"`
+}
+
+type EvidenceCounts struct {
+	Photos     int `json:"photos"`
+	VoiceNotes int `json:"voiceNotes"`
+	Messages   int `json:"messages"`
+	Issues     int `json:"issues"`
+	OpenIssues int `json:"openIssues"`
+}
+
+type Export struct {
+	ID        string       `json:"id"`
+	Kind      ExportKind   `json:"kind"`
+	Status    ExportStatus `json:"status"`
+	URL       *string      `json:"url,omitempty"`
+	ExpiresAt *time.Time   `json:"expiresAt,omitempty"`
+}
+
+type ExtendStageReviewInput struct {
+	StageID string `json:"stageId"`
+}
+
+type ExtendStageReviewPayload struct {
+	Stage *Stage `json:"stage"`
+}
+
+func (ExtendStageReviewPayload) IsExtendStageReviewResult() {}
+
+type FeePolicy struct {
+	Protection   *ProtectionFeeRule  `json:"protection"`
+	ChangeOrders *ChangeOrderFeeRule `json:"changeOrders"`
+	Match        *MatchFeeRule       `json:"match"`
+	Shop         *ShopFeeRule        `json:"shop"`
+}
+
+type FeeProgress struct {
+	Total int64 `json:"total"`
+	Paid  int64 `json:"paid"`
+}
+
+// Protection fee (owner, P2): 1% of the agreement price incl. PPN, collected as 1% of each stage when funded;
+// minimum Rp 200.000 per job (shortfall at the first funding), cap Rp 2.500.000. Change orders: no fee up to
+// 25% of the agreement price, 1% above. Match fee (P4, when Renora brought the owner): 3% of the first job,
+// cap Rp 5.000.000, taken from released payments; waived for founding contractors until 31 Dec 2027.
+// Contractors pay nothing on their own clients.
+type FeeSchedule struct {
+	Protection   *ProtectionFee      `json:"protection,omitempty"`
+	ChangeOrders *ChangeOrderFeeRule `json:"changeOrders"`
+	Match        *MatchFee           `json:"match,omitempty"`
+}
+
+type Finish struct {
+	Element FinishElement `json:"element"`
+	// The newest price-book source behind `priceDelta`.
+	LatestSourceDate *scalar.Date `json:"latestSourceDate,omitempty"`
+	WorkItemCode     *string      `json:"workItemCode,omitempty"`
+	Spec             string       `json:"spec"`
+	Status           FinishStatus `json:"status"`
+	// Signed price change against the basis.
+	PriceDelta  *int64         `json:"priceDelta,omitempty"`
+	DeltaBasis  *string        `json:"deltaBasis,omitempty"`
+	Allowance   *int64         `json:"allowance,omitempty"`
+	Options     []FinishOption `json:"options"`
+	SourceCount *int           `json:"sourceCount,omitempty"`
+}
+
+type FinishInput struct {
+	Element      FinishElement `json:"element"`
+	WorkItemCode *string       `json:"workItemCode,omitempty"`
+	Spec         string        `json:"spec"`
+	Status       FinishStatus  `json:"status"`
+	// Signed price change against the basis.
+	PriceDelta *int64              `json:"priceDelta,omitempty"`
+	DeltaBasis *string             `json:"deltaBasis,omitempty"`
+	Allowance  *int64              `json:"allowance,omitempty"`
+	Options    []FinishOptionInput `json:"options,omitempty"`
+}
+
+type FinishOption struct {
+	Label      string `json:"label"`
+	PriceDelta int64  `json:"priceDelta"`
+}
+
+type FinishOptionInput struct {
+	Label      string `json:"label"`
+	PriceDelta int64  `json:"priceDelta"`
+}
+
+type FundChangeOrderInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	ChangeOrderID  string `json:"changeOrderId"`
+	Bank           Bank   `json:"bank"`
+}
+
+type FundChangeOrderPayload struct {
+	Funding     *Funding     `json:"funding"`
+	ChangeOrder *ChangeOrder `json:"changeOrder"`
+}
+
+func (FundChangeOrderPayload) IsFundChangeOrderResult() {}
+
+type FundFromLinkInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	Bank           Bank   `json:"bank"`
+}
+
+type FundFromLinkPayload struct {
+	Funding *Funding `json:"funding"`
+}
+
+func (FundFromLinkPayload) IsFundFromLinkResult() {}
+
+type FundStageInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	StageID        string `json:"stageId"`
+	Bank           Bank   `json:"bank"`
+}
+
+type FundStagePayload struct {
+	Funding *Funding `json:"funding"`
+	Stage   *Stage   `json:"stage"`
+}
+
+func (FundStagePayload) IsFundStageResult() {}
+
+type FundStageRef struct {
+	No           int          `json:"no"`
+	Name         string       `json:"name"`
+	Of           int          `json:"of"`
+	PlannedStart *scalar.Date `json:"plannedStart,omitempty"`
+}
+
+// Money the owner puts in through a virtual account. Owner and ops only.
+type Funding struct {
+	ID             string             `json:"id"`
+	Job            *Job               `json:"job"`
+	Purpose        FundingPurpose     `json:"purpose"`
+	Stages         []Stage            `json:"stages"`
+	ChangeOrder    *ChangeOrder       `json:"changeOrder,omitempty"`
+	Orders         []Order            `json:"orders"`
+	Principal      int64              `json:"principal"`
+	Fee            int64              `json:"fee"`
+	Total          int64              `json:"total"`
+	Lines          []FundingLine      `json:"lines"`
+	VirtualAccount *VirtualAccount    `json:"virtualAccount,omitempty"`
+	Status         FundingStatus      `json:"status"`
+	CreatedAt      time.Time          `json:"createdAt"`
+	PaidAt         *time.Time         `json:"paidAt,omitempty"`
+	ClaimedPaidAt  *time.Time         `json:"claimedPaidAt,omitempty"`
+	RefundAccount  *BankAccountMasked `json:"refundAccount,omitempty"`
+}
+
+func (Funding) IsNeedsYouSubject() {}
+
+type FundingLine struct {
+	Kind   FundingLineKind `json:"kind"`
+	Label  string          `json:"label"`
+	Amount int64           `json:"amount"`
+}
+
+type GenerateLookInput struct {
+	BriefID     string       `json:"briefId"`
+	MoodBoardID string       `json:"moodBoardId"`
+	Presets     []LookPreset `json:"presets,omitempty"`
+	// Her own words, as typed.
+	Modifiers []string `json:"modifiers,omitempty"`
+}
+
+type GenerateLookPayload struct {
+	Look *Look `json:"look"`
+}
+
+func (GenerateLookPayload) IsGenerateLookResult() {}
+
+type GeoPoint struct {
+	Lat       float64    `json:"lat"`
+	Lng       float64    `json:"lng"`
+	AccuracyM *float64   `json:"accuracyM,omitempty"`
+	At        *time.Time `json:"at,omitempty"`
+}
+
+type GeoPointInput struct {
+	Lat       float64    `json:"lat"`
+	Lng       float64    `json:"lng"`
+	AccuracyM *float64   `json:"accuracyM,omitempty"`
+	At        *time.Time `json:"at,omitempty"`
+}
+
+type GuardCount struct {
+	Guard AiGuard `json:"guard"`
+	Count int     `json:"count"`
+}
+
+// The handover checklist: one list both sign. Items accepted here are the verified handovers (R3).
+type Handover struct {
+	Job             *Job                 `json:"job"`
+	ScheduledFor    *scalar.Date         `json:"scheduledFor,omitempty"`
+	Status          HandoverStatus       `json:"status"`
+	Counts          *HandoverCounts      `json:"counts"`
+	Groups          []HandoverGroupCount `json:"groups"`
+	Items           []HandoverItem       `json:"items"`
+	Signatures      []Signature          `json:"signatures"`
+	SignedAt        *time.Time           `json:"signedAt,omitempty"`
+	Releases        *HandoverReleases    `json:"releases,omitempty"`
+	Completion      *Completion          `json:"completion,omitempty"`
+	ChecklistPDFURL *string              `json:"checklistPdfUrl,omitempty"`
+}
+
+type HandoverCounts struct {
+	Total    int `json:"total"`
+	Checked  int `json:"checked"`
+	Accepted int `json:"accepted"`
+	Flagged  int `json:"flagged"`
+	Running  int `json:"running"`
+	// Marked fixed by the contractor, waiting for the owner to check again.
+	FixedPending int `json:"fixedPending"`
+}
+
+type HandoverGroupCount struct {
+	Group   HandoverGroup `json:"group"`
+	Total   int           `json:"total"`
+	Checked int           `json:"checked"`
+}
+
+type HandoverItem struct {
+	ID    string        `json:"id"`
+	Group HandoverGroup `json:"group"`
+	// The owner's wording.
+	Title string `json:"title"`
+	// The wording on the contractor's printed list.
+	ListTitle    string             `json:"listTitle"`
+	HowChecked   *string            `json:"howChecked,omitempty"`
+	WorkItemCode *string            `json:"workItemCode,omitempty"`
+	Kind         HandoverItemKind   `json:"kind"`
+	Status       HandoverItemStatus `json:"status"`
+	Origin       HandoverOrigin     `json:"origin"`
+	ChangeOrder  *ChangeOrder       `json:"changeOrder,omitempty"`
+	StartedAt    *time.Time         `json:"startedAt,omitempty"`
+	// When a timed test can be read (soak test 24 h).
+	ReadyAt    *time.Time   `json:"readyAt,omitempty"`
+	Result     *TestResult  `json:"result,omitempty"`
+	AcceptedAt *time.Time   `json:"acceptedAt,omitempty"`
+	FlagNote   *string      `json:"flagNote,omitempty"`
+	FixBy      *scalar.Date `json:"fixBy,omitempty"`
+	// The contractor's response, from the note on his last result.
+	ResponseNote *string `json:"responseNote,omitempty"`
+	Media        []Media `json:"media"`
+}
+
+type HandoverItemInput struct {
+	Group        HandoverGroup    `json:"group"`
+	Title        string           `json:"title"`
+	HowChecked   *string          `json:"howChecked,omitempty"`
+	Kind         HandoverItemKind `json:"kind"`
+	WorkItemCode *string          `json:"workItemCode,omitempty"`
+}
+
+type HandoverReleases struct {
+	FinalStage         *int64     `json:"finalStage,omitempty"`
+	Retention          *int64     `json:"retention,omitempty"`
+	RetentionReleaseAt *time.Time `json:"retentionReleaseAt,omitempty"`
+	LeakCheckAt        *time.Time `json:"leakCheckAt,omitempty"`
+}
+
+type HandoverResult struct {
+	Checked  int          `json:"checked"`
+	Accepted int          `json:"accepted"`
+	Total    int          `json:"total"`
+	SignedOn *scalar.Date `json:"signedOn,omitempty"`
+}
+
+type Hold struct {
+	Label        string    `json:"label"`
+	WorkItemCode *string   `json:"workItemCode,omitempty"`
+	Note         *string   `json:"note,omitempty"`
+	Amount       int64     `json:"amount"`
+	State        HoldState `json:"state"`
+}
+
+type HoldAge struct {
+	Kind    *MoneyRowKind `json:"kind,omitempty"`
+	Job     *Job          `json:"job,omitempty"`
+	Order   *Order        `json:"order,omitempty"`
+	Label   string        `json:"label"`
+	Amount  int64         `json:"amount"`
+	Reason  *string       `json:"reason,omitempty"`
+	AgeDays int           `json:"ageDays"`
+}
+
+type HomeEvent struct {
+	Kind HomeEventKind `json:"kind"`
+	Date scalar.Date   `json:"date"`
+	// `month` when only the month is known (a seasonal check); the day is then the 1st.
+	DatePrecision DatePrecision `json:"datePrecision"`
+	Title         string        `json:"title"`
+	Subtitle      *string       `json:"subtitle,omitempty"`
+	Job           *Job          `json:"job,omitempty"`
+}
+
+type HomeMaterial struct {
+	Name  string `json:"name"`
+	Order *Order `json:"order,omitempty"`
+}
+
+type HomeRecord struct {
+	Area          *string        `json:"area,omitempty"`
+	Jobs          []Job          `json:"jobs"`
+	Upcoming      []HomeEvent    `json:"upcoming"`
+	MaterialsUsed []HomeMaterial `json:"materialsUsed"`
+}
+
+type ImagePilot struct {
+	MoodBoardOnly int `json:"moodBoardOnly"`
+	WithAiPicture int `json:"withAiPicture"`
+	Pictures      int `json:"pictures"`
+	CapPerProject int `json:"capPerProject"`
+	// Projects that used all their pictures.
+	AtCap     int `json:"atCap"`
+	Consented int `json:"consented"`
+	Eligible  int `json:"eligible"`
+}
+
+type ImportSender struct {
+	Name         string     `json:"name"`
+	MessageCount int        `json:"messageCount"`
+	SampleLine   *string    `json:"sampleLine,omitempty"`
+	SampleAt     *time.Time `json:"sampleAt,omitempty"`
+	Role         SenderRole `json:"role"`
+}
+
+type ImportStats struct {
+	Messages   int          `json:"messages"`
+	From       *scalar.Date `json:"from,omitempty"`
+	To         *scalar.Date `json:"to,omitempty"`
+	Photos     int          `json:"photos"`
+	VoiceNotes int          `json:"voiceNotes"`
+}
+
+// Input failed a rule. `field` is the input path (`signature.code`, `lines.0.quantity`).
+type InvalidInput struct {
+	Code    ProblemCode `json:"code"`
+	Message string      `json:"message"`
+	Field   string      `json:"field"`
+	// Why, in a stable word: `required`, `invalid_format`, `out_of_range`, `wrong_code`, `expired`, `terms_missing`,
+	// `unknown_option`, `wrong_subject` (a signature made for another action or subject), `challenge_required` (a
+	// phone code asked for without its signing challenge), `band_rules`.
+	Reason string `json:"reason"`
+}
+
+func (InvalidInput) IsCreateAgreementVersionResult() {}
+
+func (InvalidInput) IsUpdateAgreementVersionResult() {}
+
+func (InvalidInput) IsReviewClauseResult() {}
+
+func (InvalidInput) IsSignAgreementVersionResult() {}
+
+func (InvalidInput) IsInviteOwnerResult() {}
+
+func (InvalidInput) IsRequestCodeResult() {}
+
+func (InvalidInput) IsVerifyCodeResult() {}
+
+func (InvalidInput) IsStartStaffSignInResult() {}
+
+func (InvalidInput) IsVerifyStaffSignInResult() {}
+
+func (InvalidInput) IsRegisterDeviceKeyResult() {}
+
+func (InvalidInput) IsCreateBriefResult() {}
+
+func (InvalidInput) IsUpdateBriefResult() {}
+
+func (InvalidInput) IsGenerateLookResult() {}
+
+func (InvalidInput) IsPublishBriefResult() {}
+
+func (InvalidInput) IsRespondToBidInviteResult() {}
+
+func (InvalidInput) IsRequestSiteVisitResult() {}
+
+func (InvalidInput) IsUpdateSiteVisitResult() {}
+
+func (InvalidInput) IsSaveBidResult() {}
+
+func (InvalidInput) IsSubmitBidResult() {}
+
+func (InvalidInput) IsAskBidQuestionResult() {}
+
+func (InvalidInput) IsAnswerBidQuestionResult() {}
+
+func (InvalidInput) IsCreateChangeOrderResult() {}
+
+func (InvalidInput) IsSignChangeOrderResult() {}
+
+func (InvalidInput) IsCreateThreadResult() {}
+
+func (InvalidInput) IsSendMessageResult() {}
+
+func (InvalidInput) IsCrewMemberResult() {}
+
+func (InvalidInput) IsRecordAdvanceResult() {}
+
+func (InvalidInput) IsSendCrewQuestionResult() {}
+
+func (InvalidInput) IsRecordCrewAnswerResult() {}
+
+func (InvalidInput) IsCreateDecisionResult() {}
+
+func (InvalidInput) IsAnswerDecisionResult() {}
+
+func (InvalidInput) IsAddPortfolioItemResult() {}
+
+func (InvalidInput) IsRecordHandoverItemResult() {}
+
+func (InvalidInput) IsSignHandoverResult() {}
+
+func (InvalidInput) IsRaiseIssueResult() {}
+
+func (InvalidInput) IsAddIssueMediaResult() {}
+
+func (InvalidInput) IsAnswerMediatorSuggestionResult() {}
+
+func (InvalidInput) IsCreateJobResult() {}
+
+func (InvalidInput) IsUpdateJobResult() {}
+
+func (InvalidInput) IsCreateJobImportResult() {}
+
+func (InvalidInput) IsSendLinkMessageResult() {}
+
+func (InvalidInput) IsCrewLinkResult() {}
+
+func (InvalidInput) IsDriverTripResult() {}
+
+func (InvalidInput) IsAddCartItemResult() {}
+
+func (InvalidInput) IsUpdateCartItemResult() {}
+
+func (InvalidInput) IsUpdateCartResult() {}
+
+func (InvalidInput) IsUpdateMeResult() {}
+
+func (InvalidInput) IsUpdateNotificationSettingsResult() {}
+
+func (InvalidInput) IsAddBankAccountResult() {}
+
+func (InvalidInput) IsSubmitVerificationResult() {}
+
+func (InvalidInput) IsInviteTeamMemberResult() {}
+
+func (InvalidInput) IsUpdateTeamMemberResult() {}
+
+func (InvalidInput) IsRemoveTeamMemberResult() {}
+
+func (InvalidInput) IsSaveContractorProfileResult() {}
+
+func (InvalidInput) IsDecideCaseResult() {}
+
+func (InvalidInput) IsDecideVerificationResult() {}
+
+func (InvalidInput) IsSupportTicketResult() {}
+
+func (InvalidInput) IsDeclineOrderResult() {}
+
+func (InvalidInput) IsProposeStockChangeResult() {}
+
+func (InvalidInput) IsReportDeliveryProblemResult() {}
+
+func (InvalidInput) IsAddPriceBookSourceResult() {}
+
+func (InvalidInput) IsCreateUploadResult() {}
+
+func (InvalidInput) IsCreateReportResult() {}
+
+func (InvalidInput) IsUpdateReportResult() {}
+
+func (InvalidInput) IsCreateProgressCountResult() {}
+
+func (InvalidInput) IsProblem() {}
+
+func (InvalidInput) IsCheckInStageResult() {}
+
+func (InvalidInput) IsSubmitStageResult() {}
+
+func (InvalidInput) IsApproveStageResult() {}
+
+func (InvalidInput) IsProposePartialReleaseResult() {}
+
+func (InvalidInput) IsSignPartialReleaseResult() {}
+
+func (InvalidInput) IsUpdateBudgetResult() {}
+
+func (InvalidInput) IsAddOutsidePurchaseResult() {}
+
+func (InvalidInput) IsSignEndJobResult() {}
+
+func (InvalidInput) IsCreateShopResult() {}
+
+func (InvalidInput) IsUpdateShopResult() {}
+
+func (InvalidInput) IsAddShopStaffResult() {}
+
+func (InvalidInput) IsAddDriverResult() {}
+
+func (InvalidInput) IsProductResult() {}
+
+func (InvalidInput) IsBulkUpdateProductsResult() {}
+
+func (InvalidInput) IsPriceListImportResult() {}
+
+func (InvalidInput) IsReportMismatchedPaperResult() {}
+
+func (InvalidInput) IsCreateQuoteCheckResult() {}
+
+func (InvalidInput) IsCreateWarrantyClaimResult() {}
+
+func (InvalidInput) IsUpdateWarrantyClaimResult() {}
+
+type InviteContractorInput struct {
+	BriefID      string `json:"briefId"`
+	ContractorID string `json:"contractorId"`
+	Backup       *bool  `json:"backup,omitempty"`
+}
+
+type InviteOwnerInput struct {
+	JobID                    string  `json:"jobId"`
+	VersionID                string  `json:"versionId"`
+	Phone                    string  `json:"phone"`
+	OwnerName                *string `json:"ownerName,omitempty"`
+	DisplayName              *string `json:"displayName,omitempty"`
+	Message                  *string `json:"message,omitempty"`
+	SharePricesWithPriceBook *bool   `json:"sharePricesWithPriceBook,omitempty"`
+}
+
+type InviteOwnerPayload struct {
+	Invite *OwnerInvite `json:"invite"`
+}
+
+func (InviteOwnerPayload) IsInviteOwnerResult() {}
+
+type InviteTeamMemberInput struct {
+	Phone string   `json:"phone"`
+	Name  string   `json:"name"`
+	Seat  TeamSeat `json:"seat"`
+}
+
+type InviteTeamMemberPayload struct {
+	TeamMember *TeamMember `json:"teamMember"`
+}
+
+func (InviteTeamMemberPayload) IsInviteTeamMemberResult() {}
+
+type Issue struct {
+	ID       string    `json:"id"`
+	Job      *Job      `json:"job"`
+	Number   int       `json:"number"`
+	Ref      string    `json:"ref"`
+	Title    string    `json:"title"`
+	Claim    *UserText `json:"claim"`
+	RaisedBy *Person   `json:"raisedBy"`
+	RaisedAt time.Time `json:"raisedAt"`
+	Stage    *Stage    `json:"stage,omitempty"`
+	// Set when the issue was raised from a handover item.
+	HandoverItem *HandoverItem   `json:"handoverItem,omitempty"`
+	ClauseRef    *IssueClauseRef `json:"clauseRef,omitempty"`
+	// The flagged items; only their share is held.
+	WorkItemCodes []string `json:"workItemCodes"`
+	// The photos, with capture time and GPS.
+	Media  []Media     `json:"media"`
+	Status IssueStatus `json:"status"`
+	// 3 days after raising.
+	ReplyDueAt time.Time `json:"replyDueAt"`
+	// Held for the flagged items only.
+	Held int64 `json:"held"`
+	// The rest of the stage, releasing on time.
+	KeepsClock *int64           `json:"keepsClock,omitempty"`
+	AiCheck    *IssueAiCheck    `json:"aiCheck"`
+	Replies    []IssueReply     `json:"replies"`
+	Mediator   *Mediator        `json:"mediator,omitempty"`
+	Thread     *Thread          `json:"thread,omitempty"`
+	ResolvedAt *time.Time       `json:"resolvedAt,omitempty"`
+	Resolution *IssueResolution `json:"resolution,omitempty"`
+}
+
+func (Issue) IsNeedsYouSubject() {}
+
+type IssueAiCheck struct {
+	// When the AI check ran; null until it has.
+	At     *time.Time  `json:"at,omitempty"`
+	Checks []ItemCheck `json:"checks"`
+	// Checks photos can't settle, added to the handover list.
+	AddedHandoverItems []HandoverItem `json:"addedHandoverItems"`
+}
+
+type IssueClauseRef struct {
+	VersionLabel *string `json:"versionLabel,omitempty"`
+	Clause       *Clause `json:"clause,omitempty"`
+	WorkItemCode *string `json:"workItemCode,omitempty"`
+	// The clause link is an AI suggestion until the owner confirms it.
+	Ai *AiSuggestion `json:"ai,omitempty"`
+}
+
+type IssueReply struct {
+	By        *Person        `json:"by"`
+	At        time.Time      `json:"at"`
+	Kind      IssueReplyKind `json:"kind"`
+	FixBy     *scalar.Date   `json:"fixBy,omitempty"`
+	Text      *UserText      `json:"text,omitempty"`
+	VoiceNote *Media         `json:"voiceNote,omitempty"`
+}
+
+// AI comparison of photos with the agreement. Says only matches, does not match or cannot tell; never names
+// fault (R4). Leaks and hollow tiles are always `cannot_tell`.
+type ItemCheck struct {
+	WorkItemCode *string       `json:"workItemCode,omitempty"`
+	Aspect       string        `json:"aspect"`
+	Verdict      CheckVerdict  `json:"verdict"`
+	Reason       *string       `json:"reason,omitempty"`
+	Media        []Media       `json:"media"`
+	Ai           *AiSuggestion `json:"ai"`
+}
+
+type ItemsCheck struct {
+	Text string        `json:"text"`
+	Ai   *AiSuggestion `json:"ai"`
+}
+
+// One renovation job: the record both sides share. Every role reads the same Job; fields one side may not
+// see resolve to null for the other (see `@private`).
+type Job struct {
+	ID string `json:"id"`
+	// Short code used in links and by ops.
+	Code     string   `json:"code"`
+	Title    string   `json:"title"`
+	RoomType RoomType `json:"roomType"`
+	Area     string   `json:"area"`
+	// The area's first part, e.g. "Bintaro" for "Bintaro, Tangerang Selatan".
+	AreaShort *string `json:"areaShort,omitempty"`
+	// Only the owner, the contractor and his crew.
+	Address    *string   `json:"address,omitempty"`
+	SitePoint  *GeoPoint `json:"sitePoint,omitempty"`
+	Status     JobStatus `json:"status"`
+	Owner      *Person   `json:"owner"`
+	Contractor *Person   `json:"contractor"`
+	// The contractor's business in the directory: record, badges, verified handovers.
+	ContractorBusiness *Contractor `json:"contractorBusiness,omitempty"`
+	Crew               []Person    `json:"crew"`
+	// The agreement price incl. everything in it, once there is one.
+	Price        *int64       `json:"price,omitempty"`
+	StartDate    *scalar.Date `json:"startDate,omitempty"`
+	FinishDate   *scalar.Date `json:"finishDate,omitempty"`
+	DurationDays *int         `json:"durationDays,omitempty"`
+	DayOfJob     *int         `json:"dayOfJob,omitempty"`
+	Schedule     *Schedule    `json:"schedule,omitempty"`
+	// Finished jobs only.
+	OnTime          *bool  `json:"onTime,omitempty"`
+	ProgressPercent int    `json:"progressPercent"`
+	CurrentStage    *Stage `json:"currentStage,omitempty"`
+	CurrentStageNo  *int   `json:"currentStageNo,omitempty"`
+	StageCount      *int   `json:"stageCount,omitempty"`
+	// P2 protected payments on; false means payments are recorded and confirmed only (P1).
+	ProtectedPayment bool            `json:"protectedPayment"`
+	MaterialsBuyer   *MaterialsBuyer `json:"materialsBuyer,omitempty"`
+	WarrantyUntil    *scalar.Date    `json:"warrantyUntil,omitempty"`
+	// What the caller has to do now, in their own words. Titles never carry amounts.
+	NeedsYou      []NeedsYouItem `json:"needsYou"`
+	NeedsYouCount int            `json:"needsYouCount"`
+	// What the other party still owes the caller.
+	WaitingOn      []NeedsYouItem `json:"waitingOn"`
+	WaitingOnCount int            `json:"waitingOnCount"`
+	// Dated events ahead, in time order (deliveries, stage starts, auto-releases, handover).
+	Upcoming   []NeedsYouItem `json:"upcoming"`
+	NextStep   *string        `json:"nextStep,omitempty"`
+	NextAt     *time.Time     `json:"nextAt,omitempty"`
+	NextWindow *TimeWindow    `json:"nextWindow,omitempty"`
+	Counts     *JobCounts     `json:"counts,omitempty"`
+	Fees       *FeeSchedule   `json:"fees,omitempty"`
+	Pause      *Pause         `json:"pause,omitempty"`
+	Source     *JobSource     `json:"source,omitempty"`
+	// Contractor: money released to him so far on this job.
+	Received *int64 `json:"received,omitempty"`
+	// Money funded and safe at the partner right now.
+	SafeAtPartner  *int64          `json:"safeAtPartner,omitempty"`
+	HandoverResult *HandoverResult `json:"handoverResult,omitempty"`
+	CoverPhoto     *Media          `json:"coverPhoto,omitempty"`
+	// The owner's choice for the contractor's public record.
+	RecordVisibility *RecordVisibility   `json:"recordVisibility,omitempty"`
+	Activity         *ActivityConnection `json:"activity"`
+	Documents        *JobDocuments       `json:"documents"`
+	CreatedAt        *time.Time          `json:"createdAt,omitempty"`
+	// The latest version the caller may see, created by the clock. The owner gets the latest sent one
+	// (`awaiting_signatures` or `locked`), never the contractor's unsent draft; the contractor and ops get the
+	// latest that is not superseded, drafts included.
+	Agreement *AgreementVersion `json:"agreement,omitempty"`
+	// Every version created by the clock, oldest first. The owner sees only versions sent to her (waiting for
+	// signatures, locked, or replaced after she saw them), never the contractor's unsent drafts.
+	AgreementVersions []AgreementVersion `json:"agreementVersions"`
+	OwnerInvite       *OwnerInvite       `json:"ownerInvite,omitempty"`
+	// Owners never see the contractor's unsent drafts.
+	ChangeOrders []ChangeOrder `json:"changeOrders"`
+	// The job's own thread with both parties (kind `job`); null before it starts, as in `threads`.
+	Thread         *Thread           `json:"thread,omitempty"`
+	Decisions      []Decision        `json:"decisions"`
+	Handover       *Handover         `json:"handover,omitempty"`
+	Issues         []Issue           `json:"issues"`
+	Materials      []MaterialLine    `json:"materials"`
+	Cart           *Cart             `json:"cart,omitempty"`
+	Reports        *ReportConnection `json:"reports"`
+	ProgressCounts []ProgressCount   `json:"progressCounts"`
+	// The site diary: who was on site and what was done, per day, newest first.
+	Diary []DiaryEntry `json:"diary,omitempty"`
+	// The contractor's plan for a day on site; without `date`, today's (Asia/Jakarta).
+	SiteTasks []SiteTask `json:"siteTasks,omitempty"`
+	// Work stages in order, then the retention.
+	Stages []Stage `json:"stages"`
+	// The money on this job at the partner. Owner and ops only. Always set on a protected job that is active,
+	// paused or in handover; null on an unprotected job, which says so with `protectedPayment: false`.
+	Money *ProtectedPayment `json:"money,omitempty"`
+	// The owner's budget. Owner and ops only. Present wherever `money` is.
+	Budget          *Budget          `json:"budget,omitempty"`
+	PartialReleases []PartialRelease `json:"partialReleases"`
+	EndRequest      *EndRequest      `json:"endRequest,omitempty"`
+	Warranty        *Warranty        `json:"warranty,omitempty"`
+	WarrantyClaims  []WarrantyClaim  `json:"warrantyClaims"`
+}
+
+func (Job) IsNeedsYouSubject() {}
+
+type JobConnection struct {
+	Edges      []JobEdge      `json:"edges"`
+	Nodes      []Job          `json:"nodes"`
+	PageInfo   *PageInfo      `json:"pageInfo"`
+	TotalCount int            `json:"totalCount"`
+	Counts     *JobListCounts `json:"counts"`
+}
+
+type JobCounts struct {
+	Photos       int `json:"photos"`
+	VoiceNotes   int `json:"voiceNotes"`
+	Messages     int `json:"messages"`
+	ChangeOrders int `json:"changeOrders"`
+}
+
+type JobDocuments struct {
+	// Every agreement version created by the clock, oldest first; for the owner only those sent to her.
+	Versions        []AgreementVersion   `json:"versions"`
+	Statements      *StatementConnection `json:"statements,omitempty"`
+	WarrantyCardURL *string              `json:"warrantyCardUrl,omitempty"`
+	Exports         []Export             `json:"exports"`
+}
+
+type JobEdge struct {
+	Cursor string `json:"cursor"`
+	Node   *Job   `json:"node"`
+}
+
+// One link in a job's hash chain.
+type JobEvent struct {
+	Seq     int          `json:"seq"`
+	At      time.Time    `json:"at"`
+	Actor   *string      `json:"actor,omitempty"`
+	Kind    JobEventKind `json:"kind"`
+	Summary string       `json:"summary"`
+	RefID   *string      `json:"refId,omitempty"`
+	// SHA-256 over this event and the previous hash.
+	Hash     string  `json:"hash"`
+	PrevHash *string `json:"prevHash,omitempty"`
+}
+
+type JobEventConnection struct {
+	Edges      []JobEventEdge `json:"edges"`
+	Nodes      []JobEvent     `json:"nodes"`
+	PageInfo   *PageInfo      `json:"pageInfo"`
+	TotalCount int            `json:"totalCount"`
+}
+
+type JobEventEdge struct {
+	Cursor string    `json:"cursor"`
+	Node   *JobEvent `json:"node"`
+}
+
+type JobImport struct {
+	ID       string         `json:"id"`
+	Source   ImportSource   `json:"source"`
+	FileName *string        `json:"fileName,omitempty"`
+	Status   ImportStatus   `json:"status"`
+	Stats    *ImportStats   `json:"stats,omitempty"`
+	Senders  []ImportSender `json:"senders"`
+	// What the AI read: each waits for him to accept or ignore it. `field` is `title`, `owner_name`, `area`,
+	// `price`, `start_date`, `duration_days`, `stages`, `warranty` or `work_item` (its `value` is the line's code).
+	Suggestions []AiSuggestion `json:"suggestions"`
+	WorkItems   []WorkItem     `json:"workItems"`
+	Stages      []StagePlan    `json:"stages"`
+	TermsCheck  *TermsCheck    `json:"termsCheck,omitempty"`
+	// The shareable quote (RAB) card from a voice start.
+	RabCard *ShareCard `json:"rabCard,omitempty"`
+}
+
+// Ops reads every field of the job, both sides' money included.
+type JobInspection struct {
+	Job          *Job            `json:"job"`
+	Evidence     *EvidenceCounts `json:"evidence"`
+	EventsCount  int             `json:"eventsCount"`
+	FirstEventAt *time.Time      `json:"firstEventAt,omitempty"`
+	ChainIntact  bool            `json:"chainIntact"`
+	CheckedAt    time.Time       `json:"checkedAt"`
+}
+
+// Totals across all pages.
+type JobListCounts struct {
+	All    int `json:"all"`
+	Active int `json:"active"`
+	// Open bid invitations.
+	Invited  int `json:"invited"`
+	Finished int `json:"finished"`
+}
+
+type KeyTermCheck struct {
+	Term   KeyTerm   `json:"term"`
+	Status TermState `json:"status"`
+	Value  *string   `json:"value,omitempty"`
+	Clause *Clause   `json:"clause,omitempty"`
+}
+
+type LastJob struct {
+	Label         string       `json:"label"`
+	FinishedOn    *scalar.Date `json:"finishedOn,omitempty"`
+	ItemsAccepted *int         `json:"itemsAccepted,omitempty"`
+	ItemsTotal    *int         `json:"itemsTotal,omitempty"`
+	Photos        []Media      `json:"photos"`
+}
+
+type LastMessage struct {
+	Text       *string   `json:"text,omitempty"`
+	At         time.Time `json:"at"`
+	AuthorName *string   `json:"authorName,omitempty"`
+	// Null for Renora's own system lines.
+	Author *Person `json:"author,omitempty"`
+	// Who has read it, and when, as on the message: the caller's own last message shows read once another person has.
+	ReadBy []MessageRead `json:"readBy"`
+}
+
+type LedgerEntry struct {
+	ID       string    `json:"id"`
+	At       time.Time `json:"at"`
+	Ref      string    `json:"ref"`
+	BankRef  *string   `json:"bankRef,omitempty"`
+	Movement Movement  `json:"movement"`
+	Label    string    `json:"label"`
+	Job      *Job      `json:"job,omitempty"`
+	Order    *Order    `json:"order,omitempty"`
+	// The job or order.
+	Title  *string `json:"title,omitempty"`
+	Detail *string `json:"detail,omitempty"`
+	In     int64   `json:"in"`
+	Out    int64   `json:"out"`
+	// Fee to Renora, never held at the partner.
+	Fee    *int64       `json:"fee,omitempty"`
+	Status LedgerStatus `json:"status"`
+}
+
+type LedgerEntryConnection struct {
+	Edges      []LedgerEntryEdge `json:"edges"`
+	Nodes      []LedgerEntry     `json:"nodes"`
+	PageInfo   *PageInfo         `json:"pageInfo"`
+	TotalCount int               `json:"totalCount"`
+}
+
+type LedgerEntryEdge struct {
+	Cursor string       `json:"cursor"`
+	Node   *LedgerEntry `json:"node"`
+}
+
+type Lever struct {
+	Label string `json:"label"`
+	// The finish it changes, matching `Brief.finishes[].element`.
+	Finish *FinishElement `json:"finish,omitempty"`
+	// The saving, or the bottom of it when it is a range.
+	Saves int64 `json:"saves"`
+	// When the saving is a range: its top.
+	SavesHigh *int64 `json:"savesHigh,omitempty"`
+}
+
+type LimitCheck struct {
+	Limit              int64 `json:"limit"`
+	TopPlusContingency int64 `json:"topPlusContingency"`
+	// Signed: negative means under the limit.
+	OverLimit int64   `json:"overLimit"`
+	Levers    []Lever `json:"levers"`
+}
+
+type Link struct {
+	Kind   LinkKind   `json:"kind"`
+	Status LinkStatus `json:"status"`
+	// Shown in the page header.
+	ShortURL *string `json:"shortUrl,omitempty"`
+	// The job the link belongs to, for deep links into the app. The job itself is read through the link's page.
+	JobID *string `json:"jobId,omitempty"`
+	// A driver's link: the delivery it moves.
+	DeliveryID *string     `json:"deliveryId,omitempty"`
+	JobTitle   *string     `json:"jobTitle,omitempty"`
+	Issuer     *LinkIssuer `json:"issuer"`
+	HolderName *string     `json:"holderName,omitempty"`
+	Language   Language    `json:"language"`
+	ExpiresAt  time.Time   `json:"expiresAt"`
+	// Shown on every no-account page.
+	TrustStrip string `json:"trustStrip"`
+}
+
+// Who sent the link. The phone is for a call; talking happens in Renora (R8).
+type LinkIssuer struct {
+	DisplayName string `json:"displayName"`
+	Initials    string `json:"initials"`
+	// Dialable E.164 number.
+	Phone *string `json:"phone,omitempty"`
+}
+
+type Look struct {
+	ID        string     `json:"id"`
+	MoodBoard *MoodBoard `json:"moodBoard,omitempty"`
+	Title     *string    `json:"title,omitempty"`
+	ImageURL  string     `json:"imageUrl"`
+	// Always "AI illustration · not to scale · not the agreed spec".
+	Stamp     string        `json:"stamp"`
+	Presets   []LookPreset  `json:"presets"`
+	Modifiers []string      `json:"modifiers"`
+	Elements  []LookElement `json:"elements"`
+	Warnings  []LookWarning `json:"warnings"`
+	QuotaLeft int           `json:"quotaLeft"`
+	Ai        *AiSuggestion `json:"ai"`
+	CreatedAt time.Time     `json:"createdAt"`
+}
+
+type LookElement struct {
+	Label string           `json:"label"`
+	State LookElementState `json:"state"`
+}
+
+type LookWarning struct {
+	Kind string `json:"kind"`
+	Text string `json:"text"`
+}
+
+type MarkBidQuestionReadInput struct {
+	QuestionID string `json:"questionId"`
+}
+
+type MarkNotificationsReadInput struct {
+	Ids []string `json:"ids,omitempty"`
+	All *bool    `json:"all,omitempty"`
+}
+
+type MarkNotificationsReadPayload struct {
+	UnreadCount int `json:"unreadCount"`
+}
+
+func (MarkNotificationsReadPayload) IsMarkNotificationsReadResult() {}
+
+type MarkThreadReadInput struct {
+	ThreadID      string  `json:"threadId"`
+	UpToMessageID *string `json:"upToMessageId,omitempty"`
+}
+
+type MarkThreadReadPayload struct {
+	Thread *Thread `json:"thread"`
+}
+
+func (MarkThreadReadPayload) IsMarkThreadReadResult() {}
+
+type MatchFee struct {
+	Rate         int             `json:"rate"`
+	Cap          int64           `json:"cap"`
+	Amount       int64           `json:"amount"`
+	Waived       bool            `json:"waived"`
+	WaiverReason *MatchFeeWaiver `json:"waiverReason,omitempty"`
+	WaivedUntil  *scalar.Date    `json:"waivedUntil,omitempty"`
+}
+
+type MatchFeeRule struct {
+	Rate int   `json:"rate"`
+	Cap  int64 `json:"cap"`
+	// Founding contractors pay no match fee until this day.
+	WaivedUntil *scalar.Date `json:"waivedUntil,omitempty"`
+}
+
+type MaterialIndex struct {
+	Value      *float64 `json:"value,omitempty"`
+	YearOnYear int      `json:"yearOnYear"`
+	Month      string   `json:"month"`
+}
+
+type MaterialLine struct {
+	ID  string `json:"id"`
+	Job *Job   `json:"job"`
+	// The product at the chosen shop (its photos for the row's thumbnail); null until a shop is chosen.
+	Product      *Product `json:"product,omitempty"`
+	StageNo      int      `json:"stageNo"`
+	WorkItemCode *string  `json:"workItemCode,omitempty"`
+	Name         string   `json:"name"`
+	Quantity     float64  `json:"quantity"`
+	Unit         Unit     `json:"unit"`
+	// "Pemilik beli lewat Renora" or "Saya beli, termasuk harga saya".
+	Buyer LineBuyer `json:"buyer"`
+	// What the owner pays. Never the contractor's buying price (R6).
+	Planned    *int64             `json:"planned,omitempty"`
+	Status     MaterialLineStatus `json:"status"`
+	ChosenShop *Shop              `json:"chosenShop,omitempty"`
+	BackupShop *Shop              `json:"backupShop,omitempty"`
+	Order      *Order             `json:"order,omitempty"`
+	Decision   *Decision          `json:"decision,omitempty"`
+	Offers     *MaterialOffers    `json:"offers,omitempty"`
+}
+
+func (MaterialLine) IsNeedsYouSubject() {}
+
+type MaterialOffer struct {
+	Shop *Shop `json:"shop"`
+	// The shop's product the price comes from. A product the shop deletes leaves the offers.
+	Product   *Product `json:"product"`
+	UnitPrice int64    `json:"unitPrice"`
+	Total     int64    `json:"total"`
+	InStock   bool     `json:"inStock"`
+	// Units in stock at the shop.
+	Stock  *int         `json:"stock,omitempty"`
+	Eta    *TimeWindow  `json:"eta,omitempty"`
+	Labels []OfferLabel `json:"labels"`
+}
+
+// Shops for one line, nearest first; never sorted as a recommendation (R9).
+type MaterialOffers struct {
+	Line         *MaterialLine `json:"line"`
+	QuantityNote *string       `json:"quantityNote,omitempty"`
+	Range        *PriceRange   `json:"range,omitempty"`
+	// Date the shops' prices were read.
+	PricesAsOf *scalar.Date    `json:"pricesAsOf,omitempty"`
+	Offers     []MaterialOffer `json:"offers"`
+}
+
+type Media struct {
+	ID       string    `json:"id"`
+	Kind     MediaKind `json:"kind"`
+	URL      string    `json:"url"`
+	ThumbURL *string   `json:"thumbUrl,omitempty"`
+	// When the photo was taken, as the device sent it. A gallery photo keeps its own time (EXIF or the file's),
+	// never the upload time; null when the device could not tell.
+	CapturedAt *time.Time `json:"capturedAt,omitempty"`
+	CreatedAt  time.Time  `json:"createdAt"`
+	Location   *GeoPoint  `json:"location,omitempty"`
+	// Metres from the job's site point to `location`; null without GPS or a site point.
+	DistanceM *int `json:"distanceM,omitempty"`
+	// `distanceM` is within 100 m of the job's site point. False without GPS, without a site point, or when forwarded.
+	OnSite *bool `json:"onSite,omitempty"`
+	// Not edited since capture.
+	Original    *bool     `json:"original,omitempty"`
+	DurationSec *int      `json:"durationSec,omitempty"`
+	Transcript  *UserText `json:"transcript,omitempty"`
+	TakenBy     *string   `json:"takenBy,omitempty"`
+	Caption     *string   `json:"caption,omitempty"`
+	// The name the file had on the phone (`CreateUploadInput.fileName`).
+	FileName *string      `json:"fileName,omitempty"`
+	Source   *MediaSource `json:"source,omitempty"`
+	// A photo's number among the job's photos taken that day (Asia/Jakarta), the number evidence cites it by
+	// ("photos 2 and 3, 3 Nov 17:41"). Null for other media and photos taken off a job.
+	Number *int `json:"number,omitempty"`
+}
+
+type Mediator struct {
+	Person   *Person    `json:"person,omitempty"`
+	Name     string     `json:"name"`
+	JoinedAt *time.Time `json:"joinedAt,omitempty"`
+	// 5 working days after joining.
+	DecisionDueAt *time.Time `json:"decisionDueAt,omitempty"`
+	// The suggestion sent to both sides, with each side's answer. Null until one is sent.
+	Suggestion *MediatorDecision `json:"suggestion,omitempty"`
+}
+
+type MediatorDecision struct {
+	Outcome MediatorOutcome `json:"outcome"`
+	FixBy   *scalar.Date    `json:"fixBy,omitempty"`
+	Release *int64          `json:"release,omitempty"`
+	Refund  *int64          `json:"refund,omitempty"`
+	Text    string          `json:"text"`
+	State   DecisionState   `json:"state"`
+	// Who wrote it.
+	DecidedBy *Person    `json:"decidedBy,omitempty"`
+	DecidedAt *time.Time `json:"decidedAt,omitempty"`
+	SentAt    *time.Time `json:"sentAt,omitempty"`
+	// Each side's answer once sent: `accepts` or `disagrees`. Nothing moves until both accept.
+	Answers []Position `json:"answers"`
+	// When the second acceptance applied it.
+	AppliedAt *time.Time `json:"appliedAt,omitempty"`
+}
+
+type Message struct {
+	ID        string       `json:"id"`
+	Thread    *Thread      `json:"thread"`
+	ClientRef *string      `json:"clientRef,omitempty"`
+	Author    *Person      `json:"author"`
+	Kind      MessageKind  `json:"kind"`
+	Text      *UserText    `json:"text,omitempty"`
+	Media     []Media      `json:"media"`
+	Card      *MessageCard `json:"card,omitempty"`
+	// AI answers cite their sources and are not binding. An AI answer's `ai.source.ref` is the question it answers.
+	Citations []Citation    `json:"citations"`
+	Ai        *AiSuggestion `json:"ai,omitempty"`
+	Via       MessageVia    `json:"via"`
+	CreatedAt time.Time     `json:"createdAt"`
+	// Who has read it, and when.
+	ReadBy []MessageRead `json:"readBy"`
+}
+
+// A record shown in the thread. Push previews never carry amounts; cards in the thread may.
+type MessageCard struct {
+	Type  CardType `json:"type"`
+	RefID string   `json:"refId"`
+	// The order an `order` or `delivery` card belongs to, so a buyer opens the order.
+	OrderID  *string `json:"orderId,omitempty"`
+	Title    string  `json:"title"`
+	Subtitle *string `json:"subtitle,omitempty"`
+}
+
+type MessageConnection struct {
+	Edges      []MessageEdge `json:"edges"`
+	Nodes      []Message     `json:"nodes"`
+	PageInfo   *PageInfo     `json:"pageInfo"`
+	TotalCount int           `json:"totalCount"`
+}
+
+type MessageEdge struct {
+	Cursor string   `json:"cursor"`
+	Node   *Message `json:"node"`
+}
+
+type MessageRead struct {
+	Person *Person   `json:"person"`
+	At     time.Time `json:"at"`
+}
+
+type ModelPin struct {
+	Use             ModelUse         `json:"use"`
+	Version         string           `json:"version"`
+	Candidate       *string          `json:"candidate,omitempty"`
+	CandidateState  *CandidateState  `json:"candidateState,omitempty"`
+	CandidateReplay *CandidateReplay `json:"candidateReplay,omitempty"`
+}
+
+type MoneyRange struct {
+	Low  int64 `json:"low"`
+	High int64 `json:"high"`
+}
+
+type MoneyRow struct {
+	Kind  MoneyRowKind `json:"kind"`
+	RefID *string      `json:"refId,omitempty"`
+	// Order rows: the order's reference, `RN-118306`.
+	OrderRef *string `json:"orderRef,omitempty"`
+	Label    string  `json:"label"`
+	// Order rows: the shop paid.
+	ShopName *string    `json:"shopName,omitempty"`
+	Amount   int64      `json:"amount"`
+	Fee      *int64     `json:"fee,omitempty"`
+	FundedAt *time.Time `json:"fundedAt,omitempty"`
+	// Rows open for funding: after this the contractor may send a pause notice.
+	FundByAt     *time.Time `json:"fundByAt,omitempty"`
+	ReleasedAt   *time.Time `json:"releasedAt,omitempty"`
+	ReleaseDueAt *time.Time `json:"releaseDueAt,omitempty"`
+	// What released the money, or what will release it.
+	ReleaseTrigger *ReleaseTrigger `json:"releaseTrigger,omitempty"`
+	State          MoneyRowState   `json:"state"`
+}
+
+type MoneyTotals struct {
+	Released       int64 `json:"released"`
+	SafeAtPartner  int64 `json:"safeAtPartner"`
+	ToFund         int64 `json:"toFund"`
+	ThroughAccount int64 `json:"throughAccount"`
+	MaterialsToBuy int64 `json:"materialsToBuy"`
+	Forecast       int64 `json:"forecast"`
+}
+
+type MoodBoard struct {
+	ID       string    `json:"id"`
+	Title    string    `json:"title"`
+	RoomType *RoomType `json:"roomType,omitempty"`
+	Photo    *Media    `json:"photo"`
+	Caption  string    `json:"caption"`
+}
+
+type Mutation struct {
+}
+
+type NeedsYouItem struct {
+	Kind NeedsYouKind `json:"kind"`
+	// No amounts in the title.
+	Title string `json:"title"`
+	Job   *Job   `json:"job,omitempty"`
+	// What to open.
+	Subject NeedsYouSubject `json:"subject,omitempty"`
+	RefID   string          `json:"refId"`
+	DueAt   *time.Time      `json:"dueAt,omitempty"`
+	// A slot rather than a deadline, such as a delivery.
+	Window     *TimeWindow `json:"window,omitempty"`
+	PhotoCount *int        `json:"photoCount,omitempty"`
+	// Signed change in price, for change orders.
+	PriceDelta *int64 `json:"priceDelta,omitempty"`
+}
+
+type NextFunding struct {
+	StageNo  int        `json:"stageNo"`
+	FundByAt *time.Time `json:"fundByAt,omitempty"`
+}
+
+// Not found, not visible to the caller, or an expired link.
+type NotFound struct {
+	Code    ProblemCode `json:"code"`
+	Message string      `json:"message"`
+}
+
+func (NotFound) IsCreateAgreementVersionResult() {}
+
+func (NotFound) IsUpdateAgreementVersionResult() {}
+
+func (NotFound) IsReviewClauseResult() {}
+
+func (NotFound) IsSignAgreementVersionResult() {}
+
+func (NotFound) IsInviteOwnerResult() {}
+
+func (NotFound) IsRemindOwnerResult() {}
+
+func (NotFound) IsApproveQRSignInResult() {}
+
+func (NotFound) IsCreateSigningChallengeResult() {}
+
+func (NotFound) IsUpdateBriefResult() {}
+
+func (NotFound) IsClaimBriefResult() {}
+
+func (NotFound) IsSuggestWorkListResult() {}
+
+func (NotFound) IsSaveWorkListResult() {}
+
+func (NotFound) IsGenerateLookResult() {}
+
+func (NotFound) IsPublishBriefResult() {}
+
+func (NotFound) IsInviteContractorResult() {}
+
+func (NotFound) IsRespondToBidInviteResult() {}
+
+func (NotFound) IsRequestSiteVisitResult() {}
+
+func (NotFound) IsUpdateSiteVisitResult() {}
+
+func (NotFound) IsSaveBidResult() {}
+
+func (NotFound) IsSubmitBidResult() {}
+
+func (NotFound) IsWithdrawBidResult() {}
+
+func (NotFound) IsAskBidQuestionResult() {}
+
+func (NotFound) IsAnswerBidQuestionResult() {}
+
+func (NotFound) IsShareBidAnswerResult() {}
+
+func (NotFound) IsMarkBidQuestionReadResult() {}
+
+func (NotFound) IsChooseBidResult() {}
+
+func (NotFound) IsCloseBriefResult() {}
+
+func (NotFound) IsCreateChangeOrderResult() {}
+
+func (NotFound) IsUpdateChangeOrderResult() {}
+
+func (NotFound) IsDeleteChangeOrderResult() {}
+
+func (NotFound) IsSignChangeOrderResult() {}
+
+func (NotFound) IsDeclineChangeOrderResult() {}
+
+func (NotFound) IsFundChangeOrderResult() {}
+
+func (NotFound) IsCreateThreadResult() {}
+
+func (NotFound) IsSendMessageResult() {}
+
+func (NotFound) IsMarkThreadReadResult() {}
+
+func (NotFound) IsRenewCrewLinkResult() {}
+
+func (NotFound) IsCrewMemberResult() {}
+
+func (NotFound) IsRecordAdvanceResult() {}
+
+func (NotFound) IsRecordWagePaymentResult() {}
+
+func (NotFound) IsSendCrewQuestionResult() {}
+
+func (NotFound) IsRecordCrewAnswerResult() {}
+
+func (NotFound) IsCreateDecisionResult() {}
+
+func (NotFound) IsAnswerDecisionResult() {}
+
+func (NotFound) IsCreateRecommendationResult() {}
+
+func (NotFound) IsAddPortfolioItemResult() {}
+
+func (NotFound) IsUpdateHandoverResult() {}
+
+func (NotFound) IsRecordHandoverItemResult() {}
+
+func (NotFound) IsSignHandoverResult() {}
+
+func (NotFound) IsRaiseIssueResult() {}
+
+func (NotFound) IsAddIssueMediaResult() {}
+
+func (NotFound) IsReplyToIssueResult() {}
+
+func (NotFound) IsResolveIssueResult() {}
+
+func (NotFound) IsRequestMediationResult() {}
+
+func (NotFound) IsAnswerMediatorSuggestionResult() {}
+
+func (NotFound) IsCreateJobResult() {}
+
+func (NotFound) IsUpdateJobResult() {}
+
+func (NotFound) IsSetRecordVisibilityResult() {}
+
+func (NotFound) IsCreateJobExportResult() {}
+
+func (NotFound) IsUpdateJobImportResult() {}
+
+func (NotFound) IsStartLinkSessionResult() {}
+
+func (NotFound) IsSendLinkMessageResult() {}
+
+func (NotFound) IsFundFromLinkResult() {}
+
+func (NotFound) IsCrewLinkResult() {}
+
+func (NotFound) IsRequestNewLinkResult() {}
+
+func (NotFound) IsDriverTripResult() {}
+
+func (NotFound) IsUpdateMaterialLineResult() {}
+
+func (NotFound) IsSendMaterialsListResult() {}
+
+func (NotFound) IsAddCartItemResult() {}
+
+func (NotFound) IsUpdateCartItemResult() {}
+
+func (NotFound) IsUpdateCartResult() {}
+
+func (NotFound) IsRemoveCartItemResult() {}
+
+func (NotFound) IsCheckoutCartResult() {}
+
+func (NotFound) IsRevokeSessionResult() {}
+
+func (NotFound) IsAddBankAccountResult() {}
+
+func (NotFound) IsUpdateTeamMemberResult() {}
+
+func (NotFound) IsRemoveTeamMemberResult() {}
+
+func (NotFound) IsAssignCaseResult() {}
+
+func (NotFound) IsDecideCaseResult() {}
+
+func (NotFound) IsRetryPayoutInstructionResult() {}
+
+func (NotFound) IsDecideVerificationResult() {}
+
+func (NotFound) IsRequestReverificationResult() {}
+
+func (NotFound) IsSupportTicketResult() {}
+
+func (NotFound) IsAcceptOrderResult() {}
+
+func (NotFound) IsDeclineOrderResult() {}
+
+func (NotFound) IsRerouteOrderResult() {}
+
+func (NotFound) IsProposeStockChangeResult() {}
+
+func (NotFound) IsAnswerStockProposalResult() {}
+
+func (NotFound) IsPackOrderResult() {}
+
+func (NotFound) IsDispatchOrderResult() {}
+
+func (NotFound) IsReportRunningLateResult() {}
+
+func (NotFound) IsConfirmDeliveryResult() {}
+
+func (NotFound) IsReportDeliveryProblemResult() {}
+
+func (NotFound) IsSendSitePhotoReminderResult() {}
+
+func (NotFound) IsAddPriceBookSourceResult() {}
+
+func (NotFound) IsCreateReportResult() {}
+
+func (NotFound) IsUpdateReportResult() {}
+
+func (NotFound) IsAcknowledgeReportResult() {}
+
+func (NotFound) IsCreateProgressCountResult() {}
+
+func (NotFound) IsUpdateSiteTaskResult() {}
+
+func (NotFound) IsProblem() {}
+
+func (NotFound) IsFundStageResult() {}
+
+func (NotFound) IsClaimFundingPaidResult() {}
+
+func (NotFound) IsCheckInStageResult() {}
+
+func (NotFound) IsSubmitStageResult() {}
+
+func (NotFound) IsApproveStageResult() {}
+
+func (NotFound) IsExtendStageReviewResult() {}
+
+func (NotFound) IsProposePartialReleaseResult() {}
+
+func (NotFound) IsSignPartialReleaseResult() {}
+
+func (NotFound) IsUpdateBudgetResult() {}
+
+func (NotFound) IsAddOutsidePurchaseResult() {}
+
+func (NotFound) IsSendPauseNoticeResult() {}
+
+func (NotFound) IsRemindOwnerToFundResult() {}
+
+func (NotFound) IsProposeEndJobResult() {}
+
+func (NotFound) IsSignEndJobResult() {}
+
+func (NotFound) IsUpdateShopResult() {}
+
+func (NotFound) IsPublishShopResult() {}
+
+func (NotFound) IsAddShopStaffResult() {}
+
+func (NotFound) IsRemoveShopRecordResult() {}
+
+func (NotFound) IsAddDriverResult() {}
+
+func (NotFound) IsProductResult() {}
+
+func (NotFound) IsDeleteProductResult() {}
+
+func (NotFound) IsBulkUpdateProductsResult() {}
+
+func (NotFound) IsPriceListImportResult() {}
+
+func (NotFound) IsReportMismatchedPaperResult() {}
+
+func (NotFound) IsAskAboutQuoteResult() {}
+
+func (NotFound) IsCreateWarrantyClaimResult() {}
+
+func (NotFound) IsUpdateWarrantyClaimResult() {}
+
+// Never contains amounts (R7). Push payloads carry only `title`, `body` and `deepLink`; Android shows them
+// as PRIVATE on the lock screen.
+type Notification struct {
+	ID        string            `json:"id"`
+	Kind      NotificationEvent `json:"kind"`
+	Title     string            `json:"title"`
+	Body      string            `json:"body"`
+	Job       *Job              `json:"job,omitempty"`
+	RefID     *string           `json:"refId,omitempty"`
+	DeepLink  string            `json:"deepLink"`
+	NeedsYou  bool              `json:"needsYou"`
+	CreatedAt time.Time         `json:"createdAt"`
+	ReadAt    *time.Time        `json:"readAt,omitempty"`
+}
+
+type NotificationChannel struct {
+	Event NotificationEvent `json:"event"`
+	App   bool              `json:"app"`
+	Email bool              `json:"email"`
+	// The WhatsApp doorbell. At most 1 message per person per day.
+	Whatsapp bool `json:"whatsapp"`
+}
+
+type NotificationChannelInput struct {
+	Event    NotificationEvent `json:"event"`
+	App      bool              `json:"app"`
+	Email    bool              `json:"email"`
+	Whatsapp bool              `json:"whatsapp"`
+}
+
+type NotificationConnection struct {
+	Edges       []NotificationEdge `json:"edges"`
+	Nodes       []Notification     `json:"nodes"`
+	PageInfo    *PageInfo          `json:"pageInfo"`
+	TotalCount  int                `json:"totalCount"`
+	UnreadCount int                `json:"unreadCount"`
+}
+
+type NotificationEdge struct {
+	Cursor string        `json:"cursor"`
+	Node   *Notification `json:"node"`
+}
+
+type NotificationSettings struct {
+	// iOS: pushes that need her (stage review, funding due) are sent Time Sensitive and break through Focus. Off by default.
+	TimeSensitive bool                  `json:"timeSensitive"`
+	Channels      []NotificationChannel `json:"channels"`
+	EveningDigest *EveningDigest        `json:"eveningDigest,omitempty"`
+	QuietHours    *QuietHours           `json:"quietHours,omitempty"`
+	Reminders     []Reminder            `json:"reminders"`
+}
+
+type NotificationSettingsInput struct {
+	Channels             []NotificationChannelInput `json:"channels"`
+	TimeSensitive        *bool                      `json:"timeSensitive,omitempty"`
+	EveningDigestEnabled *bool                      `json:"eveningDigestEnabled,omitempty"`
+	EveningDigestTime    *string                    `json:"eveningDigestTime,omitempty"`
+	QuietFrom            *string                    `json:"quietFrom,omitempty"`
+	QuietTo              *string                    `json:"quietTo,omitempty"`
+	Reminders            []ReminderInput            `json:"reminders,omitempty"`
+}
+
+// What the AI saw in her photos; she ticks what is right.
+type Observation struct {
+	ID     string            `json:"id"`
+	Text   string            `json:"text"`
+	Media  []Media           `json:"media"`
+	Status ObservationStatus `json:"status"`
+}
+
+type ObservationInput struct {
+	ID     string            `json:"id"`
+	Status ObservationStatus `json:"status"`
+}
+
+type OpeningHours struct {
+	Day    Weekday `json:"day"`
+	Closed bool    `json:"closed"`
+	// HH:MM.
+	Open  *string `json:"open,omitempty"`
+	Close *string `json:"close,omitempty"`
+}
+
+type OpeningHoursInput struct {
+	Day    Weekday `json:"day"`
+	Closed bool    `json:"closed"`
+	Open   *string `json:"open,omitempty"`
+	Close  *string `json:"close,omitempty"`
+}
+
+type OpsOverview struct {
+	AsOf          time.Time `json:"asOf"`
+	ActiveJobs    int       `json:"activeJobs"`
+	ProtectedJobs int       `json:"protectedJobs"`
+	// In escrow now: the same figure as today's `reconciliation.ledger`.
+	SafeAtPartner  int64      `json:"safeAtPartner"`
+	ReconciledAt   *time.Time `json:"reconciledAt,omitempty"`
+	ReleasesDue24h int64      `json:"releasesDue24h"`
+	OpenIssues     int        `json:"openIssues"`
+	Pauses         int        `json:"pauses"`
+	PilotDay       *int       `json:"pilotDay,omitempty"`
+	// Funnel figures count from this day.
+	PilotStartedOn  *scalar.Date  `json:"pilotStartedOn,omitempty"`
+	PilotLengthDays *int          `json:"pilotLengthDays,omitempty"`
+	Pilot           []PilotMetric `json:"pilot"`
+	Systems         *OpsSystems   `json:"systems,omitempty"`
+}
+
+type OpsSystems struct {
+	PartnerAPI           SystemHealth `json:"partnerApi"`
+	QuietContractors     int          `json:"quietContractors"`
+	AiGuardsFired        int          `json:"aiGuardsFired"`
+	VerificationsWaiting int          `json:"verificationsWaiting"`
+	TicketsOpen          int          `json:"ticketsOpen"`
+	PayoutsRetrying      int          `json:"payoutsRetrying"`
+}
+
+type OpsUser struct {
+	ID           string  `json:"id"`
+	Name         string  `json:"name"`
+	DisplayName  *string `json:"displayName,omitempty"`
+	BusinessName *string `json:"businessName,omitempty"`
+	// The business a crew member or driver works for.
+	WorksFor     *string        `json:"worksFor,omitempty"`
+	Trade        *string        `json:"trade,omitempty"`
+	JoinedAt     *time.Time     `json:"joinedAt,omitempty"`
+	Roles        []AccountRole  `json:"roles"`
+	PhoneMasked  *string        `json:"phoneMasked,omitempty"`
+	Verification []Verification `json:"verification"`
+	// Null for people on a personal link only.
+	AiConsent     *AiConsentState    `json:"aiConsent,omitempty"`
+	AiConsentAt   *time.Time         `json:"aiConsentAt,omitempty"`
+	Areas         []string           `json:"areas"`
+	Record        *UserRecord        `json:"record,omitempty"`
+	Jobs          []Job              `json:"jobs"`
+	PayoutAccount *BankAccountMasked `json:"payoutAccount,omitempty"`
+	JobsSummary   *string            `json:"jobsSummary,omitempty"`
+	OpenTickets   *int               `json:"openTickets,omitempty"`
+	LastActiveAt  time.Time          `json:"lastActiveAt"`
+}
+
+type OpsUserConnection struct {
+	Edges      []OpsUserEdge `json:"edges"`
+	Nodes      []OpsUser     `json:"nodes"`
+	PageInfo   *PageInfo     `json:"pageInfo"`
+	TotalCount int           `json:"totalCount"`
+	Counts     *UserCounts   `json:"counts"`
+}
+
+type OpsUserEdge struct {
+	Cursor string   `json:"cursor"`
+	Node   *OpsUser `json:"node"`
+}
+
+type OpsUserPayload struct {
+	User *OpsUser `json:"user"`
+}
+
+func (OpsUserPayload) IsRequestReverificationResult() {}
+
+type Order struct {
+	ID       string        `json:"id"`
+	Ref      string        `json:"ref"`
+	Job      *Job          `json:"job,omitempty"`
+	JobTitle *string       `json:"jobTitle,omitempty"`
+	Shop     *Shop         `json:"shop"`
+	Buyer    *Person       `json:"buyer"`
+	Payer    *Person       `json:"payer"`
+	Status   OrderStatus   `json:"status"`
+	Channel  *OrderChannel `json:"channel,omitempty"`
+	Lines    []OrderLine   `json:"lines"`
+	Total    int64         `json:"total"`
+	// 2% of delivered goods; 0 for a shop's first 5 delivered orders.
+	ShopFee      *int64           `json:"shopFee,omitempty"`
+	ShopReceives *int64           `json:"shopReceives,omitempty"`
+	Funding      *Funding         `json:"funding,omitempty"`
+	PaidAt       *time.Time       `json:"paidAt,omitempty"`
+	MoneyState   *OrderMoneyState `json:"moneyState,omitempty"`
+	// 2 open hours after arrival, never later than the slot start.
+	AnswerByAt    *time.Time     `json:"answerByAt,omitempty"`
+	AcceptedAt    *time.Time     `json:"acceptedAt,omitempty"`
+	AcceptedBy    *string        `json:"acceptedBy,omitempty"`
+	Slot          *TimeWindow    `json:"slot"`
+	Site          *OrderSite     `json:"site,omitempty"`
+	BackupShop    *Shop          `json:"backupShop,omitempty"`
+	StockProposal *StockProposal `json:"stockProposal,omitempty"`
+	LoadingPhoto  *Media         `json:"loadingPhoto,omitempty"`
+	Deliveries    []Delivery     `json:"deliveries"`
+	Thread        *Thread        `json:"thread,omitempty"`
+	// Delivery note PDF.
+	DeliveryNoteURL *string      `json:"deliveryNoteUrl,omitempty"`
+	Timeline        []OrderEvent `json:"timeline"`
+	Payout          *Payout      `json:"payout,omitempty"`
+}
+
+type OrderConnection struct {
+	Edges      []OrderEdge `json:"edges"`
+	Nodes      []Order     `json:"nodes"`
+	PageInfo   *PageInfo   `json:"pageInfo"`
+	TotalCount int         `json:"totalCount"`
+	// Orders per status across all pages.
+	Counts []OrderStatusCount `json:"counts"`
+}
+
+type OrderEdge struct {
+	Cursor string `json:"cursor"`
+	Node   *Order `json:"node"`
+}
+
+type OrderEvent struct {
+	At    time.Time      `json:"at"`
+	Event OrderEventKind `json:"event"`
+	// Where the step was taken, such as a WhatsApp reply.
+	Via *StepChannel `json:"via,omitempty"`
+	By  *string      `json:"by,omitempty"`
+}
+
+type OrderLine struct {
+	ID           string   `json:"id"`
+	Product      *Product `json:"product,omitempty"`
+	Sku          *string  `json:"sku,omitempty"`
+	Name         string   `json:"name"`
+	Quantity     float64  `json:"quantity"`
+	Unit         Unit     `json:"unit"`
+	UnitPrice    int64    `json:"unitPrice"`
+	Amount       int64    `json:"amount"`
+	WorkItemCode *string  `json:"workItemCode,omitempty"`
+	// Products the shop could offer instead when it is short: same category, enough stock, nearest price.
+	Substitutes []Product `json:"substitutes,omitempty"`
+	// The job's materials-list line this order line buys, when it came from the list.
+	MaterialLine *MaterialLine `json:"materialLine,omitempty"`
+	// Live stock while the order waits for its answer.
+	InStock *int `json:"inStock,omitempty"`
+	// Stock frozen at accepting.
+	InStockAtAccept *int     `json:"inStockAtAccept,omitempty"`
+	PackedQuantity  *float64 `json:"packedQuantity,omitempty"`
+	Note            *string  `json:"note,omitempty"`
+}
+
+type OrderPayload struct {
+	Order *Order `json:"order"`
+}
+
+func (OrderPayload) IsAcceptOrderResult() {}
+
+func (OrderPayload) IsDeclineOrderResult() {}
+
+func (OrderPayload) IsRerouteOrderResult() {}
+
+func (OrderPayload) IsProposeStockChangeResult() {}
+
+func (OrderPayload) IsAnswerStockProposalResult() {}
+
+func (OrderPayload) IsPackOrderResult() {}
+
+type OrderSite struct {
+	Area       *string  `json:"area,omitempty"`
+	DistanceKm *float64 `json:"distanceKm,omitempty"`
+	// Shown to the shop after it accepts.
+	Address *string `json:"address,omitempty"`
+	// The job's site point, for directions; shown to the shop after it accepts, like the address.
+	Location     *GeoPoint `json:"location,omitempty"`
+	GateNote     *string   `json:"gateNote,omitempty"`
+	ReceiverName *string   `json:"receiverName,omitempty"`
+}
+
+type OrderStatusCount struct {
+	Status OrderStatus `json:"status"`
+	Count  int         `json:"count"`
+}
+
+type OwnerFundLink struct {
+	JobTitle              string         `json:"jobTitle"`
+	Stage                 *FundStageRef  `json:"stage"`
+	PreviousStage         *PreviousStage `json:"previousStage,omitempty"`
+	ContractorDisplayName *string        `json:"contractorDisplayName,omitempty"`
+	Principal             int64          `json:"principal"`
+	Fee                   int64          `json:"fee"`
+	Total                 int64          `json:"total"`
+	SafeAtPartner         *int64         `json:"safeAtPartner,omitempty"`
+	FundByAt              *time.Time     `json:"fundByAt,omitempty"`
+	Funding               *Funding       `json:"funding,omitempty"`
+	TrustStrip            string         `json:"trustStrip"`
+}
+
+type OwnerInvite struct {
+	ID             string            `json:"id"`
+	URL            string            `json:"url"`
+	Status         OwnerInviteStatus `json:"status"`
+	SentAt         time.Time         `json:"sentAt"`
+	OpenedAt       *time.Time        `json:"openedAt,omitempty"`
+	ExpiresAt      time.Time         `json:"expiresAt"`
+	NextReminderAt *time.Time        `json:"nextReminderAt,omitempty"`
+}
+
+type OwnerJobLink struct {
+	Job              *Job           `json:"job"`
+	CurrentStageName *string        `json:"currentStageName,omitempty"`
+	DayOfJob         *int           `json:"dayOfJob,omitempty"`
+	DurationDays     *int           `json:"durationDays,omitempty"`
+	Schedule         *Schedule      `json:"schedule,omitempty"`
+	NeedsYou         []NeedsYouItem `json:"needsYou"`
+	LatestReport     *Report        `json:"latestReport,omitempty"`
+	NextFunding      *NextFunding   `json:"nextFunding,omitempty"`
+	TrustStrip       string         `json:"trustStrip"`
+}
+
+type PackOrderInput struct {
+	OrderID        string            `json:"orderId"`
+	Lines          []PackedLineInput `json:"lines"`
+	LoadingPhotoID *string           `json:"loadingPhotoId,omitempty"`
+}
+
+type PackedLineInput struct {
+	OrderLineID    string  `json:"orderLineId"`
+	PackedQuantity float64 `json:"packedQuantity"`
+	Note           *string `json:"note,omitempty"`
+}
+
+// Relay cursor pagination. Pass `endCursor` back as `after`; `hasNextPage` is false on the last page.
 type PageInfo struct {
 	HasNextPage     bool    `json:"hasNextPage"`
 	HasPreviousPage bool    `json:"hasPreviousPage"`
@@ -23,69 +4714,2485 @@ type PageInfo struct {
 	EndCursor       *string `json:"endCursor,omitempty"`
 }
 
+type PartialRelease struct {
+	ID         string `json:"id"`
+	Stage      *Stage `json:"stage"`
+	ReleaseNow int64  `json:"releaseNow"`
+	Later      int64  `json:"later"`
+	// What releases the rest.
+	Condition  string               `json:"condition"`
+	Status     PartialReleaseStatus `json:"status"`
+	Signatures []Signature          `json:"signatures"`
+}
+
+type PastJobRef struct {
+	Job        *Job         `json:"job,omitempty"`
+	Label      string       `json:"label"`
+	FinishedOn *scalar.Date `json:"finishedOn,omitempty"`
+}
+
+type PastTickets struct {
+	Count        int        `json:"count"`
+	LastClosedAt *time.Time `json:"lastClosedAt,omitempty"`
+}
+
+// The contractor's right to pause when the next stage is unfunded 3 days after he submits.
+type Pause struct {
+	Status   PauseStatus `json:"status"`
+	Reason   *string     `json:"reason,omitempty"`
+	NoticeAt time.Time   `json:"noticeAt"`
+	// 48 h after the notice unless the owner funds.
+	EffectiveAt time.Time  `json:"effectiveAt"`
+	EndedAt     *time.Time `json:"endedAt,omitempty"`
+	// Paused days extend the finish date.
+	PausedDays *int `json:"pausedDays,omitempty"`
+	// After 14 days unfunded and silent he may end the job for owner default.
+	OwnerDefaultAvailableAt *time.Time `json:"ownerDefaultAvailableAt,omitempty"`
+}
+
+type Payout struct {
+	ID          string       `json:"id"`
+	Ref         string       `json:"ref"`
+	Kind        PayoutKind   `json:"kind"`
+	Recipient   *Person      `json:"recipient"`
+	Job         *Job         `json:"job,omitempty"`
+	JobTitle    *string      `json:"jobTitle,omitempty"`
+	StageNo     *int         `json:"stageNo,omitempty"`
+	ChangeOrder *ChangeOrder `json:"changeOrder,omitempty"`
+	Order       *Order       `json:"order,omitempty"`
+	OrderRef    *string      `json:"orderRef,omitempty"`
+	Gross       int64        `json:"gross"`
+	// Shop commission or the P4 match fee. 0 for a contractor's own clients.
+	Fee     int64              `json:"fee"`
+	Net     int64              `json:"net"`
+	Account *BankAccountMasked `json:"account"`
+	Trigger ReleaseTrigger     `json:"trigger"`
+	Rail    *PayoutRail        `json:"rail,omitempty"`
+	Status  PayoutStatus       `json:"status"`
+	// When the release was triggered: owner approval, check-in or site photo.
+	ApprovedAt *time.Time `json:"approvedAt,omitempty"`
+	SentAt     *time.Time `json:"sentAt,omitempty"`
+	ExpectedBy *time.Time `json:"expectedBy,omitempty"`
+	ArrivedAt  *time.Time `json:"arrivedAt,omitempty"`
+}
+
+type PayoutConnection struct {
+	Edges      []PayoutEdge `json:"edges"`
+	Nodes      []Payout     `json:"nodes"`
+	PageInfo   *PageInfo    `json:"pageInfo"`
+	TotalCount int          `json:"totalCount"`
+	// Fees on every payout in the list, across all pages.
+	FeeTotal int64 `json:"feeTotal"`
+}
+
+type PayoutEdge struct {
+	Cursor string  `json:"cursor"`
+	Node   *Payout `json:"node"`
+}
+
+type PayoutInstruction struct {
+	ID    string          `json:"id"`
+	Ref   string          `json:"ref"`
+	Kind  InstructionKind `json:"kind"`
+	Job   *Job            `json:"job,omitempty"`
+	Order *Order          `json:"order,omitempty"`
+	// The job or order.
+	Title  *string            `json:"title,omitempty"`
+	Detail *string            `json:"detail,omitempty"`
+	To     *BankAccountMasked `json:"to"`
+	// Refund to the payer's original account.
+	ToSource *bool           `json:"toSource,omitempty"`
+	Trigger  *ReleaseTrigger `json:"trigger,omitempty"`
+	// Set on refunds instead of `trigger`.
+	RefundReason *RefundReason `json:"refundReason,omitempty"`
+	// When the trigger happened (for the 4-day clock, the submission).
+	TriggeredAt *time.Time       `json:"triggeredAt,omitempty"`
+	Rail        *InstructionRail `json:"rail,omitempty"`
+	// What the recipient receives.
+	Amount int64 `json:"amount"`
+	// Shop commission kept back for Renora.
+	Fee           *int64       `json:"fee,omitempty"`
+	Status        PayoutStatus `json:"status"`
+	ScheduledAt   *time.Time   `json:"scheduledAt,omitempty"`
+	ArrivedAt     *time.Time   `json:"arrivedAt,omitempty"`
+	NextAttemptAt *time.Time   `json:"nextAttemptAt,omitempty"`
+	// When the held money entered escrow.
+	HeldSince *time.Time `json:"heldSince,omitempty"`
+	// Mediator decision due, for a mediated split.
+	DecisionDueAt *time.Time `json:"decisionDueAt,omitempty"`
+	// Last reminder to the party yet to sign.
+	RemindedAt *time.Time      `json:"remindedAt,omitempty"`
+	Attempts   []Attempt       `json:"attempts"`
+	Partial    *PartialRelease `json:"partial,omitempty"`
+}
+
+type PayoutInstructionConnection struct {
+	Edges      []PayoutInstructionEdge `json:"edges"`
+	Nodes      []PayoutInstruction     `json:"nodes"`
+	PageInfo   *PageInfo               `json:"pageInfo"`
+	TotalCount int                     `json:"totalCount"`
+	// Released to contractors and shops today (the WIB day on the server's clock) so far: the same figure as
+	// `reconciliation.released` for today.
+	ReleasedToday int64 `json:"releasedToday"`
+}
+
+type PayoutInstructionEdge struct {
+	Cursor string             `json:"cursor"`
+	Node   *PayoutInstruction `json:"node"`
+}
+
+type PayoutInstructionPayload struct {
+	Instruction *PayoutInstruction `json:"instruction"`
+}
+
+func (PayoutInstructionPayload) IsRetryPayoutInstructionResult() {}
+
+type PayoutJobTotal struct {
+	Job   *Job   `json:"job,omitempty"`
+	Title string `json:"title"`
+	Net   int64  `json:"net"`
+	Count int    `json:"count"`
+}
+
+type PayoutSummary struct {
+	Month      string           `json:"month"`
+	Gross      int64            `json:"gross"`
+	Fee        int64            `json:"fee"`
+	Net        int64            `json:"net"`
+	Count      int              `json:"count"`
+	SendingNow *int64           `json:"sendingNow,omitempty"`
+	Jobs       []PayoutJobTotal `json:"jobs"`
+	PDFURL     *string          `json:"pdfUrl,omitempty"`
+}
+
+// A guide, not legal advice.
+type PermitCheck struct {
+	ChangeOfUse    bool          `json:"changeOfUse"`
+	Structural     bool          `json:"structural"`
+	FloorAreaGrows bool          `json:"floorAreaGrows"`
+	Facade         bool          `json:"facade"`
+	Result         *PermitResult `json:"result,omitempty"`
+	RuleSource     *string       `json:"ruleSource,omitempty"`
+}
+
+type PermitCheckInput struct {
+	ChangeOfUse    bool `json:"changeOfUse"`
+	Structural     bool `json:"structural"`
+	FloorAreaGrows bool `json:"floorAreaGrows"`
+	Facade         bool `json:"facade"`
+}
+
+// A person as others on the job see them. `displayName` is how people address them, with the honorific
+// (Bu Dewi, Pak Joko); `initials` fill the avatar.
+type Person struct {
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	DisplayName  string    `json:"displayName"`
+	Initials     string    `json:"initials"`
+	Role         PartyRole `json:"role"`
+	BusinessName *string   `json:"businessName,omitempty"`
+	PhoneMasked  *string   `json:"phoneMasked,omitempty"`
+	// Dialable E.164 number (`+6281218804471`), for a call only: talking happens in Renora (R8). Only people
+	// who share a job, an order or a delivery with this person (and ops) read it; everyone else reads `null`.
+	Phone *string `json:"phone,omitempty"`
+	// The contractor's business in the directory, for a contractor.
+	Business *Contractor `json:"business,omitempty"`
+}
+
+// One pilot metric, with its target.
+type PilotMetric struct {
+	Metric PilotMetricName `json:"metric"`
+	// In `unit`; null until the pilot has the data.
+	Value *int       `json:"value,omitempty"`
+	Unit  MetricUnit `json:"unit"`
+	// Target by the last pilot day (or the month named in the metric).
+	Target *int `json:"target,omitempty"`
+	// Interim targets before the last pilot day.
+	Checkpoints []Checkpoint `json:"checkpoints"`
+	// The count or sum behind `value`, e.g. 15 owners signed.
+	Numerator *int `json:"numerator,omitempty"`
+	// What `value` is measured over, e.g. 34 owners.
+	Denominator *int `json:"denominator,omitempty"`
+	// Month of a monthly metric, `2026-10`.
+	Period *string      `json:"period,omitempty"`
+	State  *MetricState `json:"state,omitempty"`
+}
+
+type PortfolioItem struct {
+	ID       string          `json:"id"`
+	Media    *Media          `json:"media"`
+	Label    string          `json:"label"`
+	Area     *string         `json:"area,omitempty"`
+	RoomType *RoomType       `json:"roomType,omitempty"`
+	Status   PortfolioStatus `json:"status"`
+}
+
+type Position struct {
+	Party      PartyRole  `json:"party"`
+	Stance     *Stance    `json:"stance,omitempty"`
+	Text       *string    `json:"text,omitempty"`
+	At         *time.Time `json:"at,omitempty"`
+	NotifiedAt *time.Time `json:"notifiedAt,omitempty"`
+}
+
+type PreviousStage struct {
+	No     int         `json:"no"`
+	Status StageStatus `json:"status"`
+}
+
+type PriceAlert struct {
+	Row         *PriceBookRow `json:"row"`
+	Item        string        `json:"item"`
+	AgeDays     int           `json:"ageDays"`
+	DropsInDays *int          `json:"dropsInDays,omitempty"`
+	// Open briefs that show the item as not priced yet.
+	BriefsAffected *int `json:"briefsAffected,omitempty"`
+}
+
+// The dated price book behind every range (R9). A range needs 3+ independent sources (one from a survey or a
+// signed job, newest within 90 days, none older than 180). A per-item bid check needs 5+ from 2+ source types.
+// News rows never count. Stale at 90 days, dropped at 180.
+type PriceBookRow struct {
+	ID               string        `json:"id"`
+	Item             string        `json:"item"`
+	Category         *RoomType     `json:"category,omitempty"`
+	Unit             Unit          `json:"unit"`
+	Region           string        `json:"region"`
+	Low              *int64        `json:"low,omitempty"`
+	High             *int64        `json:"high,omitempty"`
+	SourceCount      int           `json:"sourceCount"`
+	Sources          []SourceCount `json:"sources"`
+	LatestSourceDate *scalar.Date  `json:"latestSourceDate,omitempty"`
+	AgeDays          *int          `json:"ageDays,omitempty"`
+	// Agreement items priced against this row.
+	Usage       []PriceUsage     `json:"usage"`
+	Status      PriceRowStatus   `json:"status"`
+	CheckStatus PriceCheckStatus `json:"checkStatus"`
+}
+
+type PriceBookRowConnection struct {
+	Edges      []PriceBookRowEdge `json:"edges"`
+	Nodes      []PriceBookRow     `json:"nodes"`
+	PageInfo   *PageInfo          `json:"pageInfo"`
+	TotalCount int                `json:"totalCount"`
+	Counts     []RoomCount        `json:"counts"`
+}
+
+type PriceBookRowEdge struct {
+	Cursor string        `json:"cursor"`
+	Node   *PriceBookRow `json:"node"`
+}
+
+type PriceBookStatus struct {
+	NextSweepOn   scalar.Date    `json:"nextSweepOn"`
+	MaterialIndex *MaterialIndex `json:"materialIndex,omitempty"`
+	Alerts        []PriceAlert   `json:"alerts"`
+}
+
+// The price-book check of one line, recomputed whenever the bid is saved: a line with 5+ sources from 2+ source
+// types is `above`, `below` or `within` its range per unit; otherwise `not_enough_data`.
+type PriceCheck struct {
+	Verdict         PriceVerdict `json:"verdict"`
+	SourceCount     int          `json:"sourceCount"`
+	SourceTypeCount *int         `json:"sourceTypeCount,omitempty"`
+	// The price book's range per unit for this line; null without enough data.
+	Low  *int64 `json:"low,omitempty"`
+	High *int64 `json:"high,omitempty"`
+}
+
+type PriceListImport struct {
+	ID          string                `json:"id"`
+	Source      PriceListSource       `json:"source"`
+	Status      PriceListImportStatus `json:"status"`
+	CreatedAt   *time.Time            `json:"createdAt,omitempty"`
+	CommittedAt *time.Time            `json:"committedAt,omitempty"`
+	Pages       *int                  `json:"pages,omitempty"`
+	CodeCheck   *CodeCheck            `json:"codeCheck,omitempty"`
+	Lines       []PriceListLine       `json:"lines"`
+}
+
+type PriceListImportPayload struct {
+	PriceListImport *PriceListImport `json:"priceListImport"`
+}
+
+func (PriceListImportPayload) IsPriceListImportResult() {}
+
+type PriceListLine struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Price *int64 `json:"price,omitempty"`
+	Unit  *Unit  `json:"unit,omitempty"`
+	// What the AI read, for example "26?.000".
+	RawPrice *string `json:"rawPrice,omitempty"`
+	// Where on the photo: `p1 row 2`.
+	Cite   *string         `json:"cite,omitempty"`
+	Status PriceLineStatus `json:"status"`
+	Ai     *AiSuggestion   `json:"ai,omitempty"`
+}
+
+type PriceListLineInput struct {
+	ID     string           `json:"id"`
+	Price  *int64           `json:"price,omitempty"`
+	Unit   *Unit            `json:"unit,omitempty"`
+	Status *PriceLineStatus `json:"status,omitempty"`
+}
+
+// A price-book range: 3+ independent sources, newest within 90 days (R9).
+type PriceRange struct {
+	Low              *int64       `json:"low,omitempty"`
+	High             *int64       `json:"high,omitempty"`
+	SourceCount      int          `json:"sourceCount"`
+	SourceTypeCount  *int         `json:"sourceTypeCount,omitempty"`
+	LatestSourceDate *scalar.Date `json:"latestSourceDate,omitempty"`
+	Status           RangeStatus  `json:"status"`
+}
+
+type PriceUsage struct {
+	Job          *Job   `json:"job"`
+	JobTitle     string `json:"jobTitle"`
+	WorkItemCode string `json:"workItemCode"`
+}
+
+type Product struct {
+	ID           string          `json:"id"`
+	Shop         *Shop           `json:"shop"`
+	Sku          *string         `json:"sku,omitempty"`
+	Name         string          `json:"name"`
+	Description  *string         `json:"description,omitempty"`
+	Category     ProductCategory `json:"category"`
+	Unit         Unit            `json:"unit"`
+	Price        int64           `json:"price"`
+	Grade        *ProductGrade   `json:"grade,omitempty"`
+	PiecesPerBox *int            `json:"piecesPerBox,omitempty"`
+	M2PerBox     *float64        `json:"m2PerBox,omitempty"`
+	PricePerM2   *int64          `json:"pricePerM2,omitempty"`
+	// Goes down when an order is packed.
+	Stock int `json:"stock"`
+	// `low` at 10 or fewer, `out` at 0.
+	StockStatus StockStatus `json:"stockStatus"`
+	// Out-of-stock products are hidden from buyers.
+	Visible bool    `json:"visible"`
+	Photos  []Media `json:"photos"`
+}
+
+type ProductConnection struct {
+	Edges      []ProductEdge `json:"edges"`
+	Nodes      []Product     `json:"nodes"`
+	PageInfo   *PageInfo     `json:"pageInfo"`
+	TotalCount int           `json:"totalCount"`
+	// Products per category across all pages.
+	Counts []CategoryCount `json:"counts"`
+}
+
+type ProductEdge struct {
+	Cursor string   `json:"cursor"`
+	Node   *Product `json:"node"`
+}
+
+type ProductInput struct {
+	Sku          *string          `json:"sku,omitempty"`
+	Name         *string          `json:"name,omitempty"`
+	Description  *string          `json:"description,omitempty"`
+	Category     *ProductCategory `json:"category,omitempty"`
+	Unit         *Unit            `json:"unit,omitempty"`
+	Price        *int64           `json:"price,omitempty"`
+	Grade        *ProductGrade    `json:"grade,omitempty"`
+	PiecesPerBox *int             `json:"piecesPerBox,omitempty"`
+	M2PerBox     *float64         `json:"m2PerBox,omitempty"`
+	Stock        *int             `json:"stock,omitempty"`
+	Visible      *bool            `json:"visible,omitempty"`
+	PhotoIds     []string         `json:"photoIds,omitempty"`
+}
+
+type ProductPayload struct {
+	Product *Product `json:"product"`
+}
+
+func (ProductPayload) IsProductResult() {}
+
+type ProgressCount struct {
+	ID    string         `json:"id"`
+	Date  scalar.Date    `json:"date"`
+	Items []ProgressItem `json:"items"`
+	// Sum of weight × percent.
+	WeightedPercent int         `json:"weightedPercent"`
+	Signatures      []Signature `json:"signatures"`
+}
+
+type ProgressItem struct {
+	WorkItemCode string `json:"workItemCode"`
+	Weight       *int   `json:"weight,omitempty"`
+	Percent      int    `json:"percent"`
+}
+
+type ProgressItemInput struct {
+	WorkItemCode string `json:"workItemCode"`
+	Percent      int    `json:"percent"`
+}
+
+type ProposeEndJobInput struct {
+	IdempotencyKey    string    `json:"idempotencyKey"`
+	JobID             string    `json:"jobId"`
+	Reason            EndReason `json:"reason"`
+	Note              *string   `json:"note,omitempty"`
+	PayOutForWorkDone *int64    `json:"payOutForWorkDone,omitempty"`
+}
+
+type ProposeEndJobPayload struct {
+	EndRequest *EndRequest `json:"endRequest"`
+}
+
+func (ProposeEndJobPayload) IsProposeEndJobResult() {}
+
+type ProposePartialReleaseInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	StageID        string `json:"stageId"`
+	ReleaseNow     int64  `json:"releaseNow"`
+	Condition      string `json:"condition"`
+}
+
+type ProposePartialReleasePayload struct {
+	PartialRelease *PartialRelease `json:"partialRelease"`
+}
+
+func (ProposePartialReleasePayload) IsProposePartialReleaseResult() {}
+
+type ProposeStockChangeInput struct {
+	OrderID string                   `json:"orderId"`
+	Lines   []StockProposalLineInput `json:"lines"`
+}
+
+// The job's money at the licensed payment partner (R5: Renora never holds money). Say \"safe at the
+// partner\", never \"held by bank\"; \"Funded\" and \"Released\", never \"Paid\" alone.
+type ProtectedPayment struct {
+	AsOf          time.Time                `json:"asOf"`
+	Partner       *ProtectedPaymentPartner `json:"partner"`
+	Rows          []MoneyRow               `json:"rows"`
+	Totals        *MoneyTotals             `json:"totals"`
+	ProtectionFee *FeeProgress             `json:"protectionFee,omitempty"`
+	RefundAccount *BankAccountMasked       `json:"refundAccount,omitempty"`
+	// What the partner does if Renora closes.
+	StandingInstruction *string `json:"standingInstruction,omitempty"`
+	StatementURL        *string `json:"statementUrl,omitempty"`
+}
+
+type ProtectedPaymentPartner struct {
+	// "licensed payment partner" until the partner contract allows its name.
+	DisplayName      string  `json:"displayName"`
+	LicensedBy       string  `json:"licensedBy"`
+	SubAccountMasked *string `json:"subAccountMasked,omitempty"`
+}
+
+type ProtectionFee struct {
+	Rate        int   `json:"rate"`
+	MinPerJob   int64 `json:"minPerJob"`
+	CapPerJob   int64 `json:"capPerJob"`
+	Total       int64 `json:"total"`
+	Paid        int64 `json:"paid"`
+	IncludesPpn bool  `json:"includesPpn"`
+}
+
+type ProtectionFeeRule struct {
+	Rate        int   `json:"rate"`
+	MinPerJob   int64 `json:"minPerJob"`
+	CapPerJob   int64 `json:"capPerJob"`
+	IncludesPpn bool  `json:"includesPpn"`
+}
+
+// Where a value came from, quoted word for word when it came from a chat, voice note or bid.
+type Provenance struct {
+	Kind  ProvenanceKind `json:"kind"`
+	Quote *string        `json:"quote,omitempty"`
+	By    *string        `json:"by,omitempty"`
+	At    *time.Time     `json:"at,omitempty"`
+	// Id of the source message, media or record.
+	Ref *string `json:"ref,omitempty"`
+	// Where in a voice note the quote starts.
+	OffsetSec *int `json:"offsetSec,omitempty"`
+}
+
+type ProvenanceInput struct {
+	Kind      ProvenanceKind `json:"kind"`
+	Ref       *string        `json:"ref,omitempty"`
+	Quote     *string        `json:"quote,omitempty"`
+	OffsetSec *int           `json:"offsetSec,omitempty"`
+}
+
+type PublishBriefInput struct {
+	BriefID  string    `json:"briefId"`
+	Matching *Matching `json:"matching,omitempty"`
+}
+
+type PublishShopInput struct {
+	ShopID string `json:"shopId"`
+}
+
+type QRSignIn struct {
+	ID string `json:"id"`
+	// What the web page shows as a QR code: `renora://auth/qr/{id}`. The phone app scans it and calls
+	// `approveQrSignIn(qrSignInId: id)`. Once approved, the poll of `qrSignIn` that returns `session` also sets
+	// the web session cookies, as `verifyCode` does.
+	Payload   *string   `json:"payload,omitempty"`
+	Status    QRStatus  `json:"status"`
+	ExpiresAt time.Time `json:"expiresAt"`
+	// Set once approved; the web page continues with this session.
+	Session *Session `json:"session,omitempty"`
+}
+
 type Query struct {
 }
 
-type ServerInfo struct {
-	Version string    `json:"version"`
-	Time    time.Time `json:"time"`
+type QuietHours struct {
+	From string `json:"from"`
+	To   string `json:"to"`
 }
 
-// A problem with mutation input that the user can fix. Mutations return these
-// in their payload; unexpected failures come back as top-level errors instead.
-type UserError struct {
-	Code    UserErrorCode `json:"code"`
-	Message string        `json:"message"`
-	// Path to the input field, e.g. ["input", "stages", "2", "amount"].
-	Field []string `json:"field,omitempty"`
+// A per-project or per-day limit is used up.
+type QuotaReached struct {
+	Code    ProblemCode `json:"code"`
+	Message string      `json:"message"`
 }
 
-type UserErrorCode string
+func (QuotaReached) IsRemindOwnerResult() {}
+
+func (QuotaReached) IsGenerateLookResult() {}
+
+func (QuotaReached) IsProblem() {}
+
+func (QuotaReached) IsRemindOwnerToFundResult() {}
+
+type QuoteCheck struct {
+	ID                 string       `json:"id"`
+	Terms              *TermsCheck  `json:"terms"`
+	ContractorName     *string      `json:"contractorName,omitempty"`
+	QuoteDate          *scalar.Date `json:"quoteDate,omitempty"`
+	Total              *int64       `json:"total,omitempty"`
+	PriceBookDate      *scalar.Date `json:"priceBookDate,omitempty"`
+	Lines              []QuoteLine  `json:"lines"`
+	SuggestedQuestions []string     `json:"suggestedQuestions"`
+	CreatedAt          time.Time    `json:"createdAt"`
+}
+
+type QuoteLine struct {
+	Code      *string    `json:"code,omitempty"`
+	Item      string     `json:"item"`
+	Quantity  *float64   `json:"quantity,omitempty"`
+	Unit      *Unit      `json:"unit,omitempty"`
+	UnitPrice *int64     `json:"unitPrice,omitempty"`
+	Amount    *int64     `json:"amount,omitempty"`
+	Scope     *LineScope `json:"scope,omitempty"`
+	// The quote's own words for the line.
+	Quote   *string       `json:"quote,omitempty"`
+	Range   *PriceRange   `json:"range,omitempty"`
+	Verdict PriceVerdict  `json:"verdict"`
+	Ai      *AiSuggestion `json:"ai,omitempty"`
+}
+
+type RaiseIssueInput struct {
+	JobID          string   `json:"jobId"`
+	Text           string   `json:"text"`
+	VoiceNoteID    *string  `json:"voiceNoteId,omitempty"`
+	MediaIds       []string `json:"mediaIds,omitempty"`
+	StageID        *string  `json:"stageId,omitempty"`
+	ClauseID       *string  `json:"clauseId,omitempty"`
+	HandoverItemID *string  `json:"handoverItemId,omitempty"`
+	// The flagged items; only their share is held.
+	WorkItemCodes []string `json:"workItemCodes,omitempty"`
+}
+
+type RaiseIssuePayload struct {
+	Issue *Issue `json:"issue"`
+}
+
+func (RaiseIssuePayload) IsRaiseIssueResult() {}
+
+type Reconciliation struct {
+	Date     scalar.Date `json:"date"`
+	Opening  int64       `json:"opening"`
+	In       int64       `json:"in"`
+	Released int64       `json:"released"`
+	Refunded int64       `json:"refunded"`
+	// In escrow at the day's close (now, for today): the sum of `holdAges`.
+	Ledger           int64 `json:"ledger"`
+	PartnerStatement int64 `json:"partnerStatement"`
+	// Signed: ledger minus the partner's statement.
+	Difference int64                `json:"difference"`
+	Status     ReconciliationStatus `json:"status"`
+	MatchedAt  *time.Time           `json:"matchedAt,omitempty"`
+	// Renora's merchant profile at the partner; one sub-account per job sits under it.
+	MerchantProfileMasked *string `json:"merchantProfileMasked,omitempty"`
+	// Everything in escrow at the day's close, oldest first; together they make `ledger`. Holds over 120 days
+	// raise an alert; the partner allows at least 150.
+	HoldAges []HoldAge `json:"holdAges"`
+}
+
+type RecordAdvanceInput struct {
+	IdempotencyKey string      `json:"idempotencyKey"`
+	CrewMemberID   string      `json:"crewMemberId"`
+	Amount         int64       `json:"amount"`
+	Date           scalar.Date `json:"date"`
+	Note           *string     `json:"note,omitempty"`
+}
+
+type RecordAdvancePayload struct {
+	Advance *Advance `json:"advance"`
+}
+
+func (RecordAdvancePayload) IsRecordAdvanceResult() {}
+
+type RecordCheck struct {
+	Kind      Badge             `json:"kind"`
+	Status    RecordCheckStatus `json:"status"`
+	CheckedOn *scalar.Date      `json:"checkedOn,omitempty"`
+}
+
+type RecordCrewAnswerInput struct {
+	ClientRef    string          `json:"clientRef"`
+	QuestionID   string          `json:"questionId"`
+	CrewMemberID string          `json:"crewMemberId"`
+	Answer       CrewAnswerValue `json:"answer"`
+	// The forwarded photo, uploaded with source `whatsapp_forward`.
+	MediaID               *string `json:"mediaId,omitempty"`
+	ForwardedFromWhatsapp *bool   `json:"forwardedFromWhatsapp,omitempty"`
+}
+
+type RecordCrewAnswerPayload struct {
+	Question *CrewQuestion `json:"question"`
+}
+
+func (RecordCrewAnswerPayload) IsRecordCrewAnswerResult() {}
+
+type RecordHandover struct {
+	Job           *Job            `json:"job,omitempty"`
+	Label         string          `json:"label"`
+	FinishedOn    *scalar.Date    `json:"finishedOn,omitempty"`
+	DueOn         *scalar.Date    `json:"dueOn,omitempty"`
+	ItemsAccepted *int            `json:"itemsAccepted,omitempty"`
+	ItemsTotal    *int            `json:"itemsTotal,omitempty"`
+	OnTime        *bool           `json:"onTime,omitempty"`
+	Status        RecordJobStatus `json:"status"`
+	// The owner's choice for this job.
+	OwnerChoice *OwnerRecordChoice `json:"ownerChoice,omitempty"`
+	// Before, then after.
+	Photos []Media `json:"photos"`
+}
+
+type RecordHandoverItemInput struct {
+	JobID    string         `json:"jobId"`
+	ItemID   string         `json:"itemId"`
+	Action   HandoverAction `json:"action"`
+	Note     *string        `json:"note,omitempty"`
+	FixBy    *scalar.Date   `json:"fixBy,omitempty"`
+	MediaIds []string       `json:"mediaIds,omitempty"`
+}
+
+type RecordHandoverItemPayload struct {
+	Handover *Handover     `json:"handover"`
+	Item     *HandoverItem `json:"item"`
+}
+
+func (RecordHandoverItemPayload) IsRecordHandoverItemResult() {}
+
+type RecordIssue struct {
+	RaisedOn        scalar.Date       `json:"raisedOn"`
+	Status          RecordIssueStatus `json:"status"`
+	FixedOn         *scalar.Date      `json:"fixedOn,omitempty"`
+	FixDays         *int              `json:"fixDays,omitempty"`
+	ContractorReply *string           `json:"contractorReply,omitempty"`
+}
+
+type RecordStats struct {
+	VerifiedHandovers       int      `json:"verifiedHandovers"`
+	OnTimeRate              *int     `json:"onTimeRate,omitempty"`
+	MedianApprovalDays      *float64 `json:"medianApprovalDays,omitempty"`
+	StagesApproved          *int     `json:"stagesApproved,omitempty"`
+	IssuesRaised            *int     `json:"issuesRaised,omitempty"`
+	IssuesFixedWithin14Days *int     `json:"issuesFixedWithin14Days,omitempty"`
+	ReplyHours              *float64 `json:"replyHours,omitempty"`
+}
+
+type RecordWagePaymentInput struct {
+	IdempotencyKey string      `json:"idempotencyKey"`
+	WeekStart      scalar.Date `json:"weekStart"`
+	CrewMemberID   string      `json:"crewMemberId"`
+	Amount         int64       `json:"amount"`
+	PaidAt         time.Time   `json:"paidAt"`
+}
+
+type RecordWagePaymentPayload struct {
+	Week *WageWeek `json:"week"`
+}
+
+func (RecordWagePaymentPayload) IsRecordWagePaymentResult() {}
+
+// Rp 50.000 phone credit or data once the invited mandor's first owner signs. Never cash.
+type Referral struct {
+	URL        string            `json:"url"`
+	Reward     int64             `json:"reward"`
+	RewardKind string            `json:"rewardKind"`
+	Invitees   []ReferralInvitee `json:"invitees"`
+}
+
+type ReferralInvitee struct {
+	Name       string         `json:"name"`
+	Status     ReferralStatus `json:"status"`
+	RewardedAt *time.Time     `json:"rewardedAt,omitempty"`
+}
+
+type RegisterDeviceKeyInput struct {
+	Platform DevicePlatform `json:"platform"`
+	// The raw 32-byte Ed25519 public key from the secure enclave or keystore, base64url without padding.
+	PublicKey string  `json:"publicKey"`
+	Label     *string `json:"label,omitempty"`
+}
+
+type RegisterDeviceKeyPayload struct {
+	DeviceKey *DeviceKey `json:"deviceKey"`
+}
+
+func (RegisterDeviceKeyPayload) IsRegisterDeviceKeyResult() {}
+
+// One phone's push token for the signed-in session. Re-register after every sign-in and whenever the token
+// changes; `signOut` drops the devices its session registered. Pushes carry a `deepLink` to open on tap.
+type RegisterPushDeviceInput struct {
+	Platform  DevicePlatform `json:"platform"`
+	PushToken string         `json:"pushToken"`
+	// Defaults to `apns` on iOS and `fcm` on Android.
+	Provider *PushProvider `json:"provider,omitempty"`
+}
+
+type RegisterPushDevicePayload struct {
+	Registered bool `json:"registered"`
+}
+
+func (RegisterPushDevicePayload) IsRegisterPushDeviceResult() {}
+
+type RelatedItem struct {
+	Code     string       `json:"code"`
+	Relation ItemRelation `json:"relation"`
+}
+
+type RelatedItemInput struct {
+	Code     string       `json:"code"`
+	Relation ItemRelation `json:"relation"`
+}
+
+type RemindOwnerInput struct {
+	InviteID string `json:"inviteId"`
+}
+
+type RemindOwnerPayload struct {
+	Invite *OwnerInvite `json:"invite"`
+}
+
+func (RemindOwnerPayload) IsRemindOwnerResult() {}
+
+type RemindOwnerToFundInput struct {
+	JobID string `json:"jobId"`
+}
+
+type RemindOwnerToFundPayload struct {
+	SentAt time.Time `json:"sentAt"`
+}
+
+func (RemindOwnerToFundPayload) IsRemindOwnerToFundResult() {}
+
+// Contractor nudges: evening report, Saturday wages, stage ready to submit.
+type Reminder struct {
+	Kind    ReminderKind `json:"kind"`
+	Enabled bool         `json:"enabled"`
+	// In words, e.g. "Fridays 17:00".
+	Schedule *string `json:"schedule,omitempty"`
+	// HH:MM, Asia/Jakarta.
+	Time *string `json:"time,omitempty"`
+	// No reminder between these times.
+	QuietHours *QuietHours `json:"quietHours,omitempty"`
+}
+
+type ReminderInput struct {
+	Kind     ReminderKind           `json:"kind"`
+	Enabled  bool                   `json:"enabled"`
+	Schedule *ReminderScheduleInput `json:"schedule,omitempty"`
+}
+
+type ReminderScheduleInput struct {
+	// HH:MM, Asia/Jakarta.
+	Time string `json:"time"`
+	// HH:MM; no reminder between `quietFrom` and `quietTo`.
+	QuietFrom *string `json:"quietFrom,omitempty"`
+	QuietTo   *string `json:"quietTo,omitempty"`
+}
+
+type RemoveCartItemInput struct {
+	JobID  string `json:"jobId"`
+	ItemID string `json:"itemId"`
+}
+
+type RemoveDriverInput struct {
+	DriverID string `json:"driverId"`
+}
+
+type RemoveShopRecordPayload struct {
+	DeletedID string `json:"deletedId"`
+}
+
+func (RemoveShopRecordPayload) IsRemoveShopRecordResult() {}
+
+type RemoveShopStaffInput struct {
+	StaffID string `json:"staffId"`
+}
+
+type RemoveTeamMemberInput struct {
+	TeamMemberID string `json:"teamMemberId"`
+}
+
+type RemoveTeamMemberPayload struct {
+	DeletedID string `json:"deletedId"`
+}
+
+func (RemoveTeamMemberPayload) IsRemoveTeamMemberResult() {}
+
+type RenewCrewLinkInput struct {
+	JobID        string `json:"jobId"`
+	CrewMemberID string `json:"crewMemberId"`
+}
+
+type RenewCrewLinkPayload struct {
+	CrewMember *CrewMember `json:"crewMember"`
+	LinkURL    string      `json:"linkUrl"`
+}
+
+func (RenewCrewLinkPayload) IsRenewCrewLinkResult() {}
+
+type ReplacedBy struct {
+	CheckCode *string    `json:"checkCode,omitempty"`
+	LockedAt  *time.Time `json:"lockedAt,omitempty"`
+	Reason    *string    `json:"reason,omitempty"`
+}
+
+type ReplyToIssueInput struct {
+	IssueID     string         `json:"issueId"`
+	Kind        IssueReplyKind `json:"kind"`
+	FixBy       *scalar.Date   `json:"fixBy,omitempty"`
+	Text        *string        `json:"text,omitempty"`
+	VoiceNoteID *string        `json:"voiceNoteId,omitempty"`
+}
+
+type ReplyToIssuePayload struct {
+	Issue *Issue `json:"issue"`
+}
+
+func (ReplyToIssuePayload) IsReplyToIssueResult() {}
+
+type ReplyToSupportTicketInput struct {
+	TicketID       string  `json:"ticketId"`
+	Text           string  `json:"text"`
+	CannedAnswerID *string `json:"cannedAnswerId,omitempty"`
+}
+
+type Report struct {
+	ID  string `json:"id"`
+	Job *Job   `json:"job"`
+	// When the owner sees it: her evening summary after it was sent, or at once when she has none.
+	OwnerSeesAt   *time.Time    `json:"ownerSeesAt,omitempty"`
+	ClientRef     *string       `json:"clientRef,omitempty"`
+	Author        *Person       `json:"author"`
+	Kind          ReportKind    `json:"kind"`
+	CapturedAt    time.Time     `json:"capturedAt"`
+	CreatedAt     time.Time     `json:"createdAt"`
+	OnSite        *bool         `json:"onSite,omitempty"`
+	Issue         *Issue        `json:"issue,omitempty"`
+	CrewCount     *int          `json:"crewCount,omitempty"`
+	Media         []Media       `json:"media"`
+	Text          *UserText     `json:"text,omitempty"`
+	NoWorkReason  *NoWorkReason `json:"noWorkReason,omitempty"`
+	StageTag      *StageTag     `json:"stageTag,omitempty"`
+	WorkItemCodes []string      `json:"workItemCodes"`
+	SeenByOwnerAt *time.Time    `json:"seenByOwnerAt,omitempty"`
+	OwnerAck      *ReportAck    `json:"ownerAck,omitempty"`
+}
+
+type ReportConnection struct {
+	Edges      []ReportEdge `json:"edges"`
+	Nodes      []Report     `json:"nodes"`
+	PageInfo   *PageInfo    `json:"pageInfo"`
+	TotalCount int          `json:"totalCount"`
+}
+
+type ReportDeliveryProblemInput struct {
+	DeliveryID string                 `json:"deliveryId"`
+	Lines      []DeliveryProblemInput `json:"lines"`
+}
+
+type ReportEdge struct {
+	Cursor string  `json:"cursor"`
+	Node   *Report `json:"node"`
+}
+
+type ReportMismatchedPaperInput struct {
+	CheckCode    string   `json:"checkCode"`
+	Text         string   `json:"text"`
+	MediaIds     []string `json:"mediaIds,omitempty"`
+	ContactPhone *string  `json:"contactPhone,omitempty"`
+}
+
+type ReportMismatchedPaperPayload struct {
+	Received bool `json:"received"`
+}
+
+func (ReportMismatchedPaperPayload) IsReportMismatchedPaperResult() {}
+
+type ReportRunningLateInput struct {
+	DeliveryID string           `json:"deliveryId"`
+	NewEta     *TimeWindowInput `json:"newEta"`
+}
+
+type RequestCodeInput struct {
+	// E.164 Indonesian number. Clients accept 08…, 8…, +62… and 62… with spaces or dashes and normalise.
+	Phone   string       `json:"phone"`
+	Channel *CodeChannel `json:"channel,omitempty"`
+	Purpose *CodePurpose `json:"purpose,omitempty"`
+	// Required for a `sign` code: the `createSigningChallenge` it answers, so it signs only that challenge's
+	// purpose and subject, for the same user, once. A `sign` code without it never signs (`invalid_input`,
+	// `signature.code`, `challenge_required`). Problems: `challenge_expired` (`challengeId`, not this user's or
+	// unknown). Ignored for `sign_in`.
+	ChallengeID *string `json:"challengeId,omitempty"`
+	// WhatsApp one-tap autofill handshake (Android).
+	AndroidAppHash *string `json:"androidAppHash,omitempty"`
+}
+
+type RequestCodePayload struct {
+	Challenge *CodeChallenge `json:"challenge"`
+}
+
+func (RequestCodePayload) IsRequestCodeResult() {}
+
+type RequestDataExportPayload struct {
+	Export *Export `json:"export"`
+}
+
+func (RequestDataExportPayload) IsRequestDataExportResult() {}
+
+type RequestMediationInput struct {
+	IssueID string  `json:"issueId"`
+	Note    *string `json:"note,omitempty"`
+}
+
+type RequestMediationPayload struct {
+	Issue *Issue `json:"issue"`
+}
+
+func (RequestMediationPayload) IsRequestMediationResult() {}
+
+type RequestNewLinkPayload struct {
+	Requested bool `json:"requested"`
+}
+
+func (RequestNewLinkPayload) IsRequestNewLinkResult() {}
+
+type RequestReverificationInput struct {
+	UserID string           `json:"userId"`
+	Kind   VerificationKind `json:"kind"`
+	Note   *string          `json:"note,omitempty"`
+}
+
+type RequestSiteVisitInput struct {
+	InviteID string            `json:"inviteId"`
+	Slots    []TimeWindowInput `json:"slots"`
+}
+
+type RerouteOrderInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	OrderID        string `json:"orderId"`
+	ShopID         string `json:"shopId"`
+}
+
+type ResolveIssueInput struct {
+	IssueID string              `json:"issueId"`
+	Kind    IssueResolutionKind `json:"kind"`
+	Note    *string             `json:"note,omitempty"`
+}
+
+type ResolveIssuePayload struct {
+	Issue *Issue `json:"issue"`
+}
+
+func (ResolveIssuePayload) IsResolveIssueResult() {}
+
+type RespondToBidInviteInput struct {
+	InviteID      string            `json:"inviteId"`
+	Answer        InviteAnswer      `json:"answer"`
+	DeclineReason *DeclineReasonBid `json:"declineReason,omitempty"`
+}
+
+type Retention struct {
+	Share  int   `json:"share"`
+	Amount int64 `json:"amount"`
+	Days   int   `json:"days"`
+}
+
+type RetentionInput struct {
+	Share  int   `json:"share"`
+	Amount int64 `json:"amount"`
+	Days   int   `json:"days"`
+}
+
+type RetryPayoutInstructionInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	InstructionID  string `json:"instructionId"`
+}
+
+type ReviewClauseInput struct {
+	VersionID string        `json:"versionId"`
+	ClauseID  string        `json:"clauseId"`
+	Verdict   ClauseVerdict `json:"verdict"`
+	// Required with `ask_to_change`.
+	Text *string `json:"text,omitempty"`
+}
+
+type ReviewClausePayload struct {
+	Clause *Clause `json:"clause"`
+}
+
+func (ReviewClausePayload) IsReviewClauseResult() {}
+
+type RevokeSessionInput struct {
+	SessionID string `json:"sessionId"`
+}
+
+type RevokeSessionPayload struct {
+	Sessions []SignedInSession `json:"sessions"`
+}
+
+func (RevokeSessionPayload) IsRevokeSessionResult() {}
+
+type RoomCount struct {
+	Category RoomType `json:"category"`
+	Count    int      `json:"count"`
+}
+
+// A range from the dated price book (R9): rounded to Rp 100.000, drawn with no centre line, its assumptions
+// and sources shown; contingency is its own line. Owner only: contractors never see our estimate. Priced on
+// every read, so it follows the brief: work-list lines against the price book for her room and region, per-m²
+// lines sized to her room. A new size or work list re-prices it.
+type RoughBudget struct {
+	AsOf  time.Time         `json:"asOf"`
+	Low   int64             `json:"low"`
+	High  int64             `json:"high"`
+	Lines []RoughBudgetLine `json:"lines"`
+	// Lines left out as not priced yet.
+	ExcludedLines *int              `json:"excludedLines,omitempty"`
+	Contingency   *RoughContingency `json:"contingency"`
+	LimitCheck    *LimitCheck       `json:"limitCheck"`
+	TypicalWeeks  *WeekRange        `json:"typicalWeeks,omitempty"`
+	SourcesNote   *string           `json:"sourcesNote,omitempty"`
+	Assumptions   []string          `json:"assumptions"`
+}
+
+type RoughBudgetLine struct {
+	WorkItemCode *string `json:"workItemCode,omitempty"`
+	// The work-list lines this budget line prices.
+	WorkItems    []BriefWorkItem `json:"workItems"`
+	Label        string          `json:"label"`
+	PriceBookRow *PriceBookRow   `json:"priceBookRow,omitempty"`
+	// The price-book row per unit.
+	UnitRange *MoneyRange `json:"unitRange,omitempty"`
+	Quantity  *float64    `json:"quantity,omitempty"`
+	Unit      *Unit       `json:"unit,omitempty"`
+	// A rough size from the brief, not a measurement.
+	QuantityApprox *bool         `json:"quantityApprox,omitempty"`
+	Range          *PriceRange   `json:"range"`
+	Sources        []SourceCount `json:"sources"`
+	// False for a line left out of the total (unticked or not priced yet).
+	InTotal bool `json:"inTotal"`
+}
+
+type RoughContingency struct {
+	Tier   ContingencyTier `json:"tier"`
+	Reason *string         `json:"reason,omitempty"`
+	Rate   int             `json:"rate"`
+	Low    int64           `json:"low"`
+	High   int64           `json:"high"`
+	// Every tier she can pick, priced on this budget (10%, 15%, 20%).
+	Options []ContingencyOption `json:"options"`
+}
+
+type RunningLate struct {
+	NewEta *TimeWindow `json:"newEta"`
+	SentAt time.Time   `json:"sentAt"`
+}
+
+type SaveBidInput struct {
+	// Optional for drafts saved before this field existed; a replay with the same key returns the first result.
+	IdempotencyKey *string   `json:"idempotencyKey,omitempty"`
+	InviteID       string    `json:"inviteId"`
+	Bid            *BidInput `json:"bid"`
+}
+
+type SaveContractorProfilePayload struct {
+	ContractorProfile *ContractorProfile `json:"contractorProfile"`
+}
+
+func (SaveContractorProfilePayload) IsSaveContractorProfileResult() {}
+
+type SaveWorkListInput struct {
+	BriefID string               `json:"briefId"`
+	Items   []BriefWorkItemInput `json:"items"`
+}
+
+type Seats struct {
+	Used  int `json:"used"`
+	Limit int `json:"limit"`
+}
+
+type SecurityKey struct {
+	Label   string      `json:"label"`
+	AddedOn scalar.Date `json:"addedOn"`
+}
+
+type SendCrewQuestionInput struct {
+	JobID          string           `json:"jobId"`
+	Kind           CrewQuestionKind `json:"kind"`
+	Text           *string          `json:"text,omitempty"`
+	WorkItemCode   *string          `json:"workItemCode,omitempty"`
+	ContextMediaID *string          `json:"contextMediaId,omitempty"`
+	CrewMemberIds  []string         `json:"crewMemberIds"`
+}
+
+type SendCrewQuestionPayload struct {
+	Question *CrewQuestion `json:"question"`
+}
+
+func (SendCrewQuestionPayload) IsSendCrewQuestionResult() {}
+
+type SendLinkMessageInput struct {
+	ClientRef string   `json:"clientRef"`
+	Text      string   `json:"text"`
+	MediaIds  []string `json:"mediaIds,omitempty"`
+}
+
+type SendLinkMessagePayload struct {
+	Message *Message `json:"message"`
+}
+
+func (SendLinkMessagePayload) IsSendLinkMessageResult() {}
+
+type SendMaterialsListInput struct {
+	JobID   string `json:"jobId"`
+	StageNo int    `json:"stageNo"`
+}
+
+type SendMaterialsListPayload struct {
+	Lines []MaterialLine `json:"lines"`
+}
+
+func (SendMaterialsListPayload) IsSendMaterialsListResult() {}
+
+type SendMessageInput struct {
+	ClientRef             string        `json:"clientRef"`
+	ThreadID              string        `json:"threadId"`
+	Text                  *string       `json:"text,omitempty"`
+	MediaIds              []string      `json:"mediaIds,omitempty"`
+	ForwardedFromWhatsapp *bool         `json:"forwardedFromWhatsapp,omitempty"`
+	AskAi                 *bool         `json:"askAi,omitempty"`
+	Card                  *CardRefInput `json:"card,omitempty"`
+}
+
+type SendMessagePayload struct {
+	Message *Message `json:"message"`
+}
+
+func (SendMessagePayload) IsSendMessageResult() {}
+
+type SendPauseNoticeInput struct {
+	JobID string `json:"jobId"`
+}
+
+type SendPauseNoticePayload struct {
+	Job *Job `json:"job"`
+}
+
+func (SendPauseNoticePayload) IsSendPauseNoticeResult() {}
+
+type SendSitePhotoReminderInput struct {
+	DeliveryID string `json:"deliveryId"`
+}
+
+type SenderRoleInput struct {
+	Name string     `json:"name"`
+	Role SenderRole `json:"role"`
+}
+
+type Session struct {
+	Viewer    *Me       `json:"viewer"`
+	ExpiresAt time.Time `json:"expiresAt"`
+	// Mobile only: the bearer token.
+	Token *string `json:"token,omitempty"`
+	// Web only: also set as the `renora_csrf` cookie; send it as `X-CSRF-Token` on every mutation.
+	CsrfToken *string `json:"csrfToken,omitempty"`
+	// Read-only session from an owner link; signing needs a phone code.
+	Guest bool `json:"guest"`
+}
+
+type SetRecordVisibilityInput struct {
+	JobID                string           `json:"jobId"`
+	Visibility           RecordVisibility `json:"visibility"`
+	ShareMoodBoardPhotos *bool            `json:"shareMoodBoardPhotos,omitempty"`
+}
+
+type SetRecordVisibilityPayload struct {
+	Job *Job `json:"job"`
+}
+
+func (SetRecordVisibilityPayload) IsSetRecordVisibilityResult() {}
+
+type Settlement struct {
+	StaysReleased  int64 `json:"staysReleased"`
+	PaysOut        int64 `json:"paysOut"`
+	ReturnsToOwner int64 `json:"returnsToOwner"`
+	NotFunded      int64 `json:"notFunded"`
+	// Fee refunded pro rata.
+	FeeRefund *int64 `json:"feeRefund,omitempty"`
+}
+
+type SetupChecklistItem struct {
+	Step   SetupStep  `json:"step"`
+	Status StepStatus `json:"status"`
+}
+
+type ShareBidAnswerInput struct {
+	QuestionID string `json:"questionId"`
+	AnswerID   string `json:"answerId"`
+}
+
+// A pre-written message with a link. Never contains amounts.
+type ShareCard struct {
+	URL      string  `json:"url"`
+	Message  string  `json:"message"`
+	ImageURL *string `json:"imageUrl,omitempty"`
+}
+
+// A building-supply shop. Buyers see the name, area, distance, on-time share and answer time; settings,
+// staff, payout account and fees are for the shop's own staff and ops.
+type Shop struct {
+	ID       string    `json:"id"`
+	Slug     *string   `json:"slug,omitempty"`
+	Name     string    `json:"name"`
+	Area     *string   `json:"area,omitempty"`
+	Address  *string   `json:"address,omitempty"`
+	Location *GeoPoint `json:"location,omitempty"`
+	// From the job being shopped for.
+	DistanceKm           *float64 `json:"distanceKm,omitempty"`
+	OnTimeRate           *int     `json:"onTimeRate,omitempty"`
+	TypicalAnswerMinutes *int     `json:"typicalAnswerMinutes,omitempty"`
+	OpenNow              *bool    `json:"openNow,omitempty"`
+	// When an order placed now must be answered (open hours only).
+	AnswersBy              *time.Time       `json:"answersBy,omitempty"`
+	Status                 *ShopStatus      `json:"status,omitempty"`
+	PausedReason           *ShopPauseReason `json:"pausedReason,omitempty"`
+	OwnerName              *string          `json:"ownerName,omitempty"`
+	Hours                  []OpeningHours   `json:"hours"`
+	ClosedOnPublicHolidays *bool            `json:"closedOnPublicHolidays,omitempty"`
+	ClosedDays             []ClosedDays     `json:"closedDays"`
+	// Hidden from new lists; open orders keep their deadlines.
+	PausedNewOrders     *bool          `json:"pausedNewOrders,omitempty"`
+	DeliveryRadiusKm    *float64       `json:"deliveryRadiusKm,omitempty"`
+	MinOrderForDelivery *int64         `json:"minOrderForDelivery,omitempty"`
+	DeliverySlots       []DeliverySlot `json:"deliverySlots"`
+	Vehicles            []Vehicle      `json:"vehicles,omitempty"`
+	// Staff answer orders on Renora's WhatsApp number (1 accept, 2 short line, 3 running late, 4 decline). No amounts on WhatsApp.
+	WhatsappMode  *bool           `json:"whatsappMode,omitempty"`
+	Nib           *string         `json:"nib,omitempty"`
+	PayoutAccount *BankAccount    `json:"payoutAccount,omitempty"`
+	Fee           *ShopFee        `json:"fee,omitempty"`
+	AnswerRate    *AnswerRate     `json:"answerRate,omitempty"`
+	SetupSteps    []ShopSetupItem `json:"setupSteps,omitempty"`
+	Staff         []ShopStaff     `json:"staff,omitempty"`
+	Drivers       []Driver        `json:"drivers,omitempty"`
+	// The shop's own catalogue, newest first, hidden products included for its staff. `categories` matches any of
+	// them (a group such as grout and adhesive); `q` matches the name in either language or the SKU.
+	Products              *ProductConnection `json:"products"`
+	LatestPriceListImport *PriceListImport   `json:"latestPriceListImport,omitempty"`
+	Payouts               *PayoutConnection  `json:"payouts,omitempty"`
+	// A month's totals (`YYYY-MM`); a month with no payouts reads zeros and no rows.
+	PayoutSummary *PayoutSummary `json:"payoutSummary,omitempty"`
+}
+
+// 2% of delivered goods, first 5 delivered orders free, rate locked to 31 Dec 2027.
+type ShopFee struct {
+	Commission      int         `json:"commission"`
+	FreeOrdersLeft  int         `json:"freeOrdersLeft"`
+	RateLockedUntil scalar.Date `json:"rateLockedUntil"`
+}
+
+type ShopFeeRule struct {
+	// Of delivered goods.
+	Commission int `json:"commission"`
+	// A new shop's first orders carry no commission.
+	FreeOrders      int         `json:"freeOrders"`
+	RateLockedUntil scalar.Date `json:"rateLockedUntil"`
+}
+
+type ShopMembership struct {
+	Shop      *Shop         `json:"shop"`
+	StaffRole ShopStaffRole `json:"staffRole"`
+}
+
+type ShopPayload struct {
+	Shop *Shop `json:"shop"`
+}
+
+func (ShopPayload) IsCreateShopResult() {}
+
+func (ShopPayload) IsUpdateShopResult() {}
+
+func (ShopPayload) IsPublishShopResult() {}
+
+type ShopSettingsInput struct {
+	Name                   *string             `json:"name,omitempty"`
+	OwnerName              *string             `json:"ownerName,omitempty"`
+	Address                *string             `json:"address,omitempty"`
+	Location               *GeoPointInput      `json:"location,omitempty"`
+	Hours                  []OpeningHoursInput `json:"hours,omitempty"`
+	ClosedOnPublicHolidays *bool               `json:"closedOnPublicHolidays,omitempty"`
+	// Replaces the shop's closed periods; `[]` clears them. Problems: `invalid_input` when `to` is before `from`.
+	ClosedDays          []ClosedDaysInput `json:"closedDays,omitempty"`
+	PausedNewOrders     *bool             `json:"pausedNewOrders,omitempty"`
+	DeliveryRadiusKm    *float64          `json:"deliveryRadiusKm,omitempty"`
+	MinOrderForDelivery *int64            `json:"minOrderForDelivery,omitempty"`
+	// Replaces the shop's vehicles.
+	Vehicles []VehicleInput `json:"vehicles,omitempty"`
+	// Replaces the delivery slots buyers pick from. Problems: `invalid_input` when a slot ends before it starts.
+	DeliverySlots []DeliverySlotInput `json:"deliverySlots,omitempty"`
+	WhatsappMode  *bool               `json:"whatsappMode,omitempty"`
+	Nib           *string             `json:"nib,omitempty"`
+}
+
+type ShopSetupItem struct {
+	Step   ShopSetupStep `json:"step"`
+	Status StepStatus    `json:"status"`
+}
+
+type ShopStaff struct {
+	ID          string           `json:"id"`
+	Name        string           `json:"name"`
+	PhoneMasked *string          `json:"phoneMasked,omitempty"`
+	Permissions []ShopPermission `json:"permissions"`
+	Channel     StepChannel      `json:"channel"`
+}
+
+type SignAgreementVersionInput struct {
+	VersionID string          `json:"versionId"`
+	Signature *SignatureInput `json:"signature"`
+}
+
+type SignAgreementVersionPayload struct {
+	Version *AgreementVersion `json:"version"`
+}
+
+func (SignAgreementVersionPayload) IsSignAgreementVersionResult() {}
+
+type SignChangeOrderInput struct {
+	ChangeOrderID string          `json:"changeOrderId"`
+	Signature     *SignatureInput `json:"signature"`
+}
+
+type SignChangeOrderPayload struct {
+	ChangeOrder *ChangeOrder `json:"changeOrder"`
+}
+
+func (SignChangeOrderPayload) IsSignChangeOrderResult() {}
+
+type SignEndJobInput struct {
+	IdempotencyKey string          `json:"idempotencyKey"`
+	EndRequestID   string          `json:"endRequestId"`
+	Signature      *SignatureInput `json:"signature"`
+}
+
+type SignEndJobPayload struct {
+	EndRequest *EndRequest `json:"endRequest"`
+}
+
+func (SignEndJobPayload) IsSignEndJobResult() {}
+
+type SignHandoverInput struct {
+	IdempotencyKey string          `json:"idempotencyKey"`
+	JobID          string          `json:"jobId"`
+	Signature      *SignatureInput `json:"signature"`
+}
+
+type SignHandoverPayload struct {
+	Handover *Handover `json:"handover"`
+}
+
+func (SignHandoverPayload) IsSignHandoverResult() {}
+
+type SignOutPayload struct {
+	SignedOut bool `json:"signedOut"`
+}
+
+func (SignOutPayload) IsSignOutResult() {}
+
+type SignPartialReleaseInput struct {
+	IdempotencyKey   string          `json:"idempotencyKey"`
+	PartialReleaseID string          `json:"partialReleaseId"`
+	Signature        *SignatureInput `json:"signature"`
+}
+
+type SignPartialReleasePayload struct {
+	PartialRelease *PartialRelease `json:"partialRelease"`
+}
+
+func (SignPartialReleasePayload) IsSignPartialReleaseResult() {}
+
+type Signature struct {
+	Party    PartyRole       `json:"party"`
+	Person   *Person         `json:"person"`
+	Name     string          `json:"name"`
+	SignedAt *time.Time      `json:"signedAt,omitempty"`
+	Method   SignatureMethod `json:"method"`
+	// True when the text changed after this signature (R2).
+	Stale bool `json:"stale"`
+}
+
+// How a person signs or steps up: the device key after a biometric unlock, or a fresh WhatsApp/SMS code
+// (`requestCode` with purpose `sign`) as the fallback on any phone. Exactly one. The device key is Ed25519: a raw
+// 32-byte public key, and a base64url signature over the `createSigningChallenge` nonce.
+type SignatureInput struct {
+	Device *DeviceAssertionInput `json:"device,omitempty"`
+	Code   *CodeAnswerInput      `json:"code,omitempty"`
+}
+
+type SignedInSession struct {
+	ID           string    `json:"id"`
+	Label        string    `json:"label"`
+	Place        *string   `json:"place,omitempty"`
+	LastActiveAt time.Time `json:"lastActiveAt"`
+	Current      bool      `json:"current"`
+}
+
+type SigningChallenge struct {
+	ID        string         `json:"id"`
+	Purpose   SigningPurpose `json:"purpose"`
+	SubjectID string         `json:"subjectId"`
+	// Sign this string's UTF-8 bytes with the Ed25519 device key.
+	Nonce     string    `json:"nonce"`
+	ExpiresAt time.Time `json:"expiresAt"`
+	// False when this phone has no device key: use the phone-code fallback.
+	DeviceKeyRegistered bool `json:"deviceKeyRegistered"`
+	// Where the fallback code goes.
+	Fallback CodeChannel `json:"fallback"`
+}
+
+// One line of the contractor's plan for a day on site. Crew answers on their links can tick it.
+type SiteTask struct {
+	ID   string      `json:"id"`
+	Job  *Job        `json:"job"`
+	Date scalar.Date `json:"date"`
+	// In the contractor's words.
+	Title        string          `json:"title"`
+	WorkItemCode *string         `json:"workItemCode,omitempty"`
+	Done         bool            `json:"done"`
+	DoneAt       *time.Time      `json:"doneAt,omitempty"`
+	DoneBy       *SiteTaskDoneBy `json:"doneBy,omitempty"`
+	ClientRef    *string         `json:"clientRef,omitempty"`
+}
+
+type SiteVisit struct {
+	ID            string          `json:"id"`
+	Contractor    *Person         `json:"contractor"`
+	Status        SiteVisitStatus `json:"status"`
+	Slots         []TimeWindow    `json:"slots"`
+	ConfirmedSlot *TimeWindow     `json:"confirmedSlot,omitempty"`
+	RequestedAt   time.Time       `json:"requestedAt"`
+	ConfirmedAt   *time.Time      `json:"confirmedAt,omitempty"`
+	AddressShared bool            `json:"addressShared"`
+}
+
+type SiteVisitPayload struct {
+	SiteVisit *SiteVisit `json:"siteVisit"`
+}
+
+func (SiteVisitPayload) IsRequestSiteVisitResult() {}
+
+func (SiteVisitPayload) IsUpdateSiteVisitResult() {}
+
+type SourceCount struct {
+	Type  PriceSourceType `json:"type"`
+	Count int             `json:"count"`
+}
+
+type StaffChallenge struct {
+	ChallengeID string        `json:"challengeId"`
+	Methods     []StaffFactor `json:"methods"`
+	// JSON-encoded PublicKeyCredentialRequestOptions.
+	WebauthnOptions *string `json:"webauthnOptions,omitempty"`
+	// Keys registered to this staff account, so the right one is used.
+	SecurityKeys []SecurityKey `json:"securityKeys"`
+}
+
+type StaffMember struct {
+	ID          string            `json:"id"`
+	Name        string            `json:"name"`
+	Email       *string           `json:"email,omitempty"`
+	StaffRole   StaffRole         `json:"staffRole"`
+	Permissions []StaffPermission `json:"permissions"`
+	Person      *Person           `json:"person"`
+}
+
+type StaffProfile struct {
+	StaffRole   StaffRole         `json:"staffRole"`
+	Permissions []StaffPermission `json:"permissions"`
+}
+
+type Stage struct {
+	ID  string `json:"id"`
+	Job *Job   `json:"job"`
+	// Retention follows the last work stage with kind `retention`.
+	No   int       `json:"no"`
+	Kind StageKind `json:"kind"`
+	Name string    `json:"name"`
+	// Short label for tight rows, in English.
+	ShortName *string `json:"shortName,omitempty"`
+	// The name in Bahasa Indonesia, as written in the agreement.
+	NameBahasa      *string      `json:"nameBahasa,omitempty"`
+	ShortNameBahasa *string      `json:"shortNameBahasa,omitempty"`
+	Share           int          `json:"share"`
+	Amount          int64        `json:"amount"`
+	IsDownPayment   bool         `json:"isDownPayment"`
+	Status          StageStatus  `json:"status"`
+	PlannedStart    *scalar.Date `json:"plannedStart,omitempty"`
+	DueDate         *scalar.Date `json:"dueDate,omitempty"`
+	// Planned window on the schedule; the span is `finishDate − startDate` days.
+	StartDate  *scalar.Date `json:"startDate,omitempty"`
+	FinishDate *scalar.Date `json:"finishDate,omitempty"`
+	Funding    *Funding     `json:"funding,omitempty"`
+	FundedAt   *time.Time   `json:"fundedAt,omitempty"`
+	// After this the contractor may send a pause notice.
+	FundByAt *time.Time `json:"fundByAt,omitempty"`
+	// Protection fee collected with this stage.
+	Fee         *int64     `json:"fee,omitempty"`
+	CheckInAt   *time.Time `json:"checkInAt,omitempty"`
+	SubmittedAt *time.Time `json:"submittedAt,omitempty"`
+	// 4 days after submission, or 7 when the owner asked for more time.
+	AutoReleaseAt *time.Time `json:"autoReleaseAt,omitempty"`
+	// The latest it can auto-release: `autoReleaseAt`, plus the one 3-day extension while it is unused.
+	LatestAutoReleaseAt *time.Time      `json:"latestAutoReleaseAt,omitempty"`
+	ExtensionUsed       bool            `json:"extensionUsed"`
+	Reminders           []StageReminder `json:"reminders"`
+	ReleasedAt          *time.Time      `json:"releasedAt,omitempty"`
+	ReleaseTrigger      *ReleaseTrigger `json:"releaseTrigger,omitempty"`
+	Released            int64           `json:"released"`
+	SafeAtPartner       int64           `json:"safeAtPartner"`
+	// Part held for flagged items while an issue is open.
+	Held int64 `json:"held"`
+	// Retention: 90 days after handover.
+	ReleaseDueAt *time.Time `json:"releaseDueAt,omitempty"`
+	// Retention: day-75 three-point leak check.
+	LeakCheckAt *time.Time  `json:"leakCheckAt,omitempty"`
+	Proof       *StageProof `json:"proof,omitempty"`
+	Checks      []ItemCheck `json:"checks"`
+	// Checks photos can't settle, done at handover.
+	MovedToHandover []string           `json:"movedToHandover"`
+	Payee           *BankAccountMasked `json:"payee,omitempty"`
+}
+
+func (Stage) IsNeedsYouSubject() {}
+
+type StagePlan struct {
+	No   int    `json:"no"`
+	Name string `json:"name"`
+	// Short label for tight rows, in English.
+	ShortName *string `json:"shortName,omitempty"`
+	// The name in Bahasa Indonesia, as written in the agreement.
+	NameBahasa      *string      `json:"nameBahasa,omitempty"`
+	ShortNameBahasa *string      `json:"shortNameBahasa,omitempty"`
+	Share           int          `json:"share"`
+	Amount          int64        `json:"amount"`
+	IsDownPayment   bool         `json:"isDownPayment"`
+	PlannedStart    *scalar.Date `json:"plannedStart,omitempty"`
+	DueDate         *scalar.Date `json:"dueDate,omitempty"`
+}
+
+type StagePlanInput struct {
+	No            int          `json:"no"`
+	Name          string       `json:"name"`
+	NameBahasa    *string      `json:"nameBahasa,omitempty"`
+	Share         int          `json:"share"`
+	Amount        int64        `json:"amount"`
+	IsDownPayment *bool        `json:"isDownPayment,omitempty"`
+	PlannedStart  *scalar.Date `json:"plannedStart,omitempty"`
+	DueDate       *scalar.Date `json:"dueDate,omitempty"`
+}
+
+type StageProof struct {
+	PhotoCount     int     `json:"photoCount"`
+	VoiceNoteCount int     `json:"voiceNoteCount"`
+	AllOnSite      bool    `json:"allOnSite"`
+	Media          []Media `json:"media"`
+	// Who signed this stage's proof.
+	SignedBy []PartyRole `json:"signedBy"`
+}
+
+type StageReminder struct {
+	Kind   StageReminderKind `json:"kind"`
+	At     time.Time         `json:"at"`
+	SentAt *time.Time        `json:"sentAt,omitempty"`
+}
+
+// The AI's stage tag on a report, confirmed by the contractor.
+type StageTag struct {
+	StageNo         int           `json:"stageNo"`
+	ProgressPercent *int          `json:"progressPercent,omitempty"`
+	Ai              *AiSuggestion `json:"ai"`
+}
+
+type StartDriverTripInput struct {
+	Location *GeoPointInput `json:"location,omitempty"`
+}
+
+type StartLinkSessionInput struct {
+	Client ClientKind `json:"client"`
+}
+
+type StartLinkSessionPayload struct {
+	Session *Session `json:"session"`
+}
+
+func (StartLinkSessionPayload) IsStartLinkSessionResult() {}
+
+type StartStaffSignInInput struct {
+	Email string `json:"email"`
+}
+
+type StartStaffSignInPayload struct {
+	Challenge *StaffChallenge `json:"challenge"`
+}
+
+func (StartStaffSignInPayload) IsStartStaffSignInResult() {}
+
+type Statement struct {
+	ID   string      `json:"id"`
+	Date scalar.Date `json:"date"`
+	// When the money moved.
+	At     *time.Time    `json:"at,omitempty"`
+	Kind   StatementKind `json:"kind"`
+	Label  string        `json:"label"`
+	Amount int64         `json:"amount"`
+	Fee    *int64        `json:"fee,omitempty"`
+	Ref    *string       `json:"ref,omitempty"`
+	PDFURL *string       `json:"pdfUrl,omitempty"`
+}
+
+type StatementConnection struct {
+	Edges      []StatementEdge `json:"edges"`
+	Nodes      []Statement     `json:"nodes"`
+	PageInfo   *PageInfo       `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+type StatementEdge struct {
+	Cursor string     `json:"cursor"`
+	Node   *Statement `json:"node"`
+}
+
+type StockApproval struct {
+	Party   PartyRole `json:"party"`
+	Approve bool      `json:"approve"`
+	At      time.Time `json:"at"`
+}
+
+type StockProposal struct {
+	ID              string              `json:"id"`
+	Status          StockProposalStatus `json:"status"`
+	DueAt           time.Time           `json:"dueAt"`
+	Lines           []StockProposalLine `json:"lines"`
+	ApprovalsNeeded []PartyRole         `json:"approvalsNeeded"`
+	Approvals       []StockApproval     `json:"approvals"`
+	// What happens with no answer.
+	DefaultOutcome *string `json:"defaultOutcome,omitempty"`
+}
+
+type StockProposalLine struct {
+	OrderLine      *OrderLine  `json:"orderLine"`
+	Needed         float64     `json:"needed"`
+	InStock        float64     `json:"inStock"`
+	Option         StockOption `json:"option"`
+	Substitute     *Product    `json:"substitute,omitempty"`
+	SecondTripSlot *TimeWindow `json:"secondTripSlot,omitempty"`
+	Refund         *int64      `json:"refund,omitempty"`
+}
+
+type StockProposalLineInput struct {
+	OrderLineID         string           `json:"orderLineId"`
+	Option              StockOption      `json:"option"`
+	SubstituteProductID *string          `json:"substituteProductId,omitempty"`
+	SecondTripSlot      *TimeWindowInput `json:"secondTripSlot,omitempty"`
+}
+
+type SubmitBidInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	BidID          string `json:"bidId"`
+}
+
+type SubmitStageInput struct {
+	StageID string `json:"stageId"`
+	// At least 1.
+	PhotoIds    []string `json:"photoIds"`
+	VoiceNoteID *string  `json:"voiceNoteId,omitempty"`
+	Note        *string  `json:"note,omitempty"`
+	// Checks that photos can't settle, moved to the handover list.
+	MovedToHandover []string `json:"movedToHandover,omitempty"`
+	// Photos still in the offline queue attach when they arrive.
+	ClientRef *string `json:"clientRef,omitempty"`
+}
+
+type SubmitStagePayload struct {
+	Stage *Stage `json:"stage"`
+}
+
+func (SubmitStagePayload) IsSubmitStageResult() {}
+
+type SubmitVerificationInput struct {
+	Kind VerificationKind `json:"kind"`
+	// NIB or SBU number. Never echoed back in full.
+	Number   *string  `json:"number,omitempty"`
+	MediaIds []string `json:"mediaIds,omitempty"`
+}
+
+type SubmitVerificationPayload struct {
+	Verification *Verification `json:"verification"`
+}
+
+func (SubmitVerificationPayload) IsSubmitVerificationResult() {}
+
+type Subscription struct {
+}
+
+type SuggestWorkListInput struct {
+	BriefID string `json:"briefId"`
+}
+
+type SuggestionAnswerInput struct {
+	ID     string           `json:"id"`
+	Answer SuggestionAnswer `json:"answer"`
+	// His corrected value, when he accepts it changed.
+	Value *string `json:"value,omitempty"`
+}
+
+type SupportTicket struct {
+	ID              string         `json:"id"`
+	Ref             string         `json:"ref"`
+	User            *Person        `json:"user"`
+	Job             *Job           `json:"job,omitempty"`
+	Subject         string         `json:"subject"`
+	Status          TicketStatus   `json:"status"`
+	Channel         *TicketChannel `json:"channel,omitempty"`
+	CreatedAt       time.Time      `json:"createdAt"`
+	FirstReplyDueAt *time.Time     `json:"firstReplyDueAt,omitempty"`
+	Assignee        *StaffMember   `json:"assignee,omitempty"`
+	Thread          *Thread        `json:"thread"`
+	// The support thread, oldest first.
+	Messages    []Message    `json:"messages"`
+	PastTickets *PastTickets `json:"pastTickets,omitempty"`
+}
+
+type SupportTicketConnection struct {
+	Edges      []SupportTicketEdge `json:"edges"`
+	Nodes      []SupportTicket     `json:"nodes"`
+	PageInfo   *PageInfo           `json:"pageInfo"`
+	TotalCount int                 `json:"totalCount"`
+	Counts     *TicketCounts       `json:"counts,omitempty"`
+}
+
+type SupportTicketEdge struct {
+	Cursor string         `json:"cursor"`
+	Node   *SupportTicket `json:"node"`
+}
+
+type SupportTicketPayload struct {
+	Ticket *SupportTicket `json:"ticket"`
+}
+
+func (SupportTicketPayload) IsSupportTicketResult() {}
+
+type TeamMember struct {
+	ID string `json:"id"`
+	// The signed-in user's own seat.
+	IsYou       bool             `json:"isYou"`
+	Name        string           `json:"name"`
+	PhoneMasked *string          `json:"phoneMasked,omitempty"`
+	Seat        TeamSeat         `json:"seat"`
+	Status      TeamMemberStatus `json:"status"`
+}
+
+// Code check of the 8 key terms.
+type TermsCheck struct {
+	Written int            `json:"written"`
+	Total   int            `json:"total"`
+	Terms   []KeyTermCheck `json:"terms"`
+}
+
+type Thread struct {
+	ID           string       `json:"id"`
+	Kind         ThreadKind   `json:"kind"`
+	Job          *Job         `json:"job,omitempty"`
+	Order        *Order       `json:"order,omitempty"`
+	Issue        *Issue       `json:"issue,omitempty"`
+	Title        string       `json:"title"`
+	Participants []Person     `json:"participants"`
+	LastMessage  *LastMessage `json:"lastMessage,omitempty"`
+	UnreadCount  int          `json:"unreadCount"`
+	UpdatedAt    time.Time    `json:"updatedAt"`
+	// Newest first. Only messages up to now; nothing from the future.
+	Messages *MessageConnection `json:"messages"`
+}
+
+type ThreadConnection struct {
+	Edges      []ThreadEdge `json:"edges"`
+	Nodes      []Thread     `json:"nodes"`
+	PageInfo   *PageInfo    `json:"pageInfo"`
+	TotalCount int          `json:"totalCount"`
+}
+
+type ThreadEdge struct {
+	Cursor string  `json:"cursor"`
+	Node   *Thread `json:"node"`
+}
+
+type TicketCounts struct {
+	ClosedToday int `json:"closedToday"`
+}
+
+type TimeWindow struct {
+	Start time.Time `json:"start"`
+	End   time.Time `json:"end"`
+}
+
+type TimeWindowInput struct {
+	Start time.Time `json:"start"`
+	End   time.Time `json:"end"`
+}
+
+type TripItem struct {
+	Name     string  `json:"name"`
+	Quantity float64 `json:"quantity"`
+	Unit     Unit    `json:"unit"`
+}
+
+type TripPlace struct {
+	Name    *string `json:"name,omitempty"`
+	Area    *string `json:"area,omitempty"`
+	Address *string `json:"address,omitempty"`
+	// Where to drive: the shop's point for the pick-up, the job's site point for the drop-off.
+	Location           *GeoPoint `json:"location,omitempty"`
+	GateNote           *string   `json:"gateNote,omitempty"`
+	DistanceKm         *float64  `json:"distanceKm,omitempty"`
+	ContactName        *string   `json:"contactName,omitempty"`
+	ContactPhoneMasked *string   `json:"contactPhoneMasked,omitempty"`
+	// Dialable, for a call only.
+	ContactPhone *string `json:"contactPhone,omitempty"`
+}
+
+type UpdateAgreementVersionInput struct {
+	VersionID string              `json:"versionId"`
+	Edit      *AgreementEditInput `json:"edit"`
+}
+
+type UpdateAgreementVersionPayload struct {
+	Version *AgreementVersion `json:"version"`
+}
+
+func (UpdateAgreementVersionPayload) IsUpdateAgreementVersionResult() {}
+
+type UpdateBriefInput struct {
+	BriefID    string      `json:"briefId"`
+	DraftToken *string     `json:"draftToken,omitempty"`
+	Brief      *BriefInput `json:"brief"`
+}
+
+type UpdateBudgetInput struct {
+	JobID string `json:"jobId"`
+	Limit *int64 `json:"limit,omitempty"`
+	// Within ±500 of the tier default.
+	ContingencyRate *int `json:"contingencyRate,omitempty"`
+}
+
+type UpdateBudgetPayload struct {
+	Budget *Budget `json:"budget"`
+}
+
+func (UpdateBudgetPayload) IsUpdateBudgetResult() {}
+
+type UpdateCartInput struct {
+	JobID        string           `json:"jobId"`
+	Slot         *TimeWindowInput `json:"slot,omitempty"`
+	ReceiverName *string          `json:"receiverName,omitempty"`
+}
+
+type UpdateCartItemInput struct {
+	JobID    string  `json:"jobId"`
+	ItemID   string  `json:"itemId"`
+	Quantity float64 `json:"quantity"`
+}
+
+type UpdateChangeOrderInput struct {
+	ChangeOrderID string  `json:"changeOrderId"`
+	Title         *string `json:"title,omitempty"`
+	Description   *string `json:"description,omitempty"`
+	// A voice note to attach. Without `lines`, its lines are drafted from what it says, as on create.
+	VoiceNoteID *string                `json:"voiceNoteId,omitempty"`
+	Lines       []ChangeOrderLineInput `json:"lines,omitempty"`
+	Reason      *ChangeReason          `json:"reason,omitempty"`
+	DaysDelta   *int                   `json:"daysDelta,omitempty"`
+}
+
+type UpdateChangeOrderPayload struct {
+	ChangeOrder *ChangeOrder `json:"changeOrder"`
+}
+
+func (UpdateChangeOrderPayload) IsUpdateChangeOrderResult() {}
+
+type UpdateConsentsInput struct {
+	AiProcessing     *bool `json:"aiProcessing,omitempty"`
+	AiTrainingPhotos *bool `json:"aiTrainingPhotos,omitempty"`
+	PriceBookSharing *bool `json:"priceBookSharing,omitempty"`
+}
+
+type UpdateConsentsPayload struct {
+	Consents *Consents `json:"consents"`
+}
+
+func (UpdateConsentsPayload) IsUpdateConsentsResult() {}
+
+type UpdateCrewMemberInput struct {
+	CrewMemberID string    `json:"crewMemberId"`
+	Name         *string   `json:"name,omitempty"`
+	Role         *CrewRole `json:"role,omitempty"`
+	DayRate      *int64    `json:"dayRate,omitempty"`
+	Phone        *string   `json:"phone,omitempty"`
+	Active       *bool     `json:"active,omitempty"`
+}
+
+type UpdateDriverInput struct {
+	DriverID string  `json:"driverId"`
+	Name     *string `json:"name,omitempty"`
+	Phone    *string `json:"phone,omitempty"`
+	Plate    *string `json:"plate,omitempty"`
+	Vehicle  *string `json:"vehicle,omitempty"`
+}
+
+type UpdateHandoverInput struct {
+	JobID        string              `json:"jobId"`
+	ScheduledFor *scalar.Date        `json:"scheduledFor,omitempty"`
+	AddItems     []HandoverItemInput `json:"addItems,omitempty"`
+}
+
+type UpdateHandoverPayload struct {
+	Handover *Handover `json:"handover"`
+}
+
+func (UpdateHandoverPayload) IsUpdateHandoverResult() {}
+
+type UpdateJobImportInput struct {
+	ImportID    string                  `json:"importId"`
+	Senders     []SenderRoleInput       `json:"senders,omitempty"`
+	Suggestions []SuggestionAnswerInput `json:"suggestions,omitempty"`
+	WorkItems   []WorkItemInput         `json:"workItems,omitempty"`
+}
+
+type UpdateJobImportPayload struct {
+	JobImport *JobImport `json:"jobImport"`
+}
+
+func (UpdateJobImportPayload) IsUpdateJobImportResult() {}
+
+type UpdateJobInput struct {
+	JobID     string         `json:"jobId"`
+	Title     *string        `json:"title,omitempty"`
+	SitePoint *GeoPointInput `json:"sitePoint,omitempty"`
+	Address   *string        `json:"address,omitempty"`
+}
+
+type UpdateJobPayload struct {
+	Job *Job `json:"job"`
+}
+
+func (UpdateJobPayload) IsUpdateJobResult() {}
+
+type UpdateMaterialLineInput struct {
+	LineID       string     `json:"lineId"`
+	Buyer        *LineBuyer `json:"buyer,omitempty"`
+	ChosenShopID *string    `json:"chosenShopId,omitempty"`
+	BackupShopID *string    `json:"backupShopId,omitempty"`
+	Quantity     *float64   `json:"quantity,omitempty"`
+}
+
+type UpdateMaterialLinePayload struct {
+	Line *MaterialLine `json:"line"`
+}
+
+func (UpdateMaterialLinePayload) IsUpdateMaterialLineResult() {}
+
+type UpdateMeInput struct {
+	Name            *string   `json:"name,omitempty"`
+	DisplayName     *string   `json:"displayName,omitempty"`
+	Email           *string   `json:"email,omitempty"`
+	Language        *Language `json:"language,omitempty"`
+	PreferredVaBank *Bank     `json:"preferredVaBank,omitempty"`
+	VoiceHelp       *bool     `json:"voiceHelp,omitempty"`
+}
+
+type UpdateMePayload struct {
+	Me *Me `json:"me"`
+}
+
+func (UpdateMePayload) IsUpdateMeResult() {}
+
+type UpdateNotificationSettingsPayload struct {
+	NotificationSettings *NotificationSettings `json:"notificationSettings"`
+}
+
+func (UpdateNotificationSettingsPayload) IsUpdateNotificationSettingsResult() {}
+
+type UpdatePriceListImportInput struct {
+	ImportID string               `json:"importId"`
+	Lines    []PriceListLineInput `json:"lines"`
+}
+
+type UpdateProductInput struct {
+	ProductID string        `json:"productId"`
+	Product   *ProductInput `json:"product"`
+}
+
+type UpdateReportInput struct {
+	ReportID        string   `json:"reportId"`
+	StageNo         *int     `json:"stageNo,omitempty"`
+	ProgressPercent *int     `json:"progressPercent,omitempty"`
+	ConfirmAiTag    *bool    `json:"confirmAiTag,omitempty"`
+	WorkItemCodes   []string `json:"workItemCodes,omitempty"`
+}
+
+type UpdateReportPayload struct {
+	Report *Report `json:"report"`
+}
+
+func (UpdateReportPayload) IsUpdateReportResult() {}
+
+type UpdateShopInput struct {
+	ShopID   string             `json:"shopId"`
+	Settings *ShopSettingsInput `json:"settings"`
+}
+
+type UpdateShopStaffInput struct {
+	StaffID     string           `json:"staffId"`
+	Name        *string          `json:"name,omitempty"`
+	Permissions []ShopPermission `json:"permissions,omitempty"`
+	Channel     *StepChannel     `json:"channel,omitempty"`
+}
+
+type UpdateSiteTaskInput struct {
+	TaskID    string `json:"taskId"`
+	Done      bool   `json:"done"`
+	ClientRef string `json:"clientRef"`
+}
+
+type UpdateSiteTaskPayload struct {
+	SiteTask *SiteTask `json:"siteTask"`
+}
+
+func (UpdateSiteTaskPayload) IsUpdateSiteTaskResult() {}
+
+type UpdateSiteVisitInput struct {
+	VisitID  string           `json:"visitId"`
+	Action   SiteVisitAction  `json:"action"`
+	Slot     *TimeWindowInput `json:"slot,omitempty"`
+	Location *GeoPointInput   `json:"location,omitempty"`
+}
+
+type UpdateSupportTicketInput struct {
+	TicketID   string        `json:"ticketId"`
+	Status     *TicketStatus `json:"status,omitempty"`
+	AssigneeID *string       `json:"assigneeId,omitempty"`
+}
+
+type UpdateTeamMemberInput struct {
+	TeamMemberID string    `json:"teamMemberId"`
+	Name         *string   `json:"name,omitempty"`
+	Seat         *TeamSeat `json:"seat,omitempty"`
+	// Required to give someone the owner seat (it signs agreements and changes the bank).
+	Signature *SignatureInput `json:"signature,omitempty"`
+}
+
+type UpdateTeamMemberPayload struct {
+	TeamMember *TeamMember `json:"teamMember"`
+}
+
+func (UpdateTeamMemberPayload) IsUpdateTeamMemberResult() {}
+
+type UpdateWarrantyClaimInput struct {
+	ClaimID  string              `json:"claimId"`
+	Action   WarrantyClaimAction `json:"action"`
+	VisitAt  *time.Time          `json:"visitAt,omitempty"`
+	Note     *string             `json:"note,omitempty"`
+	MediaIds []string            `json:"mediaIds,omitempty"`
+}
+
+type UpdateWarrantyClaimPayload struct {
+	Claim *WarrantyClaim `json:"claim"`
+}
+
+func (UpdateWarrantyClaimPayload) IsUpdateWarrantyClaimResult() {}
+
+type Upload struct {
+	// PUT the bytes here before `expiresAt`.
+	URL string `json:"url"`
+	// Headers to send with the PUT, as `name: value` lines.
+	Headers   []string  `json:"headers"`
+	ExpiresAt time.Time `json:"expiresAt"`
+	// The media record to reference by id; it is readable once the PUT has arrived.
+	Media *Media `json:"media"`
+}
+
+type UserCounts struct {
+	All        int `json:"all"`
+	Owner      int `json:"owner"`
+	Contractor int `json:"contractor"`
+	Supplier   int `json:"supplier"`
+	// People on personal links only (crew, drivers).
+	Link int `json:"link"`
+}
+
+type UserRecord struct {
+	Handovers  int  `json:"handovers"`
+	OnTimeRate *int `json:"onTimeRate,omitempty"`
+}
+
+// User text or a voice transcript, with a machine translation into the reader's language when it differs.
+type UserText struct {
+	Original           string    `json:"original"`
+	Language           Language  `json:"language"`
+	Translated         *string   `json:"translated,omitempty"`
+	TranslatedLanguage *Language `json:"translatedLanguage,omitempty"`
+}
+
+type Vehicle struct {
+	Kind  string `json:"kind"`
+	Plate string `json:"plate"`
+}
+
+type VehicleInput struct {
+	Kind  string `json:"kind"`
+	Plate string `json:"plate"`
+}
+
+type Verification struct {
+	Kind         VerificationKind   `json:"kind"`
+	Status       VerificationStatus `json:"status"`
+	Detail       *string            `json:"detail,omitempty"`
+	CheckedAt    *time.Time         `json:"checkedAt,omitempty"`
+	RejectReason *string            `json:"rejectReason,omitempty"`
+}
+
+type VerificationCase struct {
+	ID           string                 `json:"id"`
+	SubjectName  string                 `json:"subjectName"`
+	Role         Role                   `json:"role"`
+	Kinds        []VerificationKind     `json:"kinds"`
+	Status       VerificationCaseStatus `json:"status"`
+	SubmittedBy  *Person                `json:"submittedBy,omitempty"`
+	SubmittedAt  *time.Time             `json:"submittedAt,omitempty"`
+	Address      *string                `json:"address,omitempty"`
+	DueAt        *time.Time             `json:"dueAt,omitempty"`
+	Documents    []VerificationDocument `json:"documents"`
+	Fields       []VerificationField    `json:"fields"`
+	AiSuggestion *AiSuggestion          `json:"aiSuggestion,omitempty"`
+	// What the code checks found.
+	CodeCheck *string               `json:"codeCheck,omitempty"`
+	Media     []Media               `json:"media"`
+	Decision  *VerificationDecision `json:"decision,omitempty"`
+}
+
+type VerificationCaseConnection struct {
+	Edges      []VerificationCaseEdge `json:"edges"`
+	Nodes      []VerificationCase     `json:"nodes"`
+	PageInfo   *PageInfo              `json:"pageInfo"`
+	TotalCount int                    `json:"totalCount"`
+}
+
+type VerificationCaseEdge struct {
+	Cursor string            `json:"cursor"`
+	Node   *VerificationCase `json:"node"`
+}
+
+type VerificationCasePayload struct {
+	VerificationCase *VerificationCase `json:"verificationCase"`
+}
+
+func (VerificationCasePayload) IsDecideVerificationResult() {}
+
+// Who decided, when, and why.
+type VerificationDecision struct {
+	Approve   bool                      `json:"approve"`
+	Reason    *VerificationRejectReason `json:"reason,omitempty"`
+	Note      *string                   `json:"note,omitempty"`
+	DecidedBy *Person                   `json:"decidedBy"`
+	DecidedAt time.Time                 `json:"decidedAt"`
+}
+
+type VerificationDocument struct {
+	Kind VerificationKind `json:"kind"`
+	// Whose document it is, when not the business itself.
+	HolderName *string `json:"holderName,omitempty"`
+	Media      *Media  `json:"media,omitempty"`
+}
+
+type VerificationField struct {
+	Field          string     `json:"field"`
+	OnDocument     string     `json:"onDocument"`
+	OnDocumentNote *string    `json:"onDocumentNote,omitempty"`
+	Entered        string     `json:"entered"`
+	EnteredNote    *string    `json:"enteredNote,omitempty"`
+	Check          FieldCheck `json:"check"`
+}
+
+type VerifyCodeInput struct {
+	RequestID string     `json:"requestId"`
+	Code      string     `json:"code"`
+	Client    ClientKind `json:"client"`
+	// Role chosen on sign-up (`owner`, `contractor` or `supplier`); ignored for existing users. A number Renora
+	// doesn't know gets `InvalidInput` (`role`, `required`) without it: ask who they are, then send the same code
+	// again with the role. The new account's language is the request's.
+	Role *Role `json:"role,omitempty"`
+}
+
+type VerifyCodePayload struct {
+	Session *Session `json:"session"`
+}
+
+func (VerifyCodePayload) IsVerifyCodeResult() {}
+
+type VerifyStaffSignInInput struct {
+	ChallengeID string      `json:"challengeId"`
+	Method      StaffFactor `json:"method"`
+	// JSON-encoded WebAuthn assertion.
+	Assertion *string `json:"assertion,omitempty"`
+	Code      *string `json:"code,omitempty"`
+}
+
+type VerifyStaffSignInPayload struct {
+	// Staff sessions end after 30 minutes idle.
+	Session *Session `json:"session"`
+}
+
+func (VerifyStaffSignInPayload) IsVerifyStaffSignInResult() {}
+
+type VirtualAccount struct {
+	Bank   Bank   `json:"bank"`
+	Number string `json:"number"`
+	// The exact name the owner sees in m-banking, in the payment partner's name.
+	AccountName string    `json:"accountName"`
+	ExpiresAt   time.Time `json:"expiresAt"`
+}
+
+type WageRow struct {
+	CrewMember       *CrewMember       `json:"crewMember"`
+	Name             string            `json:"name"`
+	Role             CrewRole          `json:"role"`
+	DayRate          *int64            `json:"dayRate,omitempty"`
+	Days             []WorkDay         `json:"days"`
+	DaysWorked       float64           `json:"daysWorked"`
+	Wages            int64             `json:"wages"`
+	Advances         int64             `json:"advances"`
+	Net              int64             `json:"net"`
+	PaidAt           *time.Time        `json:"paidAt,omitempty"`
+	CrewConfirmation *CrewConfirmation `json:"crewConfirmation,omitempty"`
+}
+
+type WageTotals struct {
+	Wages    int64 `json:"wages"`
+	Advances int64 `json:"advances"`
+	Paid     int64 `json:"paid"`
+	// Wages minus advances: what the week pays out.
+	Net int64 `json:"net"`
+}
+
+type WageWeek struct {
+	WeekStart scalar.Date `json:"weekStart"`
+	WeekEnd   scalar.Date `json:"weekEnd"`
+	// Saturday.
+	PayDate scalar.Date `json:"payDate"`
+	Rows    []WageRow   `json:"rows"`
+	Totals  *WageTotals `json:"totals"`
+}
+
+func (WageWeek) IsNeedsYouSubject() {}
+
+type Warranty struct {
+	Job        *Job               `json:"job"`
+	Status     WarrantyStatus     `json:"status"`
+	Months     int                `json:"months"`
+	StartsOn   *scalar.Date       `json:"startsOn,omitempty"`
+	Until      scalar.Date        `json:"until"`
+	ReminderOn *scalar.Date       `json:"reminderOn,omitempty"`
+	Coverage   []WarrantyCoverage `json:"coverage"`
+	Exclusions []string           `json:"exclusions"`
+	Retention  *WarrantyRetention `json:"retention,omitempty"`
+	CardPDFURL *string            `json:"cardPdfUrl,omitempty"`
+}
+
+type WarrantyClaim struct {
+	ID          string        `json:"id"`
+	Job         *Job          `json:"job"`
+	Area        ClaimArea     `json:"area"`
+	StartedWhen *ClaimStarted `json:"startedWhen,omitempty"`
+	Description *UserText     `json:"description"`
+	Media       []Media       `json:"media"`
+	// AI suggestion of the work item it falls under.
+	SuggestedWorkItemCode *string             `json:"suggestedWorkItemCode,omitempty"`
+	SuggestedWorkItemAi   *AiSuggestion       `json:"suggestedWorkItemAi,omitempty"`
+	Status                WarrantyClaimStatus `json:"status"`
+	// 7 days after the claim.
+	VisitDueAt     *time.Time `json:"visitDueAt,omitempty"`
+	VisitAt        *time.Time `json:"visitAt,omitempty"`
+	HoldsRetention bool       `json:"holdsRetention"`
+	CreatedAt      time.Time  `json:"createdAt"`
+}
+
+type WarrantyCoverage struct {
+	Label         string   `json:"label"`
+	WorkItemCodes []string `json:"workItemCodes"`
+}
+
+type WarrantyRetention struct {
+	Amount              *int64     `json:"amount,omitempty"`
+	ReleaseDueAt        *time.Time `json:"releaseDueAt,omitempty"`
+	LeakCheckAt         *time.Time `json:"leakCheckAt,omitempty"`
+	ClaimHoldsRetention *bool      `json:"claimHoldsRetention,omitempty"`
+}
+
+type WeekRange struct {
+	Min int `json:"min"`
+	Max int `json:"max"`
+}
+
+type WithdrawBidInput struct {
+	IdempotencyKey string `json:"idempotencyKey"`
+	BidID          string `json:"bidId"`
+}
+
+type WorkDay struct {
+	Date   scalar.Date    `json:"date"`
+	Worked bool           `json:"worked"`
+	Source *WorkDaySource `json:"source,omitempty"`
+}
+
+// A work item: volume × unit price on every line, tagged labour only or labour plus materials.
+type WorkItem struct {
+	ID    string `json:"id"`
+	Code  string `json:"code"`
+	Title string `json:"title"`
+	// The title in Bahasa Indonesia, as the contractor said or wrote it.
+	TitleBahasa *string   `json:"titleBahasa,omitempty"`
+	Spec        *string   `json:"spec,omitempty"`
+	Quantity    float64   `json:"quantity"`
+	Unit        Unit      `json:"unit"`
+	Scope       LineScope `json:"scope"`
+	// Required when `unit` is `lot`.
+	LotContents    *string         `json:"lotContents,omitempty"`
+	MaterialsBuyer *MaterialsBuyer `json:"materialsBuyer,omitempty"`
+	StageNo        *int            `json:"stageNo,omitempty"`
+	Weight         *int            `json:"weight,omitempty"`
+	// Selling price shown to the owner (R6).
+	Amount *int64 `json:"amount,omitempty"`
+	// Changed in this version.
+	Changed *bool `json:"changed,omitempty"`
+	// Set while the line is an AI draft (a voice start): `suggested` until he accepts it in `updateJobImport`.
+	Ai *AiSuggestion `json:"ai,omitempty"`
+}
+
+type WorkItemInput struct {
+	Code           string          `json:"code"`
+	Title          string          `json:"title"`
+	TitleBahasa    *string         `json:"titleBahasa,omitempty"`
+	Spec           *string         `json:"spec,omitempty"`
+	Quantity       float64         `json:"quantity"`
+	Unit           Unit            `json:"unit"`
+	Scope          LineScope       `json:"scope"`
+	LotContents    *string         `json:"lotContents,omitempty"`
+	MaterialsBuyer *MaterialsBuyer `json:"materialsBuyer,omitempty"`
+	StageNo        *int            `json:"stageNo,omitempty"`
+	Amount         *int64          `json:"amount,omitempty"`
+}
+
+type WorkList struct {
+	Items       []BriefWorkItem `json:"items"`
+	ConfirmedAt *time.Time      `json:"confirmedAt,omitempty"`
+}
+
+type WorkListPayload struct {
+	WorkList *WorkList `json:"workList"`
+}
+
+func (WorkListPayload) IsSuggestWorkListResult() {}
+
+func (WorkListPayload) IsSaveWorkListResult() {}
+
+// Site hours on given days, `HH:MM` in Asia/Jakarta; visits and work happen inside them.
+type WorkingHours struct {
+	Start string    `json:"start"`
+	End   string    `json:"end"`
+	Days  []Weekday `json:"days"`
+}
+
+type WorkingHoursInput struct {
+	Start string    `json:"start"`
+	End   string    `json:"end"`
+	Days  []Weekday `json:"days"`
+}
+
+type AcceptScope string
 
 const (
-	UserErrorCodeInvalidInput UserErrorCode = "INVALID_INPUT"
-	UserErrorCodeConflict     UserErrorCode = "CONFLICT"
-	UserErrorCodeNotFound     UserErrorCode = "NOT_FOUND"
-	UserErrorCodeForbidden    UserErrorCode = "FORBIDDEN"
+	AcceptScopeAll         AcceptScope = "all"
+	AcceptScopeInStockOnly AcceptScope = "in_stock_only"
 )
 
-var AllUserErrorCode = []UserErrorCode{
-	UserErrorCodeInvalidInput,
-	UserErrorCodeConflict,
-	UserErrorCodeNotFound,
-	UserErrorCodeForbidden,
+var AllAcceptScope = []AcceptScope{
+	AcceptScopeAll,
+	AcceptScopeInStockOnly,
 }
 
-func (e UserErrorCode) IsValid() bool {
+func (e AcceptScope) IsValid() bool {
 	switch e {
-	case UserErrorCodeInvalidInput, UserErrorCodeConflict, UserErrorCodeNotFound, UserErrorCodeForbidden:
+	case AcceptScopeAll, AcceptScopeInStockOnly:
 		return true
 	}
 	return false
 }
 
-func (e UserErrorCode) String() string {
+func (e AcceptScope) String() string {
 	return string(e)
 }
 
-func (e *UserErrorCode) UnmarshalGQL(v any) error {
+func (e *AcceptScope) UnmarshalGQL(v any) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = UserErrorCode(str)
+	*e = AcceptScope(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid UserErrorCode", str)
+		return fmt.Errorf("%s is not a valid AcceptScope", str)
 	}
 	return nil
 }
 
-func (e UserErrorCode) MarshalGQL(w io.Writer) {
+func (e AcceptScope) MarshalGQL(w io.Writer) {
 	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
-func (e *UserErrorCode) UnmarshalJSON(b []byte) error {
+func (e *AcceptScope) UnmarshalJSON(b []byte) error {
 	s, err := strconv.Unquote(string(b))
 	if err != nil {
 		return err
@@ -93,7 +7200,13120 @@ func (e *UserErrorCode) UnmarshalJSON(b []byte) error {
 	return e.UnmarshalGQL(s)
 }
 
-func (e UserErrorCode) MarshalJSON() ([]byte, error) {
+func (e AcceptScope) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type AccountRole string
+
+const (
+	AccountRoleOwner      AccountRole = "owner"
+	AccountRoleContractor AccountRole = "contractor"
+	AccountRoleSupplier   AccountRole = "supplier"
+	AccountRoleCrew       AccountRole = "crew"
+	AccountRoleDriver     AccountRole = "driver"
+)
+
+var AllAccountRole = []AccountRole{
+	AccountRoleOwner,
+	AccountRoleContractor,
+	AccountRoleSupplier,
+	AccountRoleCrew,
+	AccountRoleDriver,
+}
+
+func (e AccountRole) IsValid() bool {
+	switch e {
+	case AccountRoleOwner, AccountRoleContractor, AccountRoleSupplier, AccountRoleCrew, AccountRoleDriver:
+		return true
+	}
+	return false
+}
+
+func (e AccountRole) String() string {
+	return string(e)
+}
+
+func (e *AccountRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AccountRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AccountRole", str)
+	}
+	return nil
+}
+
+func (e AccountRole) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AccountRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AccountRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ActivityKind string
+
+const (
+	ActivityKindReport         ActivityKind = "report"
+	ActivityKindStageSubmitted ActivityKind = "stage_submitted"
+	ActivityKindStageReleased  ActivityKind = "stage_released"
+	ActivityKindFunding        ActivityKind = "funding"
+	ActivityKindChangeOrder    ActivityKind = "change_order"
+	ActivityKindDecision       ActivityKind = "decision"
+	ActivityKindIssue          ActivityKind = "issue"
+	ActivityKindDelivery       ActivityKind = "delivery"
+	ActivityKindReminder       ActivityKind = "reminder"
+	ActivityKindHandover       ActivityKind = "handover"
+	ActivityKindMessage        ActivityKind = "message"
+)
+
+var AllActivityKind = []ActivityKind{
+	ActivityKindReport,
+	ActivityKindStageSubmitted,
+	ActivityKindStageReleased,
+	ActivityKindFunding,
+	ActivityKindChangeOrder,
+	ActivityKindDecision,
+	ActivityKindIssue,
+	ActivityKindDelivery,
+	ActivityKindReminder,
+	ActivityKindHandover,
+	ActivityKindMessage,
+}
+
+func (e ActivityKind) IsValid() bool {
+	switch e {
+	case ActivityKindReport, ActivityKindStageSubmitted, ActivityKindStageReleased, ActivityKindFunding, ActivityKindChangeOrder, ActivityKindDecision, ActivityKindIssue, ActivityKindDelivery, ActivityKindReminder, ActivityKindHandover, ActivityKindMessage:
+		return true
+	}
+	return false
+}
+
+func (e ActivityKind) String() string {
+	return string(e)
+}
+
+func (e *ActivityKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ActivityKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ActivityKind", str)
+	}
+	return nil
+}
+
+func (e ActivityKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ActivityKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ActivityKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type AgreementVersionStatus string
+
+const (
+	AgreementVersionStatusDraft              AgreementVersionStatus = "draft"
+	AgreementVersionStatusAwaitingSignatures AgreementVersionStatus = "awaiting_signatures"
+	AgreementVersionStatusLocked             AgreementVersionStatus = "locked"
+	AgreementVersionStatusSuperseded         AgreementVersionStatus = "superseded"
+)
+
+var AllAgreementVersionStatus = []AgreementVersionStatus{
+	AgreementVersionStatusDraft,
+	AgreementVersionStatusAwaitingSignatures,
+	AgreementVersionStatusLocked,
+	AgreementVersionStatusSuperseded,
+}
+
+func (e AgreementVersionStatus) IsValid() bool {
+	switch e {
+	case AgreementVersionStatusDraft, AgreementVersionStatusAwaitingSignatures, AgreementVersionStatusLocked, AgreementVersionStatusSuperseded:
+		return true
+	}
+	return false
+}
+
+func (e AgreementVersionStatus) String() string {
+	return string(e)
+}
+
+func (e *AgreementVersionStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AgreementVersionStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AgreementVersionStatus", str)
+	}
+	return nil
+}
+
+func (e AgreementVersionStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AgreementVersionStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AgreementVersionStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type AiConfidence string
+
+const (
+	AiConfidenceLow    AiConfidence = "low"
+	AiConfidenceMedium AiConfidence = "medium"
+	AiConfidenceHigh   AiConfidence = "high"
+)
+
+var AllAiConfidence = []AiConfidence{
+	AiConfidenceLow,
+	AiConfidenceMedium,
+	AiConfidenceHigh,
+}
+
+func (e AiConfidence) IsValid() bool {
+	switch e {
+	case AiConfidenceLow, AiConfidenceMedium, AiConfidenceHigh:
+		return true
+	}
+	return false
+}
+
+func (e AiConfidence) String() string {
+	return string(e)
+}
+
+func (e *AiConfidence) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AiConfidence(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AiConfidence", str)
+	}
+	return nil
+}
+
+func (e AiConfidence) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AiConfidence) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AiConfidence) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type AiConsentState string
+
+const (
+	AiConsentStateOn       AiConsentState = "on"
+	AiConsentStateOff      AiConsentState = "off"
+	AiConsentStateNotAsked AiConsentState = "not_asked"
+)
+
+var AllAiConsentState = []AiConsentState{
+	AiConsentStateOn,
+	AiConsentStateOff,
+	AiConsentStateNotAsked,
+}
+
+func (e AiConsentState) IsValid() bool {
+	switch e {
+	case AiConsentStateOn, AiConsentStateOff, AiConsentStateNotAsked:
+		return true
+	}
+	return false
+}
+
+func (e AiConsentState) String() string {
+	return string(e)
+}
+
+func (e *AiConsentState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AiConsentState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AiConsentState", str)
+	}
+	return nil
+}
+
+func (e AiConsentState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AiConsentState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AiConsentState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type AiFeature string
+
+const (
+	AiFeatureAgreementFromChat AiFeature = "agreement_from_chat"
+	AiFeatureIssueCheck        AiFeature = "issue_check"
+	AiFeatureRoughBudget       AiFeature = "rough_budget"
+	AiFeatureReportTag         AiFeature = "report_tag"
+	AiFeatureBidNormaliser     AiFeature = "bid_normaliser"
+	AiFeatureKeepListCheck     AiFeature = "keep_list_check"
+	AiFeatureQuoteCheck        AiFeature = "quote_check"
+	AiFeaturePriceListRead     AiFeature = "price_list_read"
+	AiFeaturePhotoCheck        AiFeature = "photo_check"
+	AiFeatureVoiceTranscript   AiFeature = "voice_transcript"
+)
+
+var AllAiFeature = []AiFeature{
+	AiFeatureAgreementFromChat,
+	AiFeatureIssueCheck,
+	AiFeatureRoughBudget,
+	AiFeatureReportTag,
+	AiFeatureBidNormaliser,
+	AiFeatureKeepListCheck,
+	AiFeatureQuoteCheck,
+	AiFeaturePriceListRead,
+	AiFeaturePhotoCheck,
+	AiFeatureVoiceTranscript,
+}
+
+func (e AiFeature) IsValid() bool {
+	switch e {
+	case AiFeatureAgreementFromChat, AiFeatureIssueCheck, AiFeatureRoughBudget, AiFeatureReportTag, AiFeatureBidNormaliser, AiFeatureKeepListCheck, AiFeatureQuoteCheck, AiFeaturePriceListRead, AiFeaturePhotoCheck, AiFeatureVoiceTranscript:
+		return true
+	}
+	return false
+}
+
+func (e AiFeature) String() string {
+	return string(e)
+}
+
+func (e *AiFeature) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AiFeature(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AiFeature", str)
+	}
+	return nil
+}
+
+func (e AiFeature) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AiFeature) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AiFeature) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type AiGuard string
+
+const (
+	AiGuardNoVerbatimQuote      AiGuard = "no_verbatim_quote"
+	AiGuardFaultNamingRemoved   AiGuard = "fault_naming_removed"
+	AiGuardSingleFigureBlocked  AiGuard = "single_figure_blocked"
+	AiGuardHiddenItemCannotTell AiGuard = "hidden_item_cannot_tell"
+	AiGuardNumberNotInSource    AiGuard = "number_not_in_source"
+	AiGuardKeepListConflict     AiGuard = "keep_list_conflict"
+)
+
+var AllAiGuard = []AiGuard{
+	AiGuardNoVerbatimQuote,
+	AiGuardFaultNamingRemoved,
+	AiGuardSingleFigureBlocked,
+	AiGuardHiddenItemCannotTell,
+	AiGuardNumberNotInSource,
+	AiGuardKeepListConflict,
+}
+
+func (e AiGuard) IsValid() bool {
+	switch e {
+	case AiGuardNoVerbatimQuote, AiGuardFaultNamingRemoved, AiGuardSingleFigureBlocked, AiGuardHiddenItemCannotTell, AiGuardNumberNotInSource, AiGuardKeepListConflict:
+		return true
+	}
+	return false
+}
+
+func (e AiGuard) String() string {
+	return string(e)
+}
+
+func (e *AiGuard) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AiGuard(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AiGuard", str)
+	}
+	return nil
+}
+
+func (e AiGuard) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AiGuard) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AiGuard) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// AI output stays `suggested` until a person confirms it (R1).
+type AiStatus string
+
+const (
+	AiStatusSuggested AiStatus = "suggested"
+	AiStatusConfirmed AiStatus = "confirmed"
+	AiStatusRejected  AiStatus = "rejected"
+)
+
+var AllAiStatus = []AiStatus{
+	AiStatusSuggested,
+	AiStatusConfirmed,
+	AiStatusRejected,
+}
+
+func (e AiStatus) IsValid() bool {
+	switch e {
+	case AiStatusSuggested, AiStatusConfirmed, AiStatusRejected:
+		return true
+	}
+	return false
+}
+
+func (e AiStatus) String() string {
+	return string(e)
+}
+
+func (e *AiStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AiStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AiStatus", str)
+	}
+	return nil
+}
+
+func (e AiStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AiStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AiStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type AttachableCard string
+
+const (
+	AttachableCardClause AttachableCard = "clause"
+	AttachableCardReport AttachableCard = "report"
+	AttachableCardIssue  AttachableCard = "issue"
+)
+
+var AllAttachableCard = []AttachableCard{
+	AttachableCardClause,
+	AttachableCardReport,
+	AttachableCardIssue,
+}
+
+func (e AttachableCard) IsValid() bool {
+	switch e {
+	case AttachableCardClause, AttachableCardReport, AttachableCardIssue:
+		return true
+	}
+	return false
+}
+
+func (e AttachableCard) String() string {
+	return string(e)
+}
+
+func (e *AttachableCard) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AttachableCard(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AttachableCard", str)
+	}
+	return nil
+}
+
+func (e AttachableCard) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AttachableCard) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AttachableCard) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Audience string
+
+const (
+	AudienceOwner      Audience = "owner"
+	AudienceContractor Audience = "contractor"
+	AudienceSupplier   Audience = "supplier"
+	// Owner and contractor.
+	AudienceBoth     Audience = "both"
+	AudienceEveryone Audience = "everyone"
+)
+
+var AllAudience = []Audience{
+	AudienceOwner,
+	AudienceContractor,
+	AudienceSupplier,
+	AudienceBoth,
+	AudienceEveryone,
+}
+
+func (e Audience) IsValid() bool {
+	switch e {
+	case AudienceOwner, AudienceContractor, AudienceSupplier, AudienceBoth, AudienceEveryone:
+		return true
+	}
+	return false
+}
+
+func (e Audience) String() string {
+	return string(e)
+}
+
+func (e *Audience) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Audience(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Audience", str)
+	}
+	return nil
+}
+
+func (e Audience) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Audience) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Audience) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Badge string
+
+const (
+	BadgeKtp      Badge = "ktp"
+	BadgeNib      Badge = "nib"
+	BadgeBankName Badge = "bank_name"
+	BadgeSbu      Badge = "sbu"
+)
+
+var AllBadge = []Badge{
+	BadgeKtp,
+	BadgeNib,
+	BadgeBankName,
+	BadgeSbu,
+}
+
+func (e Badge) IsValid() bool {
+	switch e {
+	case BadgeKtp, BadgeNib, BadgeBankName, BadgeSbu:
+		return true
+	}
+	return false
+}
+
+func (e Badge) String() string {
+	return string(e)
+}
+
+func (e *Badge) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Badge(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Badge", str)
+	}
+	return nil
+}
+
+func (e Badge) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Badge) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Badge) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BandWarning string
+
+const (
+	BandWarningTopEqualsLimit    BandWarning = "top_equals_limit"
+	BandWarningBelowPriceBookLow BandWarning = "below_price_book_low"
+)
+
+var AllBandWarning = []BandWarning{
+	BandWarningTopEqualsLimit,
+	BandWarningBelowPriceBookLow,
+}
+
+func (e BandWarning) IsValid() bool {
+	switch e {
+	case BandWarningTopEqualsLimit, BandWarningBelowPriceBookLow:
+		return true
+	}
+	return false
+}
+
+func (e BandWarning) String() string {
+	return string(e)
+}
+
+func (e *BandWarning) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BandWarning(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BandWarning", str)
+	}
+	return nil
+}
+
+func (e BandWarning) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BandWarning) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BandWarning) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// The banks a virtual account can be opened at, and payout banks. `other` is payouts only, never a VA bank.
+type Bank string
+
+const (
+	BankBca     Bank = "BCA"
+	BankBri     Bank = "BRI"
+	BankMandiri Bank = "Mandiri"
+	BankBni     Bank = "BNI"
+	BankOther   Bank = "other"
+)
+
+var AllBank = []Bank{
+	BankBca,
+	BankBri,
+	BankMandiri,
+	BankBni,
+	BankOther,
+}
+
+func (e Bank) IsValid() bool {
+	switch e {
+	case BankBca, BankBri, BankMandiri, BankBni, BankOther:
+		return true
+	}
+	return false
+}
+
+func (e Bank) String() string {
+	return string(e)
+}
+
+func (e *Bank) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Bank(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Bank", str)
+	}
+	return nil
+}
+
+func (e Bank) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Bank) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Bank) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BankAccountPurpose string
+
+const (
+	BankAccountPurposePayout BankAccountPurpose = "payout"
+	BankAccountPurposeRefund BankAccountPurpose = "refund"
+)
+
+var AllBankAccountPurpose = []BankAccountPurpose{
+	BankAccountPurposePayout,
+	BankAccountPurposeRefund,
+}
+
+func (e BankAccountPurpose) IsValid() bool {
+	switch e {
+	case BankAccountPurposePayout, BankAccountPurposeRefund:
+		return true
+	}
+	return false
+}
+
+func (e BankAccountPurpose) String() string {
+	return string(e)
+}
+
+func (e *BankAccountPurpose) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BankAccountPurpose(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BankAccountPurpose", str)
+	}
+	return nil
+}
+
+func (e BankAccountPurpose) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BankAccountPurpose) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BankAccountPurpose) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BidFlagKind string
+
+const (
+	BidFlagKindDownPaymentOverCap BidFlagKind = "down_payment_over_cap"
+	BidFlagKindItemNotMentioned   BidFlagKind = "item_not_mentioned"
+	BidFlagKindPricedWithoutVisit BidFlagKind = "priced_without_visit"
+	BidFlagKindWarrantyShort      BidFlagKind = "warranty_short"
+	BidFlagKindNoCancellationTerm BidFlagKind = "no_cancellation_term"
+	BidFlagKindNoBusinessAddress  BidFlagKind = "no_business_address"
+)
+
+var AllBidFlagKind = []BidFlagKind{
+	BidFlagKindDownPaymentOverCap,
+	BidFlagKindItemNotMentioned,
+	BidFlagKindPricedWithoutVisit,
+	BidFlagKindWarrantyShort,
+	BidFlagKindNoCancellationTerm,
+	BidFlagKindNoBusinessAddress,
+}
+
+func (e BidFlagKind) IsValid() bool {
+	switch e {
+	case BidFlagKindDownPaymentOverCap, BidFlagKindItemNotMentioned, BidFlagKindPricedWithoutVisit, BidFlagKindWarrantyShort, BidFlagKindNoCancellationTerm, BidFlagKindNoBusinessAddress:
+		return true
+	}
+	return false
+}
+
+func (e BidFlagKind) String() string {
+	return string(e)
+}
+
+func (e *BidFlagKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BidFlagKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BidFlagKind", str)
+	}
+	return nil
+}
+
+func (e BidFlagKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BidFlagKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BidFlagKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BidInviteStatus string
+
+const (
+	BidInviteStatusSent      BidInviteStatus = "sent"
+	BidInviteStatusSeen      BidInviteStatus = "seen"
+	BidInviteStatusJoined    BidInviteStatus = "joined"
+	BidInviteStatusDeclined  BidInviteStatus = "declined"
+	BidInviteStatusExpired   BidInviteStatus = "expired"
+	BidInviteStatusWithdrawn BidInviteStatus = "withdrawn"
+	BidInviteStatusBidSent   BidInviteStatus = "bid_sent"
+	BidInviteStatusChosen    BidInviteStatus = "chosen"
+	BidInviteStatusNotChosen BidInviteStatus = "not_chosen"
+	// A backup not invited yet.
+	BidInviteStatusStandby BidInviteStatus = "standby"
+)
+
+var AllBidInviteStatus = []BidInviteStatus{
+	BidInviteStatusSent,
+	BidInviteStatusSeen,
+	BidInviteStatusJoined,
+	BidInviteStatusDeclined,
+	BidInviteStatusExpired,
+	BidInviteStatusWithdrawn,
+	BidInviteStatusBidSent,
+	BidInviteStatusChosen,
+	BidInviteStatusNotChosen,
+	BidInviteStatusStandby,
+}
+
+func (e BidInviteStatus) IsValid() bool {
+	switch e {
+	case BidInviteStatusSent, BidInviteStatusSeen, BidInviteStatusJoined, BidInviteStatusDeclined, BidInviteStatusExpired, BidInviteStatusWithdrawn, BidInviteStatusBidSent, BidInviteStatusChosen, BidInviteStatusNotChosen, BidInviteStatusStandby:
+		return true
+	}
+	return false
+}
+
+func (e BidInviteStatus) String() string {
+	return string(e)
+}
+
+func (e *BidInviteStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BidInviteStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BidInviteStatus", str)
+	}
+	return nil
+}
+
+func (e BidInviteStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BidInviteStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BidInviteStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BidStatus string
+
+const (
+	BidStatusDraft     BidStatus = "draft"
+	BidStatusSubmitted BidStatus = "submitted"
+	BidStatusWithdrawn BidStatus = "withdrawn"
+	BidStatusChosen    BidStatus = "chosen"
+	BidStatusNotChosen BidStatus = "not_chosen"
+)
+
+var AllBidStatus = []BidStatus{
+	BidStatusDraft,
+	BidStatusSubmitted,
+	BidStatusWithdrawn,
+	BidStatusChosen,
+	BidStatusNotChosen,
+}
+
+func (e BidStatus) IsValid() bool {
+	switch e {
+	case BidStatusDraft, BidStatusSubmitted, BidStatusWithdrawn, BidStatusChosen, BidStatusNotChosen:
+		return true
+	}
+	return false
+}
+
+func (e BidStatus) String() string {
+	return string(e)
+}
+
+func (e *BidStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BidStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BidStatus", str)
+	}
+	return nil
+}
+
+func (e BidStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BidStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BidStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BriefItemKind string
+
+const (
+	BriefItemKindWork           BriefItemKind = "work"
+	BriefItemKindOftenForgotten BriefItemKind = "often_forgotten"
+	BriefItemKindAssumed        BriefItemKind = "assumed"
+	BriefItemKindNotInJob       BriefItemKind = "not_in_job"
+)
+
+var AllBriefItemKind = []BriefItemKind{
+	BriefItemKindWork,
+	BriefItemKindOftenForgotten,
+	BriefItemKindAssumed,
+	BriefItemKindNotInJob,
+}
+
+func (e BriefItemKind) IsValid() bool {
+	switch e {
+	case BriefItemKindWork, BriefItemKindOftenForgotten, BriefItemKindAssumed, BriefItemKindNotInJob:
+		return true
+	}
+	return false
+}
+
+func (e BriefItemKind) String() string {
+	return string(e)
+}
+
+func (e *BriefItemKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BriefItemKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BriefItemKind", str)
+	}
+	return nil
+}
+
+func (e BriefItemKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BriefItemKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BriefItemKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BriefItemStatus string
+
+const (
+	BriefItemStatusSuggested BriefItemStatus = "suggested"
+	BriefItemStatusConfirmed BriefItemStatus = "confirmed"
+	BriefItemStatusUnticked  BriefItemStatus = "unticked"
+)
+
+var AllBriefItemStatus = []BriefItemStatus{
+	BriefItemStatusSuggested,
+	BriefItemStatusConfirmed,
+	BriefItemStatusUnticked,
+}
+
+func (e BriefItemStatus) IsValid() bool {
+	switch e {
+	case BriefItemStatusSuggested, BriefItemStatusConfirmed, BriefItemStatusUnticked:
+		return true
+	}
+	return false
+}
+
+func (e BriefItemStatus) String() string {
+	return string(e)
+}
+
+func (e *BriefItemStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BriefItemStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BriefItemStatus", str)
+	}
+	return nil
+}
+
+func (e BriefItemStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BriefItemStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BriefItemStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BriefStatus string
+
+const (
+	BriefStatusDraft               BriefStatus = "draft"
+	BriefStatusCollectingBids      BriefStatus = "collecting_bids"
+	BriefStatusClosed              BriefStatus = "closed"
+	BriefStatusChosen              BriefStatus = "chosen"
+	BriefStatusClosedWithoutChoice BriefStatus = "closed_without_choice"
+)
+
+var AllBriefStatus = []BriefStatus{
+	BriefStatusDraft,
+	BriefStatusCollectingBids,
+	BriefStatusClosed,
+	BriefStatusChosen,
+	BriefStatusClosedWithoutChoice,
+}
+
+func (e BriefStatus) IsValid() bool {
+	switch e {
+	case BriefStatusDraft, BriefStatusCollectingBids, BriefStatusClosed, BriefStatusChosen, BriefStatusClosedWithoutChoice:
+		return true
+	}
+	return false
+}
+
+func (e BriefStatus) String() string {
+	return string(e)
+}
+
+func (e *BriefStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BriefStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BriefStatus", str)
+	}
+	return nil
+}
+
+func (e BriefStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BriefStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BriefStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BudgetGroupKind string
+
+const (
+	BudgetGroupKindAgreement    BudgetGroupKind = "agreement"
+	BudgetGroupKindChangeOrders BudgetGroupKind = "change_orders"
+	BudgetGroupKindMaterials    BudgetGroupKind = "materials"
+)
+
+var AllBudgetGroupKind = []BudgetGroupKind{
+	BudgetGroupKindAgreement,
+	BudgetGroupKindChangeOrders,
+	BudgetGroupKindMaterials,
+}
+
+func (e BudgetGroupKind) IsValid() bool {
+	switch e {
+	case BudgetGroupKindAgreement, BudgetGroupKindChangeOrders, BudgetGroupKindMaterials:
+		return true
+	}
+	return false
+}
+
+func (e BudgetGroupKind) String() string {
+	return string(e)
+}
+
+func (e *BudgetGroupKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BudgetGroupKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BudgetGroupKind", str)
+	}
+	return nil
+}
+
+func (e BudgetGroupKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BudgetGroupKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BudgetGroupKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type BudgetLineState string
+
+const (
+	BudgetLineStateReleased BudgetLineState = "released"
+	BudgetLineStateSafe     BudgetLineState = "safe"
+	BudgetLineStateToPay    BudgetLineState = "to_pay"
+	BudgetLineStateToBuy    BudgetLineState = "to_buy"
+	BudgetLineStateInCart   BudgetLineState = "in_cart"
+)
+
+var AllBudgetLineState = []BudgetLineState{
+	BudgetLineStateReleased,
+	BudgetLineStateSafe,
+	BudgetLineStateToPay,
+	BudgetLineStateToBuy,
+	BudgetLineStateInCart,
+}
+
+func (e BudgetLineState) IsValid() bool {
+	switch e {
+	case BudgetLineStateReleased, BudgetLineStateSafe, BudgetLineStateToPay, BudgetLineStateToBuy, BudgetLineStateInCart:
+		return true
+	}
+	return false
+}
+
+func (e BudgetLineState) String() string {
+	return string(e)
+}
+
+func (e *BudgetLineState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BudgetLineState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BudgetLineState", str)
+	}
+	return nil
+}
+
+func (e BudgetLineState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BudgetLineState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BudgetLineState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CandidateState string
+
+const (
+	CandidateStateShadow      CandidateState = "shadow"
+	CandidateStatePromoted    CandidateState = "promoted"
+	CandidateStateNotPromoted CandidateState = "not_promoted"
+)
+
+var AllCandidateState = []CandidateState{
+	CandidateStateShadow,
+	CandidateStatePromoted,
+	CandidateStateNotPromoted,
+}
+
+func (e CandidateState) IsValid() bool {
+	switch e {
+	case CandidateStateShadow, CandidateStatePromoted, CandidateStateNotPromoted:
+		return true
+	}
+	return false
+}
+
+func (e CandidateState) String() string {
+	return string(e)
+}
+
+func (e *CandidateState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CandidateState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CandidateState", str)
+	}
+	return nil
+}
+
+func (e CandidateState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CandidateState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CandidateState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CardType string
+
+const (
+	CardTypeStageSubmitted CardType = "stage_submitted"
+	CardTypeStageReleased  CardType = "stage_released"
+	CardTypeChangeOrder    CardType = "change_order"
+	CardTypeDecision       CardType = "decision"
+	CardTypeIssue          CardType = "issue"
+	CardTypeDelivery       CardType = "delivery"
+	CardTypeOrder          CardType = "order"
+	CardTypeFunding        CardType = "funding"
+	CardTypeClause         CardType = "clause"
+	CardTypeReport         CardType = "report"
+)
+
+var AllCardType = []CardType{
+	CardTypeStageSubmitted,
+	CardTypeStageReleased,
+	CardTypeChangeOrder,
+	CardTypeDecision,
+	CardTypeIssue,
+	CardTypeDelivery,
+	CardTypeOrder,
+	CardTypeFunding,
+	CardTypeClause,
+	CardTypeReport,
+}
+
+func (e CardType) IsValid() bool {
+	switch e {
+	case CardTypeStageSubmitted, CardTypeStageReleased, CardTypeChangeOrder, CardTypeDecision, CardTypeIssue, CardTypeDelivery, CardTypeOrder, CardTypeFunding, CardTypeClause, CardTypeReport:
+		return true
+	}
+	return false
+}
+
+func (e CardType) String() string {
+	return string(e)
+}
+
+func (e *CardType) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CardType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CardType", str)
+	}
+	return nil
+}
+
+func (e CardType) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CardType) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CardType) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CaseFilter string
+
+const (
+	CaseFilterAll  CaseFilter = "all"
+	CaseFilterOpen CaseFilter = "open"
+	// With the mediator, a suggestion sent to both included.
+	CaseFilterMediator CaseFilter = "mediator"
+	CaseFilterResolved CaseFilter = "resolved"
+)
+
+var AllCaseFilter = []CaseFilter{
+	CaseFilterAll,
+	CaseFilterOpen,
+	CaseFilterMediator,
+	CaseFilterResolved,
+}
+
+func (e CaseFilter) IsValid() bool {
+	switch e {
+	case CaseFilterAll, CaseFilterOpen, CaseFilterMediator, CaseFilterResolved:
+		return true
+	}
+	return false
+}
+
+func (e CaseFilter) String() string {
+	return string(e)
+}
+
+func (e *CaseFilter) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CaseFilter(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CaseFilter", str)
+	}
+	return nil
+}
+
+func (e CaseFilter) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CaseFilter) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CaseFilter) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ChangeOrderStatus string
+
+const (
+	ChangeOrderStatusDraft              ChangeOrderStatus = "draft"
+	ChangeOrderStatusAwaitingOwner      ChangeOrderStatus = "awaiting_owner"
+	ChangeOrderStatusAwaitingContractor ChangeOrderStatus = "awaiting_contractor"
+	ChangeOrderStatusAgreed             ChangeOrderStatus = "agreed"
+	ChangeOrderStatusDeclined           ChangeOrderStatus = "declined"
+	ChangeOrderStatusWithdrawn          ChangeOrderStatus = "withdrawn"
+)
+
+var AllChangeOrderStatus = []ChangeOrderStatus{
+	ChangeOrderStatusDraft,
+	ChangeOrderStatusAwaitingOwner,
+	ChangeOrderStatusAwaitingContractor,
+	ChangeOrderStatusAgreed,
+	ChangeOrderStatusDeclined,
+	ChangeOrderStatusWithdrawn,
+}
+
+func (e ChangeOrderStatus) IsValid() bool {
+	switch e {
+	case ChangeOrderStatusDraft, ChangeOrderStatusAwaitingOwner, ChangeOrderStatusAwaitingContractor, ChangeOrderStatusAgreed, ChangeOrderStatusDeclined, ChangeOrderStatusWithdrawn:
+		return true
+	}
+	return false
+}
+
+func (e ChangeOrderStatus) String() string {
+	return string(e)
+}
+
+func (e *ChangeOrderStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ChangeOrderStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ChangeOrderStatus", str)
+	}
+	return nil
+}
+
+func (e ChangeOrderStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ChangeOrderStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ChangeOrderStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// "Found on site" or "Owner's choice"; both draw on the owner's contingency.
+type ChangeReason string
+
+const (
+	ChangeReasonFoundOnSite ChangeReason = "found_on_site"
+	ChangeReasonOwnerChoice ChangeReason = "owner_choice"
+)
+
+var AllChangeReason = []ChangeReason{
+	ChangeReasonFoundOnSite,
+	ChangeReasonOwnerChoice,
+}
+
+func (e ChangeReason) IsValid() bool {
+	switch e {
+	case ChangeReasonFoundOnSite, ChangeReasonOwnerChoice:
+		return true
+	}
+	return false
+}
+
+func (e ChangeReason) String() string {
+	return string(e)
+}
+
+func (e *ChangeReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ChangeReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ChangeReason", str)
+	}
+	return nil
+}
+
+func (e ChangeReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ChangeReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ChangeReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Draft codes are shown as "Kode draf".
+type CheckCodeKind string
+
+const (
+	CheckCodeKindDraft  CheckCodeKind = "draft"
+	CheckCodeKindLocked CheckCodeKind = "locked"
+)
+
+var AllCheckCodeKind = []CheckCodeKind{
+	CheckCodeKindDraft,
+	CheckCodeKindLocked,
+}
+
+func (e CheckCodeKind) IsValid() bool {
+	switch e {
+	case CheckCodeKindDraft, CheckCodeKindLocked:
+		return true
+	}
+	return false
+}
+
+func (e CheckCodeKind) String() string {
+	return string(e)
+}
+
+func (e *CheckCodeKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CheckCodeKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CheckCodeKind", str)
+	}
+	return nil
+}
+
+func (e CheckCodeKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CheckCodeKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CheckCodeKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CheckMatch string
+
+const (
+	CheckMatchLatestLocked CheckMatch = "latest_locked"
+	CheckMatchOlderVersion CheckMatch = "older_version"
+	CheckMatchDraft        CheckMatch = "draft"
+)
+
+var AllCheckMatch = []CheckMatch{
+	CheckMatchLatestLocked,
+	CheckMatchOlderVersion,
+	CheckMatchDraft,
+}
+
+func (e CheckMatch) IsValid() bool {
+	switch e {
+	case CheckMatchLatestLocked, CheckMatchOlderVersion, CheckMatchDraft:
+		return true
+	}
+	return false
+}
+
+func (e CheckMatch) String() string {
+	return string(e)
+}
+
+func (e *CheckMatch) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CheckMatch(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CheckMatch", str)
+	}
+	return nil
+}
+
+func (e CheckMatch) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CheckMatch) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CheckMatch) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CheckVerdict string
+
+const (
+	CheckVerdictMatches      CheckVerdict = "matches"
+	CheckVerdictDoesNotMatch CheckVerdict = "does_not_match"
+	CheckVerdictCannotTell   CheckVerdict = "cannot_tell"
+)
+
+var AllCheckVerdict = []CheckVerdict{
+	CheckVerdictMatches,
+	CheckVerdictDoesNotMatch,
+	CheckVerdictCannotTell,
+}
+
+func (e CheckVerdict) IsValid() bool {
+	switch e {
+	case CheckVerdictMatches, CheckVerdictDoesNotMatch, CheckVerdictCannotTell:
+		return true
+	}
+	return false
+}
+
+func (e CheckVerdict) String() string {
+	return string(e)
+}
+
+func (e *CheckVerdict) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CheckVerdict(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CheckVerdict", str)
+	}
+	return nil
+}
+
+func (e CheckVerdict) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CheckVerdict) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CheckVerdict) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ChoiceReason string
+
+const (
+	ChoiceReasonMoreComplete ChoiceReason = "more_complete"
+	ChoiceReasonSiteVisit    ChoiceReason = "site_visit"
+	ChoiceReasonPrice        ChoiceReason = "price"
+	ChoiceReasonTimeline     ChoiceReason = "timeline"
+	ChoiceReasonTerms        ChoiceReason = "terms"
+	ChoiceReasonRecord       ChoiceReason = "record"
+)
+
+var AllChoiceReason = []ChoiceReason{
+	ChoiceReasonMoreComplete,
+	ChoiceReasonSiteVisit,
+	ChoiceReasonPrice,
+	ChoiceReasonTimeline,
+	ChoiceReasonTerms,
+	ChoiceReasonRecord,
+}
+
+func (e ChoiceReason) IsValid() bool {
+	switch e {
+	case ChoiceReasonMoreComplete, ChoiceReasonSiteVisit, ChoiceReasonPrice, ChoiceReasonTimeline, ChoiceReasonTerms, ChoiceReasonRecord:
+		return true
+	}
+	return false
+}
+
+func (e ChoiceReason) String() string {
+	return string(e)
+}
+
+func (e *ChoiceReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ChoiceReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ChoiceReason", str)
+	}
+	return nil
+}
+
+func (e ChoiceReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ChoiceReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ChoiceReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// What a citation points at, so a client routes on it instead of on the shape of `refId`.
+type CitationType string
+
+const (
+	CitationTypeAgreement   CitationType = "agreement"
+	CitationTypeChangeOrder CitationType = "change_order"
+	CitationTypeStage       CitationType = "stage"
+	CitationTypeDecision    CitationType = "decision"
+	CitationTypeIssue       CitationType = "issue"
+	CitationTypeJob         CitationType = "job"
+)
+
+var AllCitationType = []CitationType{
+	CitationTypeAgreement,
+	CitationTypeChangeOrder,
+	CitationTypeStage,
+	CitationTypeDecision,
+	CitationTypeIssue,
+	CitationTypeJob,
+}
+
+func (e CitationType) IsValid() bool {
+	switch e {
+	case CitationTypeAgreement, CitationTypeChangeOrder, CitationTypeStage, CitationTypeDecision, CitationTypeIssue, CitationTypeJob:
+		return true
+	}
+	return false
+}
+
+func (e CitationType) String() string {
+	return string(e)
+}
+
+func (e *CitationType) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CitationType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CitationType", str)
+	}
+	return nil
+}
+
+func (e CitationType) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CitationType) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CitationType) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ClaimArea string
+
+const (
+	ClaimAreaSinkCabinet ClaimArea = "sink_cabinet"
+	ClaimAreaWallTiles   ClaimArea = "wall_tiles"
+	ClaimAreaFloor       ClaimArea = "floor"
+	ClaimAreaWorktop     ClaimArea = "worktop"
+	ClaimAreaSockets     ClaimArea = "sockets"
+	ClaimAreaOther       ClaimArea = "other"
+)
+
+var AllClaimArea = []ClaimArea{
+	ClaimAreaSinkCabinet,
+	ClaimAreaWallTiles,
+	ClaimAreaFloor,
+	ClaimAreaWorktop,
+	ClaimAreaSockets,
+	ClaimAreaOther,
+}
+
+func (e ClaimArea) IsValid() bool {
+	switch e {
+	case ClaimAreaSinkCabinet, ClaimAreaWallTiles, ClaimAreaFloor, ClaimAreaWorktop, ClaimAreaSockets, ClaimAreaOther:
+		return true
+	}
+	return false
+}
+
+func (e ClaimArea) String() string {
+	return string(e)
+}
+
+func (e *ClaimArea) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ClaimArea(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ClaimArea", str)
+	}
+	return nil
+}
+
+func (e ClaimArea) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ClaimArea) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ClaimArea) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ClaimStarted string
+
+const (
+	ClaimStartedToday    ClaimStarted = "today"
+	ClaimStartedThisWeek ClaimStarted = "this_week"
+	ClaimStartedEarlier  ClaimStarted = "earlier"
+	ClaimStartedNotSure  ClaimStarted = "not_sure"
+)
+
+var AllClaimStarted = []ClaimStarted{
+	ClaimStartedToday,
+	ClaimStartedThisWeek,
+	ClaimStartedEarlier,
+	ClaimStartedNotSure,
+}
+
+func (e ClaimStarted) IsValid() bool {
+	switch e {
+	case ClaimStartedToday, ClaimStartedThisWeek, ClaimStartedEarlier, ClaimStartedNotSure:
+		return true
+	}
+	return false
+}
+
+func (e ClaimStarted) String() string {
+	return string(e)
+}
+
+func (e *ClaimStarted) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ClaimStarted(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ClaimStarted", str)
+	}
+	return nil
+}
+
+func (e ClaimStarted) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ClaimStarted) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ClaimStarted) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ClausePart string
+
+const (
+	ClausePartParties ClausePart = "parties"
+	ClausePartScope   ClausePart = "scope"
+	ClausePartPrice   ClausePart = "price"
+	ClausePartStages  ClausePart = "stages"
+	ClausePartDates   ClausePart = "dates"
+	ClausePartTerms   ClausePart = "terms"
+)
+
+var AllClausePart = []ClausePart{
+	ClausePartParties,
+	ClausePartScope,
+	ClausePartPrice,
+	ClausePartStages,
+	ClausePartDates,
+	ClausePartTerms,
+}
+
+func (e ClausePart) IsValid() bool {
+	switch e {
+	case ClausePartParties, ClausePartScope, ClausePartPrice, ClausePartStages, ClausePartDates, ClausePartTerms:
+		return true
+	}
+	return false
+}
+
+func (e ClausePart) String() string {
+	return string(e)
+}
+
+func (e *ClausePart) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ClausePart(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ClausePart", str)
+	}
+	return nil
+}
+
+func (e ClausePart) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ClausePart) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ClausePart) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ClauseVerdict string
+
+const (
+	ClauseVerdictRight       ClauseVerdict = "right"
+	ClauseVerdictAskToChange ClauseVerdict = "ask_to_change"
+)
+
+var AllClauseVerdict = []ClauseVerdict{
+	ClauseVerdictRight,
+	ClauseVerdictAskToChange,
+}
+
+func (e ClauseVerdict) IsValid() bool {
+	switch e {
+	case ClauseVerdictRight, ClauseVerdictAskToChange:
+		return true
+	}
+	return false
+}
+
+func (e ClauseVerdict) String() string {
+	return string(e)
+}
+
+func (e *ClauseVerdict) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ClauseVerdict(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ClauseVerdict", str)
+	}
+	return nil
+}
+
+func (e ClauseVerdict) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ClauseVerdict) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ClauseVerdict) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ClientKind string
+
+const (
+	ClientKindWeb    ClientKind = "web"
+	ClientKindMobile ClientKind = "mobile"
+)
+
+var AllClientKind = []ClientKind{
+	ClientKindWeb,
+	ClientKindMobile,
+}
+
+func (e ClientKind) IsValid() bool {
+	switch e {
+	case ClientKindWeb, ClientKindMobile:
+		return true
+	}
+	return false
+}
+
+func (e ClientKind) String() string {
+	return string(e)
+}
+
+func (e *ClientKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ClientKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ClientKind", str)
+	}
+	return nil
+}
+
+func (e ClientKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ClientKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ClientKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ClockKind string
+
+const (
+	ClockKindStageReview         ClockKind = "stage_review"
+	ClockKindNextStageUnfunded   ClockKind = "next_stage_unfunded"
+	ClockKindPauseNotice         ClockKind = "pause_notice"
+	ClockKindOwnerSilent7d       ClockKind = "owner_silent_7d"
+	ClockKindInviteUnanswered24h ClockKind = "invite_unanswered_24h"
+	ClockKindContractorQuiet7d   ClockKind = "contractor_quiet_7d"
+	ClockKindIssueReply          ClockKind = "issue_reply"
+	ClockKindMediatorDecision    ClockKind = "mediator_decision"
+	ClockKindShopAnswer          ClockKind = "shop_answer"
+	ClockKindHoldAge             ClockKind = "hold_age"
+	ClockKindUnfundedDay14       ClockKind = "unfunded_day_14"
+)
+
+var AllClockKind = []ClockKind{
+	ClockKindStageReview,
+	ClockKindNextStageUnfunded,
+	ClockKindPauseNotice,
+	ClockKindOwnerSilent7d,
+	ClockKindInviteUnanswered24h,
+	ClockKindContractorQuiet7d,
+	ClockKindIssueReply,
+	ClockKindMediatorDecision,
+	ClockKindShopAnswer,
+	ClockKindHoldAge,
+	ClockKindUnfundedDay14,
+}
+
+func (e ClockKind) IsValid() bool {
+	switch e {
+	case ClockKindStageReview, ClockKindNextStageUnfunded, ClockKindPauseNotice, ClockKindOwnerSilent7d, ClockKindInviteUnanswered24h, ClockKindContractorQuiet7d, ClockKindIssueReply, ClockKindMediatorDecision, ClockKindShopAnswer, ClockKindHoldAge, ClockKindUnfundedDay14:
+		return true
+	}
+	return false
+}
+
+func (e ClockKind) String() string {
+	return string(e)
+}
+
+func (e *ClockKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ClockKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ClockKind", str)
+	}
+	return nil
+}
+
+func (e ClockKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ClockKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ClockKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ClockStatus string
+
+const (
+	ClockStatusPending      ClockStatus = "pending"
+	ClockStatusNeedsCall    ClockStatus = "needs_call"
+	ClockStatusBackupSent   ClockStatus = "backup_sent"
+	ClockStatusPausePending ClockStatus = "pause_pending"
+	ClockStatusOverdue      ClockStatus = "overdue"
+	ClockStatusInReview     ClockStatus = "in_review"
+	ClockStatusPaused       ClockStatus = "paused"
+	ClockStatusWithMediator ClockStatus = "with_mediator"
+)
+
+var AllClockStatus = []ClockStatus{
+	ClockStatusPending,
+	ClockStatusNeedsCall,
+	ClockStatusBackupSent,
+	ClockStatusPausePending,
+	ClockStatusOverdue,
+	ClockStatusInReview,
+	ClockStatusPaused,
+	ClockStatusWithMediator,
+}
+
+func (e ClockStatus) IsValid() bool {
+	switch e {
+	case ClockStatusPending, ClockStatusNeedsCall, ClockStatusBackupSent, ClockStatusPausePending, ClockStatusOverdue, ClockStatusInReview, ClockStatusPaused, ClockStatusWithMediator:
+		return true
+	}
+	return false
+}
+
+func (e ClockStatus) String() string {
+	return string(e)
+}
+
+func (e *ClockStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ClockStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ClockStatus", str)
+	}
+	return nil
+}
+
+func (e ClockStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ClockStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ClockStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CloseReason string
+
+const (
+	CloseReasonOverBudget     CloseReason = "over_budget"
+	CloseReasonNotReady       CloseReason = "not_ready"
+	CloseReasonFoundElsewhere CloseReason = "found_elsewhere"
+	CloseReasonBidsIncomplete CloseReason = "bids_incomplete"
+	CloseReasonOther          CloseReason = "other"
+)
+
+var AllCloseReason = []CloseReason{
+	CloseReasonOverBudget,
+	CloseReasonNotReady,
+	CloseReasonFoundElsewhere,
+	CloseReasonBidsIncomplete,
+	CloseReasonOther,
+}
+
+func (e CloseReason) IsValid() bool {
+	switch e {
+	case CloseReasonOverBudget, CloseReasonNotReady, CloseReasonFoundElsewhere, CloseReasonBidsIncomplete, CloseReasonOther:
+		return true
+	}
+	return false
+}
+
+func (e CloseReason) String() string {
+	return string(e)
+}
+
+func (e *CloseReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CloseReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CloseReason", str)
+	}
+	return nil
+}
+
+func (e CloseReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CloseReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CloseReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CodeChannel string
+
+const (
+	CodeChannelWhatsapp  CodeChannel = "whatsapp"
+	CodeChannelSms       CodeChannel = "sms"
+	CodeChannelVoiceCall CodeChannel = "voice_call"
+)
+
+var AllCodeChannel = []CodeChannel{
+	CodeChannelWhatsapp,
+	CodeChannelSms,
+	CodeChannelVoiceCall,
+}
+
+func (e CodeChannel) IsValid() bool {
+	switch e {
+	case CodeChannelWhatsapp, CodeChannelSms, CodeChannelVoiceCall:
+		return true
+	}
+	return false
+}
+
+func (e CodeChannel) String() string {
+	return string(e)
+}
+
+func (e *CodeChannel) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CodeChannel(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CodeChannel", str)
+	}
+	return nil
+}
+
+func (e CodeChannel) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CodeChannel) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CodeChannel) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CodePurpose string
+
+const (
+	CodePurposeSignIn CodePurpose = "sign_in"
+	CodePurposeSign   CodePurpose = "sign"
+)
+
+var AllCodePurpose = []CodePurpose{
+	CodePurposeSignIn,
+	CodePurposeSign,
+}
+
+func (e CodePurpose) IsValid() bool {
+	switch e {
+	case CodePurposeSignIn, CodePurposeSign:
+		return true
+	}
+	return false
+}
+
+func (e CodePurpose) String() string {
+	return string(e)
+}
+
+func (e *CodePurpose) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CodePurpose(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CodePurpose", str)
+	}
+	return nil
+}
+
+func (e CodePurpose) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CodePurpose) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CodePurpose) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ContingencyTier string
+
+const (
+	// 10%: surface work.
+	ContingencyTierSurface ContingencyTier = "surface"
+	// 15%: pipes, wiring or wet rooms.
+	ContingencyTierWetOrWired ContingencyTier = "wet_or_wired"
+	// 20%: leaks, roof or structure.
+	ContingencyTierHiddenRisk ContingencyTier = "hidden_risk"
+)
+
+var AllContingencyTier = []ContingencyTier{
+	ContingencyTierSurface,
+	ContingencyTierWetOrWired,
+	ContingencyTierHiddenRisk,
+}
+
+func (e ContingencyTier) IsValid() bool {
+	switch e {
+	case ContingencyTierSurface, ContingencyTierWetOrWired, ContingencyTierHiddenRisk:
+		return true
+	}
+	return false
+}
+
+func (e ContingencyTier) String() string {
+	return string(e)
+}
+
+func (e *ContingencyTier) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ContingencyTier(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ContingencyTier", str)
+	}
+	return nil
+}
+
+func (e ContingencyTier) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ContingencyTier) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ContingencyTier) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CoverageStatus string
+
+const (
+	CoverageStatusIncluded     CoverageStatus = "included"
+	CoverageStatusPartial      CoverageStatus = "partial"
+	CoverageStatusExtra        CoverageStatus = "extra"
+	CoverageStatusInOtherLine  CoverageStatus = "in_other_line"
+	CoverageStatusExcluded     CoverageStatus = "excluded"
+	CoverageStatusNotMentioned CoverageStatus = "not_mentioned"
+)
+
+var AllCoverageStatus = []CoverageStatus{
+	CoverageStatusIncluded,
+	CoverageStatusPartial,
+	CoverageStatusExtra,
+	CoverageStatusInOtherLine,
+	CoverageStatusExcluded,
+	CoverageStatusNotMentioned,
+}
+
+func (e CoverageStatus) IsValid() bool {
+	switch e {
+	case CoverageStatusIncluded, CoverageStatusPartial, CoverageStatusExtra, CoverageStatusInOtherLine, CoverageStatusExcluded, CoverageStatusNotMentioned:
+		return true
+	}
+	return false
+}
+
+func (e CoverageStatus) String() string {
+	return string(e)
+}
+
+func (e *CoverageStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CoverageStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CoverageStatus", str)
+	}
+	return nil
+}
+
+func (e CoverageStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CoverageStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CoverageStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CreateReportKind string
+
+const (
+	CreateReportKindDaily  CreateReportKind = "daily"
+	CreateReportKindNoWork CreateReportKind = "no_work"
+)
+
+var AllCreateReportKind = []CreateReportKind{
+	CreateReportKindDaily,
+	CreateReportKindNoWork,
+}
+
+func (e CreateReportKind) IsValid() bool {
+	switch e {
+	case CreateReportKindDaily, CreateReportKindNoWork:
+		return true
+	}
+	return false
+}
+
+func (e CreateReportKind) String() string {
+	return string(e)
+}
+
+func (e *CreateReportKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CreateReportKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CreateReportKind", str)
+	}
+	return nil
+}
+
+func (e CreateReportKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CreateReportKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CreateReportKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CrewAnswerOnLink string
+
+const (
+	CrewAnswerOnLinkYes      CrewAnswerOnLink = "yes"
+	CrewAnswerOnLinkNotYet   CrewAnswerOnLink = "not_yet"
+	CrewAnswerOnLinkPhoto    CrewAnswerOnLink = "photo"
+	CrewAnswerOnLinkReceived CrewAnswerOnLink = "received"
+	CrewAnswerOnLinkDiffers  CrewAnswerOnLink = "differs"
+)
+
+var AllCrewAnswerOnLink = []CrewAnswerOnLink{
+	CrewAnswerOnLinkYes,
+	CrewAnswerOnLinkNotYet,
+	CrewAnswerOnLinkPhoto,
+	CrewAnswerOnLinkReceived,
+	CrewAnswerOnLinkDiffers,
+}
+
+func (e CrewAnswerOnLink) IsValid() bool {
+	switch e {
+	case CrewAnswerOnLinkYes, CrewAnswerOnLinkNotYet, CrewAnswerOnLinkPhoto, CrewAnswerOnLinkReceived, CrewAnswerOnLinkDiffers:
+		return true
+	}
+	return false
+}
+
+func (e CrewAnswerOnLink) String() string {
+	return string(e)
+}
+
+func (e *CrewAnswerOnLink) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CrewAnswerOnLink(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CrewAnswerOnLink", str)
+	}
+	return nil
+}
+
+func (e CrewAnswerOnLink) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CrewAnswerOnLink) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CrewAnswerOnLink) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CrewAnswerValue string
+
+const (
+	CrewAnswerValueYes    CrewAnswerValue = "yes"
+	CrewAnswerValueNotYet CrewAnswerValue = "not_yet"
+	CrewAnswerValuePhoto  CrewAnswerValue = "photo"
+)
+
+var AllCrewAnswerValue = []CrewAnswerValue{
+	CrewAnswerValueYes,
+	CrewAnswerValueNotYet,
+	CrewAnswerValuePhoto,
+}
+
+func (e CrewAnswerValue) IsValid() bool {
+	switch e {
+	case CrewAnswerValueYes, CrewAnswerValueNotYet, CrewAnswerValuePhoto:
+		return true
+	}
+	return false
+}
+
+func (e CrewAnswerValue) String() string {
+	return string(e)
+}
+
+func (e *CrewAnswerValue) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CrewAnswerValue(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CrewAnswerValue", str)
+	}
+	return nil
+}
+
+func (e CrewAnswerValue) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CrewAnswerValue) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CrewAnswerValue) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CrewConfirmation string
+
+const (
+	CrewConfirmationPending  CrewConfirmation = "pending"
+	CrewConfirmationReceived CrewConfirmation = "received"
+	CrewConfirmationDisputed CrewConfirmation = "disputed"
+)
+
+var AllCrewConfirmation = []CrewConfirmation{
+	CrewConfirmationPending,
+	CrewConfirmationReceived,
+	CrewConfirmationDisputed,
+}
+
+func (e CrewConfirmation) IsValid() bool {
+	switch e {
+	case CrewConfirmationPending, CrewConfirmationReceived, CrewConfirmationDisputed:
+		return true
+	}
+	return false
+}
+
+func (e CrewConfirmation) String() string {
+	return string(e)
+}
+
+func (e *CrewConfirmation) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CrewConfirmation(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CrewConfirmation", str)
+	}
+	return nil
+}
+
+func (e CrewConfirmation) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CrewConfirmation) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CrewConfirmation) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CrewQuestionKind string
+
+const (
+	CrewQuestionKindIsDone           CrewQuestionKind = "is_done"
+	CrewQuestionKindPhotoBeforeCover CrewQuestionKind = "photo_before_cover"
+	CrewQuestionKindHeadcount        CrewQuestionKind = "headcount"
+	CrewQuestionKindWorkedToday      CrewQuestionKind = "worked_today"
+	CrewQuestionKindWageConfirm      CrewQuestionKind = "wage_confirm"
+	CrewQuestionKindDailyNote        CrewQuestionKind = "daily_note"
+)
+
+var AllCrewQuestionKind = []CrewQuestionKind{
+	CrewQuestionKindIsDone,
+	CrewQuestionKindPhotoBeforeCover,
+	CrewQuestionKindHeadcount,
+	CrewQuestionKindWorkedToday,
+	CrewQuestionKindWageConfirm,
+	CrewQuestionKindDailyNote,
+}
+
+func (e CrewQuestionKind) IsValid() bool {
+	switch e {
+	case CrewQuestionKindIsDone, CrewQuestionKindPhotoBeforeCover, CrewQuestionKindHeadcount, CrewQuestionKindWorkedToday, CrewQuestionKindWageConfirm, CrewQuestionKindDailyNote:
+		return true
+	}
+	return false
+}
+
+func (e CrewQuestionKind) String() string {
+	return string(e)
+}
+
+func (e *CrewQuestionKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CrewQuestionKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CrewQuestionKind", str)
+	}
+	return nil
+}
+
+func (e CrewQuestionKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CrewQuestionKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CrewQuestionKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CrewQuestionStatus string
+
+const (
+	CrewQuestionStatusSent     CrewQuestionStatus = "sent"
+	CrewQuestionStatusOpened   CrewQuestionStatus = "opened"
+	CrewQuestionStatusAnswered CrewQuestionStatus = "answered"
+)
+
+var AllCrewQuestionStatus = []CrewQuestionStatus{
+	CrewQuestionStatusSent,
+	CrewQuestionStatusOpened,
+	CrewQuestionStatusAnswered,
+}
+
+func (e CrewQuestionStatus) IsValid() bool {
+	switch e {
+	case CrewQuestionStatusSent, CrewQuestionStatusOpened, CrewQuestionStatusAnswered:
+		return true
+	}
+	return false
+}
+
+func (e CrewQuestionStatus) String() string {
+	return string(e)
+}
+
+func (e *CrewQuestionStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CrewQuestionStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CrewQuestionStatus", str)
+	}
+	return nil
+}
+
+func (e CrewQuestionStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CrewQuestionStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CrewQuestionStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type CrewRole string
+
+const (
+	CrewRoleTukang CrewRole = "tukang"
+	CrewRoleKenek  CrewRole = "kenek"
+)
+
+var AllCrewRole = []CrewRole{
+	CrewRoleTukang,
+	CrewRoleKenek,
+}
+
+func (e CrewRole) IsValid() bool {
+	switch e {
+	case CrewRoleTukang, CrewRoleKenek:
+		return true
+	}
+	return false
+}
+
+func (e CrewRole) String() string {
+	return string(e)
+}
+
+func (e *CrewRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CrewRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CrewRole", str)
+	}
+	return nil
+}
+
+func (e CrewRole) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CrewRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CrewRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DatePrecision string
+
+const (
+	DatePrecisionDay   DatePrecision = "day"
+	DatePrecisionMonth DatePrecision = "month"
+)
+
+var AllDatePrecision = []DatePrecision{
+	DatePrecisionDay,
+	DatePrecisionMonth,
+}
+
+func (e DatePrecision) IsValid() bool {
+	switch e {
+	case DatePrecisionDay, DatePrecisionMonth:
+		return true
+	}
+	return false
+}
+
+func (e DatePrecision) String() string {
+	return string(e)
+}
+
+func (e *DatePrecision) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DatePrecision(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DatePrecision", str)
+	}
+	return nil
+}
+
+func (e DatePrecision) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DatePrecision) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DatePrecision) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DecisionState string
+
+const (
+	DecisionStateDraft DecisionState = "draft"
+	DecisionStateSent  DecisionState = "sent"
+)
+
+var AllDecisionState = []DecisionState{
+	DecisionStateDraft,
+	DecisionStateSent,
+}
+
+func (e DecisionState) IsValid() bool {
+	switch e {
+	case DecisionStateDraft, DecisionStateSent:
+		return true
+	}
+	return false
+}
+
+func (e DecisionState) String() string {
+	return string(e)
+}
+
+func (e *DecisionState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DecisionState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DecisionState", str)
+	}
+	return nil
+}
+
+func (e DecisionState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DecisionState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DecisionState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DecisionStatus string
+
+const (
+	DecisionStatusOpen     DecisionStatus = "open"
+	DecisionStatusAnswered DecisionStatus = "answered"
+	DecisionStatusExpired  DecisionStatus = "expired"
+)
+
+var AllDecisionStatus = []DecisionStatus{
+	DecisionStatusOpen,
+	DecisionStatusAnswered,
+	DecisionStatusExpired,
+}
+
+func (e DecisionStatus) IsValid() bool {
+	switch e {
+	case DecisionStatusOpen, DecisionStatusAnswered, DecisionStatusExpired:
+		return true
+	}
+	return false
+}
+
+func (e DecisionStatus) String() string {
+	return string(e)
+}
+
+func (e *DecisionStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DecisionStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DecisionStatus", str)
+	}
+	return nil
+}
+
+func (e DecisionStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DecisionStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DecisionStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DeclineReason string
+
+const (
+	DeclineReasonOutOfStock     DeclineReason = "out_of_stock"
+	DeclineReasonTooFar         DeclineReason = "too_far"
+	DeclineReasonCannotMakeSlot DeclineReason = "cannot_make_slot"
+	DeclineReasonOther          DeclineReason = "other"
+)
+
+var AllDeclineReason = []DeclineReason{
+	DeclineReasonOutOfStock,
+	DeclineReasonTooFar,
+	DeclineReasonCannotMakeSlot,
+	DeclineReasonOther,
+}
+
+func (e DeclineReason) IsValid() bool {
+	switch e {
+	case DeclineReasonOutOfStock, DeclineReasonTooFar, DeclineReasonCannotMakeSlot, DeclineReasonOther:
+		return true
+	}
+	return false
+}
+
+func (e DeclineReason) String() string {
+	return string(e)
+}
+
+func (e *DeclineReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DeclineReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DeclineReason", str)
+	}
+	return nil
+}
+
+func (e DeclineReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DeclineReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DeclineReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DeclineReasonBid string
+
+const (
+	DeclineReasonBidBudgetNotRealistic DeclineReasonBid = "budget_not_realistic"
+	DeclineReasonBidFullyBooked        DeclineReasonBid = "fully_booked"
+	DeclineReasonBidTooFar             DeclineReasonBid = "too_far"
+	DeclineReasonBidNotMyWork          DeclineReasonBid = "not_my_work"
+	DeclineReasonBidOther              DeclineReasonBid = "other"
+)
+
+var AllDeclineReasonBid = []DeclineReasonBid{
+	DeclineReasonBidBudgetNotRealistic,
+	DeclineReasonBidFullyBooked,
+	DeclineReasonBidTooFar,
+	DeclineReasonBidNotMyWork,
+	DeclineReasonBidOther,
+}
+
+func (e DeclineReasonBid) IsValid() bool {
+	switch e {
+	case DeclineReasonBidBudgetNotRealistic, DeclineReasonBidFullyBooked, DeclineReasonBidTooFar, DeclineReasonBidNotMyWork, DeclineReasonBidOther:
+		return true
+	}
+	return false
+}
+
+func (e DeclineReasonBid) String() string {
+	return string(e)
+}
+
+func (e *DeclineReasonBid) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DeclineReasonBid(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DeclineReasonBid", str)
+	}
+	return nil
+}
+
+func (e DeclineReasonBid) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DeclineReasonBid) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DeclineReasonBid) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DeliveryStatus string
+
+const (
+	DeliveryStatusAssigned  DeliveryStatus = "assigned"
+	DeliveryStatusOnTheWay  DeliveryStatus = "on_the_way"
+	DeliveryStatusArrived   DeliveryStatus = "arrived"
+	DeliveryStatusConfirmed DeliveryStatus = "confirmed"
+	DeliveryStatusProblem   DeliveryStatus = "problem"
+	DeliveryStatusReleased  DeliveryStatus = "released"
+)
+
+var AllDeliveryStatus = []DeliveryStatus{
+	DeliveryStatusAssigned,
+	DeliveryStatusOnTheWay,
+	DeliveryStatusArrived,
+	DeliveryStatusConfirmed,
+	DeliveryStatusProblem,
+	DeliveryStatusReleased,
+}
+
+func (e DeliveryStatus) IsValid() bool {
+	switch e {
+	case DeliveryStatusAssigned, DeliveryStatusOnTheWay, DeliveryStatusArrived, DeliveryStatusConfirmed, DeliveryStatusProblem, DeliveryStatusReleased:
+		return true
+	}
+	return false
+}
+
+func (e DeliveryStatus) String() string {
+	return string(e)
+}
+
+func (e *DeliveryStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DeliveryStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DeliveryStatus", str)
+	}
+	return nil
+}
+
+func (e DeliveryStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DeliveryStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DeliveryStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DesignArm string
+
+const (
+	DesignArmMoodBoardOnly DesignArm = "mood_board_only"
+	DesignArmWithAiPicture DesignArm = "with_ai_picture"
+)
+
+var AllDesignArm = []DesignArm{
+	DesignArmMoodBoardOnly,
+	DesignArmWithAiPicture,
+}
+
+func (e DesignArm) IsValid() bool {
+	switch e {
+	case DesignArmMoodBoardOnly, DesignArmWithAiPicture:
+		return true
+	}
+	return false
+}
+
+func (e DesignArm) String() string {
+	return string(e)
+}
+
+func (e *DesignArm) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DesignArm(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DesignArm", str)
+	}
+	return nil
+}
+
+func (e DesignArm) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DesignArm) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DesignArm) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DevicePlatform string
+
+const (
+	DevicePlatformIos     DevicePlatform = "ios"
+	DevicePlatformAndroid DevicePlatform = "android"
+)
+
+var AllDevicePlatform = []DevicePlatform{
+	DevicePlatformIos,
+	DevicePlatformAndroid,
+}
+
+func (e DevicePlatform) IsValid() bool {
+	switch e {
+	case DevicePlatformIos, DevicePlatformAndroid:
+		return true
+	}
+	return false
+}
+
+func (e DevicePlatform) String() string {
+	return string(e)
+}
+
+func (e *DevicePlatform) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DevicePlatform(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DevicePlatform", str)
+	}
+	return nil
+}
+
+func (e DevicePlatform) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DevicePlatform) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DevicePlatform) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type DriverStatus string
+
+const (
+	DriverStatusFree      DriverStatus = "free"
+	DriverStatusOnTheRoad DriverStatus = "on_the_road"
+	DriverStatusAtShop    DriverStatus = "at_shop"
+)
+
+var AllDriverStatus = []DriverStatus{
+	DriverStatusFree,
+	DriverStatusOnTheRoad,
+	DriverStatusAtShop,
+}
+
+func (e DriverStatus) IsValid() bool {
+	switch e {
+	case DriverStatusFree, DriverStatusOnTheRoad, DriverStatusAtShop:
+		return true
+	}
+	return false
+}
+
+func (e DriverStatus) String() string {
+	return string(e)
+}
+
+func (e *DriverStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DriverStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DriverStatus", str)
+	}
+	return nil
+}
+
+func (e DriverStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DriverStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DriverStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type EndReason string
+
+const (
+	EndReasonMutual                 EndReason = "mutual"
+	EndReasonOwnerCancels           EndReason = "owner_cancels"
+	EndReasonContractorUnresponsive EndReason = "contractor_unresponsive"
+	EndReasonOwnerDefault           EndReason = "owner_default"
+)
+
+var AllEndReason = []EndReason{
+	EndReasonMutual,
+	EndReasonOwnerCancels,
+	EndReasonContractorUnresponsive,
+	EndReasonOwnerDefault,
+}
+
+func (e EndReason) IsValid() bool {
+	switch e {
+	case EndReasonMutual, EndReasonOwnerCancels, EndReasonContractorUnresponsive, EndReasonOwnerDefault:
+		return true
+	}
+	return false
+}
+
+func (e EndReason) String() string {
+	return string(e)
+}
+
+func (e *EndReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = EndReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid EndReason", str)
+	}
+	return nil
+}
+
+func (e EndReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *EndReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e EndReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type EndRequestStatus string
+
+const (
+	EndRequestStatusProposed  EndRequestStatus = "proposed"
+	EndRequestStatusAgreed    EndRequestStatus = "agreed"
+	EndRequestStatusMediation EndRequestStatus = "mediation"
+	EndRequestStatusSettled   EndRequestStatus = "settled"
+	EndRequestStatusWithdrawn EndRequestStatus = "withdrawn"
+)
+
+var AllEndRequestStatus = []EndRequestStatus{
+	EndRequestStatusProposed,
+	EndRequestStatusAgreed,
+	EndRequestStatusMediation,
+	EndRequestStatusSettled,
+	EndRequestStatusWithdrawn,
+}
+
+func (e EndRequestStatus) IsValid() bool {
+	switch e {
+	case EndRequestStatusProposed, EndRequestStatusAgreed, EndRequestStatusMediation, EndRequestStatusSettled, EndRequestStatusWithdrawn:
+		return true
+	}
+	return false
+}
+
+func (e EndRequestStatus) String() string {
+	return string(e)
+}
+
+func (e *EndRequestStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = EndRequestStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid EndRequestStatus", str)
+	}
+	return nil
+}
+
+func (e EndRequestStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *EndRequestStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e EndRequestStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExportKind string
+
+const (
+	ExportKindSummaryPDF           ExportKind = "summary_pdf"
+	ExportKindEvidencePack         ExportKind = "evidence_pack"
+	ExportKindStatementPDF         ExportKind = "statement_pdf"
+	ExportKindHandoverChecklistPDF ExportKind = "handover_checklist_pdf"
+	ExportKindMyData               ExportKind = "my_data"
+)
+
+var AllExportKind = []ExportKind{
+	ExportKindSummaryPDF,
+	ExportKindEvidencePack,
+	ExportKindStatementPDF,
+	ExportKindHandoverChecklistPDF,
+	ExportKindMyData,
+}
+
+func (e ExportKind) IsValid() bool {
+	switch e {
+	case ExportKindSummaryPDF, ExportKindEvidencePack, ExportKindStatementPDF, ExportKindHandoverChecklistPDF, ExportKindMyData:
+		return true
+	}
+	return false
+}
+
+func (e ExportKind) String() string {
+	return string(e)
+}
+
+func (e *ExportKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExportKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExportKind", str)
+	}
+	return nil
+}
+
+func (e ExportKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExportKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExportKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExportStatus string
+
+const (
+	ExportStatusQueued ExportStatus = "queued"
+	ExportStatusReady  ExportStatus = "ready"
+	ExportStatusFailed ExportStatus = "failed"
+)
+
+var AllExportStatus = []ExportStatus{
+	ExportStatusQueued,
+	ExportStatusReady,
+	ExportStatusFailed,
+}
+
+func (e ExportStatus) IsValid() bool {
+	switch e {
+	case ExportStatusQueued, ExportStatusReady, ExportStatusFailed:
+		return true
+	}
+	return false
+}
+
+func (e ExportStatus) String() string {
+	return string(e)
+}
+
+func (e *ExportStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExportStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExportStatus", str)
+	}
+	return nil
+}
+
+func (e ExportStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExportStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExportStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type FieldCheck string
+
+const (
+	FieldCheckSame        FieldCheck = "same"
+	FieldCheckTradingName FieldCheck = "trading_name"
+	FieldCheckNibHolder   FieldCheck = "nib_holder"
+	FieldCheckNeedsYou    FieldCheck = "needs_you"
+	FieldCheckDiffers     FieldCheck = "differs"
+)
+
+var AllFieldCheck = []FieldCheck{
+	FieldCheckSame,
+	FieldCheckTradingName,
+	FieldCheckNibHolder,
+	FieldCheckNeedsYou,
+	FieldCheckDiffers,
+}
+
+func (e FieldCheck) IsValid() bool {
+	switch e {
+	case FieldCheckSame, FieldCheckTradingName, FieldCheckNibHolder, FieldCheckNeedsYou, FieldCheckDiffers:
+		return true
+	}
+	return false
+}
+
+func (e FieldCheck) String() string {
+	return string(e)
+}
+
+func (e *FieldCheck) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FieldCheck(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FieldCheck", str)
+	}
+	return nil
+}
+
+func (e FieldCheck) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FieldCheck) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FieldCheck) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type FinishElement string
+
+const (
+	FinishElementWallTile FinishElement = "wall_tile"
+	FinishElementFloor    FinishElement = "floor"
+	FinishElementCabinets FinishElement = "cabinets"
+	FinishElementWorktop  FinishElement = "worktop"
+	FinishElementSinkTap  FinishElement = "sink_tap"
+	FinishElementLighting FinishElement = "lighting"
+	FinishElementOther    FinishElement = "other"
+)
+
+var AllFinishElement = []FinishElement{
+	FinishElementWallTile,
+	FinishElementFloor,
+	FinishElementCabinets,
+	FinishElementWorktop,
+	FinishElementSinkTap,
+	FinishElementLighting,
+	FinishElementOther,
+}
+
+func (e FinishElement) IsValid() bool {
+	switch e {
+	case FinishElementWallTile, FinishElementFloor, FinishElementCabinets, FinishElementWorktop, FinishElementSinkTap, FinishElementLighting, FinishElementOther:
+		return true
+	}
+	return false
+}
+
+func (e FinishElement) String() string {
+	return string(e)
+}
+
+func (e *FinishElement) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FinishElement(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FinishElement", str)
+	}
+	return nil
+}
+
+func (e FinishElement) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FinishElement) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FinishElement) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type FinishStatus string
+
+const (
+	FinishStatusChosen     FinishStatus = "chosen"
+	FinishStatusNotDecided FinishStatus = "not_decided"
+)
+
+var AllFinishStatus = []FinishStatus{
+	FinishStatusChosen,
+	FinishStatusNotDecided,
+}
+
+func (e FinishStatus) IsValid() bool {
+	switch e {
+	case FinishStatusChosen, FinishStatusNotDecided:
+		return true
+	}
+	return false
+}
+
+func (e FinishStatus) String() string {
+	return string(e)
+}
+
+func (e *FinishStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FinishStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FinishStatus", str)
+	}
+	return nil
+}
+
+func (e FinishStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FinishStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FinishStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type FundingLineKind string
+
+const (
+	FundingLineKindPrincipal       FundingLineKind = "principal"
+	FundingLineKindProtectionFee   FundingLineKind = "protection_fee"
+	FundingLineKindFeeMinimumTopup FundingLineKind = "fee_minimum_topup"
+)
+
+var AllFundingLineKind = []FundingLineKind{
+	FundingLineKindPrincipal,
+	FundingLineKindProtectionFee,
+	FundingLineKindFeeMinimumTopup,
+}
+
+func (e FundingLineKind) IsValid() bool {
+	switch e {
+	case FundingLineKindPrincipal, FundingLineKindProtectionFee, FundingLineKindFeeMinimumTopup:
+		return true
+	}
+	return false
+}
+
+func (e FundingLineKind) String() string {
+	return string(e)
+}
+
+func (e *FundingLineKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FundingLineKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FundingLineKind", str)
+	}
+	return nil
+}
+
+func (e FundingLineKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FundingLineKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FundingLineKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type FundingPurpose string
+
+const (
+	FundingPurposeStage           FundingPurpose = "stage"
+	FundingPurposeChangeOrder     FundingPurpose = "change_order"
+	FundingPurposeOrder           FundingPurpose = "order"
+	FundingPurposeOrderDifference FundingPurpose = "order_difference"
+)
+
+var AllFundingPurpose = []FundingPurpose{
+	FundingPurposeStage,
+	FundingPurposeChangeOrder,
+	FundingPurposeOrder,
+	FundingPurposeOrderDifference,
+}
+
+func (e FundingPurpose) IsValid() bool {
+	switch e {
+	case FundingPurposeStage, FundingPurposeChangeOrder, FundingPurposeOrder, FundingPurposeOrderDifference:
+		return true
+	}
+	return false
+}
+
+func (e FundingPurpose) String() string {
+	return string(e)
+}
+
+func (e *FundingPurpose) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FundingPurpose(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FundingPurpose", str)
+	}
+	return nil
+}
+
+func (e FundingPurpose) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FundingPurpose) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FundingPurpose) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type FundingStatus string
+
+const (
+	FundingStatusAwaitingPayment FundingStatus = "awaiting_payment"
+	FundingStatusPaid            FundingStatus = "paid"
+	FundingStatusExpired         FundingStatus = "expired"
+	FundingStatusCancelled       FundingStatus = "cancelled"
+	FundingStatusRefunded        FundingStatus = "refunded"
+)
+
+var AllFundingStatus = []FundingStatus{
+	FundingStatusAwaitingPayment,
+	FundingStatusPaid,
+	FundingStatusExpired,
+	FundingStatusCancelled,
+	FundingStatusRefunded,
+}
+
+func (e FundingStatus) IsValid() bool {
+	switch e {
+	case FundingStatusAwaitingPayment, FundingStatusPaid, FundingStatusExpired, FundingStatusCancelled, FundingStatusRefunded:
+		return true
+	}
+	return false
+}
+
+func (e FundingStatus) String() string {
+	return string(e)
+}
+
+func (e *FundingStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FundingStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FundingStatus", str)
+	}
+	return nil
+}
+
+func (e FundingStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FundingStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FundingStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type GuardReview string
+
+const (
+	GuardReviewAuto        GuardReview = "auto"
+	GuardReviewNeedsReview GuardReview = "needs_review"
+)
+
+var AllGuardReview = []GuardReview{
+	GuardReviewAuto,
+	GuardReviewNeedsReview,
+}
+
+func (e GuardReview) IsValid() bool {
+	switch e {
+	case GuardReviewAuto, GuardReviewNeedsReview:
+		return true
+	}
+	return false
+}
+
+func (e GuardReview) String() string {
+	return string(e)
+}
+
+func (e *GuardReview) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = GuardReview(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid GuardReview", str)
+	}
+	return nil
+}
+
+func (e GuardReview) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *GuardReview) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e GuardReview) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type HandoverAction string
+
+const (
+	HandoverActionAccept    HandoverAction = "accept"
+	HandoverActionFlag      HandoverAction = "flag"
+	HandoverActionStartTest HandoverAction = "start_test"
+	HandoverActionPass      HandoverAction = "pass"
+	HandoverActionFail      HandoverAction = "fail"
+	HandoverActionMarkFixed HandoverAction = "mark_fixed"
+	// Takes back the caller's last step on the item (the toast's Undo): it is not checked again. Until anyone signs.
+	HandoverActionUndo HandoverAction = "undo"
+)
+
+var AllHandoverAction = []HandoverAction{
+	HandoverActionAccept,
+	HandoverActionFlag,
+	HandoverActionStartTest,
+	HandoverActionPass,
+	HandoverActionFail,
+	HandoverActionMarkFixed,
+	HandoverActionUndo,
+}
+
+func (e HandoverAction) IsValid() bool {
+	switch e {
+	case HandoverActionAccept, HandoverActionFlag, HandoverActionStartTest, HandoverActionPass, HandoverActionFail, HandoverActionMarkFixed, HandoverActionUndo:
+		return true
+	}
+	return false
+}
+
+func (e HandoverAction) String() string {
+	return string(e)
+}
+
+func (e *HandoverAction) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = HandoverAction(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid HandoverAction", str)
+	}
+	return nil
+}
+
+func (e HandoverAction) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *HandoverAction) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e HandoverAction) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type HandoverGroup string
+
+const (
+	HandoverGroupKitchen HandoverGroup = "kitchen"
+	HandoverGroupWater   HandoverGroup = "water"
+	HandoverGroupPower   HandoverGroup = "power"
+	HandoverGroupOther   HandoverGroup = "other"
+)
+
+var AllHandoverGroup = []HandoverGroup{
+	HandoverGroupKitchen,
+	HandoverGroupWater,
+	HandoverGroupPower,
+	HandoverGroupOther,
+}
+
+func (e HandoverGroup) IsValid() bool {
+	switch e {
+	case HandoverGroupKitchen, HandoverGroupWater, HandoverGroupPower, HandoverGroupOther:
+		return true
+	}
+	return false
+}
+
+func (e HandoverGroup) String() string {
+	return string(e)
+}
+
+func (e *HandoverGroup) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = HandoverGroup(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid HandoverGroup", str)
+	}
+	return nil
+}
+
+func (e HandoverGroup) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *HandoverGroup) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e HandoverGroup) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type HandoverItemKind string
+
+const (
+	HandoverItemKindVisual   HandoverItemKind = "visual"
+	HandoverItemKindTapTest  HandoverItemKind = "tap_test"
+	HandoverItemKindSoakTest HandoverItemKind = "soak_test"
+	HandoverItemKindWaterRun HandoverItemKind = "water_run"
+	HandoverItemKindFunction HandoverItemKind = "function"
+)
+
+var AllHandoverItemKind = []HandoverItemKind{
+	HandoverItemKindVisual,
+	HandoverItemKindTapTest,
+	HandoverItemKindSoakTest,
+	HandoverItemKindWaterRun,
+	HandoverItemKindFunction,
+}
+
+func (e HandoverItemKind) IsValid() bool {
+	switch e {
+	case HandoverItemKindVisual, HandoverItemKindTapTest, HandoverItemKindSoakTest, HandoverItemKindWaterRun, HandoverItemKindFunction:
+		return true
+	}
+	return false
+}
+
+func (e HandoverItemKind) String() string {
+	return string(e)
+}
+
+func (e *HandoverItemKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = HandoverItemKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid HandoverItemKind", str)
+	}
+	return nil
+}
+
+func (e HandoverItemKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *HandoverItemKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e HandoverItemKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type HandoverItemStatus string
+
+const (
+	HandoverItemStatusNotChecked   HandoverItemStatus = "not_checked"
+	HandoverItemStatusAccepted     HandoverItemStatus = "accepted"
+	HandoverItemStatusFlagged      HandoverItemStatus = "flagged"
+	HandoverItemStatusRunning      HandoverItemStatus = "running"
+	HandoverItemStatusFixedPending HandoverItemStatus = "fixed_pending"
+)
+
+var AllHandoverItemStatus = []HandoverItemStatus{
+	HandoverItemStatusNotChecked,
+	HandoverItemStatusAccepted,
+	HandoverItemStatusFlagged,
+	HandoverItemStatusRunning,
+	HandoverItemStatusFixedPending,
+}
+
+func (e HandoverItemStatus) IsValid() bool {
+	switch e {
+	case HandoverItemStatusNotChecked, HandoverItemStatusAccepted, HandoverItemStatusFlagged, HandoverItemStatusRunning, HandoverItemStatusFixedPending:
+		return true
+	}
+	return false
+}
+
+func (e HandoverItemStatus) String() string {
+	return string(e)
+}
+
+func (e *HandoverItemStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = HandoverItemStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid HandoverItemStatus", str)
+	}
+	return nil
+}
+
+func (e HandoverItemStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *HandoverItemStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e HandoverItemStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type HandoverOrigin string
+
+const (
+	HandoverOriginAgreement       HandoverOrigin = "agreement"
+	HandoverOriginIssueCannotTell HandoverOrigin = "issue_cannot_tell"
+	HandoverOriginAdded           HandoverOrigin = "added"
+	HandoverOriginChangeOrder     HandoverOrigin = "change_order"
+)
+
+var AllHandoverOrigin = []HandoverOrigin{
+	HandoverOriginAgreement,
+	HandoverOriginIssueCannotTell,
+	HandoverOriginAdded,
+	HandoverOriginChangeOrder,
+}
+
+func (e HandoverOrigin) IsValid() bool {
+	switch e {
+	case HandoverOriginAgreement, HandoverOriginIssueCannotTell, HandoverOriginAdded, HandoverOriginChangeOrder:
+		return true
+	}
+	return false
+}
+
+func (e HandoverOrigin) String() string {
+	return string(e)
+}
+
+func (e *HandoverOrigin) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = HandoverOrigin(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid HandoverOrigin", str)
+	}
+	return nil
+}
+
+func (e HandoverOrigin) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *HandoverOrigin) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e HandoverOrigin) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type HandoverStatus string
+
+const (
+	HandoverStatusScheduled   HandoverStatus = "scheduled"
+	HandoverStatusInProgress  HandoverStatus = "in_progress"
+	HandoverStatusReadyToSign HandoverStatus = "ready_to_sign"
+	HandoverStatusSigned      HandoverStatus = "signed"
+)
+
+var AllHandoverStatus = []HandoverStatus{
+	HandoverStatusScheduled,
+	HandoverStatusInProgress,
+	HandoverStatusReadyToSign,
+	HandoverStatusSigned,
+}
+
+func (e HandoverStatus) IsValid() bool {
+	switch e {
+	case HandoverStatusScheduled, HandoverStatusInProgress, HandoverStatusReadyToSign, HandoverStatusSigned:
+		return true
+	}
+	return false
+}
+
+func (e HandoverStatus) String() string {
+	return string(e)
+}
+
+func (e *HandoverStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = HandoverStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid HandoverStatus", str)
+	}
+	return nil
+}
+
+func (e HandoverStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *HandoverStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e HandoverStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type HoldState string
+
+const (
+	HoldStateWaits      HoldState = "waits"
+	HoldStateKeepsClock HoldState = "keeps_clock"
+)
+
+var AllHoldState = []HoldState{
+	HoldStateWaits,
+	HoldStateKeepsClock,
+}
+
+func (e HoldState) IsValid() bool {
+	switch e {
+	case HoldStateWaits, HoldStateKeepsClock:
+		return true
+	}
+	return false
+}
+
+func (e HoldState) String() string {
+	return string(e)
+}
+
+func (e *HoldState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = HoldState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid HoldState", str)
+	}
+	return nil
+}
+
+func (e HoldState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *HoldState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e HoldState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type HomeEventKind string
+
+const (
+	HomeEventKindRetentionCheck   HomeEventKind = "retention_check"
+	HomeEventKindWarrantyEnd      HomeEventKind = "warranty_end"
+	HomeEventKindWarrantyReminder HomeEventKind = "warranty_reminder"
+	HomeEventKindSeasonalCheck    HomeEventKind = "seasonal_check"
+)
+
+var AllHomeEventKind = []HomeEventKind{
+	HomeEventKindRetentionCheck,
+	HomeEventKindWarrantyEnd,
+	HomeEventKindWarrantyReminder,
+	HomeEventKindSeasonalCheck,
+}
+
+func (e HomeEventKind) IsValid() bool {
+	switch e {
+	case HomeEventKindRetentionCheck, HomeEventKindWarrantyEnd, HomeEventKindWarrantyReminder, HomeEventKindSeasonalCheck:
+		return true
+	}
+	return false
+}
+
+func (e HomeEventKind) String() string {
+	return string(e)
+}
+
+func (e *HomeEventKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = HomeEventKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid HomeEventKind", str)
+	}
+	return nil
+}
+
+func (e HomeEventKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *HomeEventKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e HomeEventKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ImportSource string
+
+const (
+	ImportSourceWhatsappChat ImportSource = "whatsapp_chat"
+	ImportSourceRabPhoto     ImportSource = "rab_photo"
+	ImportSourceVoice        ImportSource = "voice"
+	ImportSourceBlank        ImportSource = "blank"
+)
+
+var AllImportSource = []ImportSource{
+	ImportSourceWhatsappChat,
+	ImportSourceRabPhoto,
+	ImportSourceVoice,
+	ImportSourceBlank,
+}
+
+func (e ImportSource) IsValid() bool {
+	switch e {
+	case ImportSourceWhatsappChat, ImportSourceRabPhoto, ImportSourceVoice, ImportSourceBlank:
+		return true
+	}
+	return false
+}
+
+func (e ImportSource) String() string {
+	return string(e)
+}
+
+func (e *ImportSource) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ImportSource(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ImportSource", str)
+	}
+	return nil
+}
+
+func (e ImportSource) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ImportSource) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ImportSource) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ImportStatus string
+
+const (
+	ImportStatusProcessing ImportStatus = "processing"
+	ImportStatusReady      ImportStatus = "ready"
+	ImportStatusFailed     ImportStatus = "failed"
+)
+
+var AllImportStatus = []ImportStatus{
+	ImportStatusProcessing,
+	ImportStatusReady,
+	ImportStatusFailed,
+}
+
+func (e ImportStatus) IsValid() bool {
+	switch e {
+	case ImportStatusProcessing, ImportStatusReady, ImportStatusFailed:
+		return true
+	}
+	return false
+}
+
+func (e ImportStatus) String() string {
+	return string(e)
+}
+
+func (e *ImportStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ImportStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ImportStatus", str)
+	}
+	return nil
+}
+
+func (e ImportStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ImportStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ImportStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type InstructionKind string
+
+const (
+	InstructionKindRelease        InstructionKind = "release"
+	InstructionKindShopPayout     InstructionKind = "shop_payout"
+	InstructionKindRefund         InstructionKind = "refund"
+	InstructionKindPartialRelease InstructionKind = "partial_release"
+)
+
+var AllInstructionKind = []InstructionKind{
+	InstructionKindRelease,
+	InstructionKindShopPayout,
+	InstructionKindRefund,
+	InstructionKindPartialRelease,
+}
+
+func (e InstructionKind) IsValid() bool {
+	switch e {
+	case InstructionKindRelease, InstructionKindShopPayout, InstructionKindRefund, InstructionKindPartialRelease:
+		return true
+	}
+	return false
+}
+
+func (e InstructionKind) String() string {
+	return string(e)
+}
+
+func (e *InstructionKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = InstructionKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid InstructionKind", str)
+	}
+	return nil
+}
+
+func (e InstructionKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *InstructionKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e InstructionKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type InstructionRail string
+
+const (
+	InstructionRailBiFast          InstructionRail = "bi_fast"
+	InstructionRailNextDayClearing InstructionRail = "next_day_clearing"
+)
+
+var AllInstructionRail = []InstructionRail{
+	InstructionRailBiFast,
+	InstructionRailNextDayClearing,
+}
+
+func (e InstructionRail) IsValid() bool {
+	switch e {
+	case InstructionRailBiFast, InstructionRailNextDayClearing:
+		return true
+	}
+	return false
+}
+
+func (e InstructionRail) String() string {
+	return string(e)
+}
+
+func (e *InstructionRail) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = InstructionRail(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid InstructionRail", str)
+	}
+	return nil
+}
+
+func (e InstructionRail) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *InstructionRail) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e InstructionRail) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type InviteAnswer string
+
+const (
+	InviteAnswerJoin    InviteAnswer = "join"
+	InviteAnswerDecline InviteAnswer = "decline"
+)
+
+var AllInviteAnswer = []InviteAnswer{
+	InviteAnswerJoin,
+	InviteAnswerDecline,
+}
+
+func (e InviteAnswer) IsValid() bool {
+	switch e {
+	case InviteAnswerJoin, InviteAnswerDecline:
+		return true
+	}
+	return false
+}
+
+func (e InviteAnswer) String() string {
+	return string(e)
+}
+
+func (e *InviteAnswer) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = InviteAnswer(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid InviteAnswer", str)
+	}
+	return nil
+}
+
+func (e InviteAnswer) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *InviteAnswer) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e InviteAnswer) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type IssueReplyKind string
+
+const (
+	IssueReplyKindWillFix  IssueReplyKind = "will_fix"
+	IssueReplyKindExplain  IssueReplyKind = "explain"
+	IssueReplyKindDisagree IssueReplyKind = "disagree"
+)
+
+var AllIssueReplyKind = []IssueReplyKind{
+	IssueReplyKindWillFix,
+	IssueReplyKindExplain,
+	IssueReplyKindDisagree,
+}
+
+func (e IssueReplyKind) IsValid() bool {
+	switch e {
+	case IssueReplyKindWillFix, IssueReplyKindExplain, IssueReplyKindDisagree:
+		return true
+	}
+	return false
+}
+
+func (e IssueReplyKind) String() string {
+	return string(e)
+}
+
+func (e *IssueReplyKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = IssueReplyKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid IssueReplyKind", str)
+	}
+	return nil
+}
+
+func (e IssueReplyKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *IssueReplyKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e IssueReplyKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type IssueResolution string
+
+const (
+	IssueResolutionFixed            IssueResolution = "fixed"
+	IssueResolutionWithdrawn        IssueResolution = "withdrawn"
+	IssueResolutionMediatorDecision IssueResolution = "mediator_decision"
+)
+
+var AllIssueResolution = []IssueResolution{
+	IssueResolutionFixed,
+	IssueResolutionWithdrawn,
+	IssueResolutionMediatorDecision,
+}
+
+func (e IssueResolution) IsValid() bool {
+	switch e {
+	case IssueResolutionFixed, IssueResolutionWithdrawn, IssueResolutionMediatorDecision:
+		return true
+	}
+	return false
+}
+
+func (e IssueResolution) String() string {
+	return string(e)
+}
+
+func (e *IssueResolution) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = IssueResolution(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid IssueResolution", str)
+	}
+	return nil
+}
+
+func (e IssueResolution) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *IssueResolution) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e IssueResolution) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type IssueResolutionKind string
+
+const (
+	IssueResolutionKindAcceptFixPlan  IssueResolutionKind = "accept_fix_plan"
+	IssueResolutionKindFixedConfirmed IssueResolutionKind = "fixed_confirmed"
+	IssueResolutionKindWithdraw       IssueResolutionKind = "withdraw"
+)
+
+var AllIssueResolutionKind = []IssueResolutionKind{
+	IssueResolutionKindAcceptFixPlan,
+	IssueResolutionKindFixedConfirmed,
+	IssueResolutionKindWithdraw,
+}
+
+func (e IssueResolutionKind) IsValid() bool {
+	switch e {
+	case IssueResolutionKindAcceptFixPlan, IssueResolutionKindFixedConfirmed, IssueResolutionKindWithdraw:
+		return true
+	}
+	return false
+}
+
+func (e IssueResolutionKind) String() string {
+	return string(e)
+}
+
+func (e *IssueResolutionKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = IssueResolutionKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid IssueResolutionKind", str)
+	}
+	return nil
+}
+
+func (e IssueResolutionKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *IssueResolutionKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e IssueResolutionKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type IssueStatus string
+
+const (
+	IssueStatusAwaitingReply IssueStatus = "awaiting_reply"
+	IssueStatusReplied       IssueStatus = "replied"
+	IssueStatusMediation     IssueStatus = "mediation"
+	// The mediator's suggestion is with both sides; nothing moves until both accept.
+	IssueStatusSuggested IssueStatus = "suggested"
+	IssueStatusResolved  IssueStatus = "resolved"
+	IssueStatusWithdrawn IssueStatus = "withdrawn"
+)
+
+var AllIssueStatus = []IssueStatus{
+	IssueStatusAwaitingReply,
+	IssueStatusReplied,
+	IssueStatusMediation,
+	IssueStatusSuggested,
+	IssueStatusResolved,
+	IssueStatusWithdrawn,
+}
+
+func (e IssueStatus) IsValid() bool {
+	switch e {
+	case IssueStatusAwaitingReply, IssueStatusReplied, IssueStatusMediation, IssueStatusSuggested, IssueStatusResolved, IssueStatusWithdrawn:
+		return true
+	}
+	return false
+}
+
+func (e IssueStatus) String() string {
+	return string(e)
+}
+
+func (e *IssueStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = IssueStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid IssueStatus", str)
+	}
+	return nil
+}
+
+func (e IssueStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *IssueStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e IssueStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ItemRelation string
+
+const (
+	ItemRelationNeededWith       ItemRelation = "needed_with"
+	ItemRelationOftenSkippedWith ItemRelation = "often_skipped_with"
+)
+
+var AllItemRelation = []ItemRelation{
+	ItemRelationNeededWith,
+	ItemRelationOftenSkippedWith,
+}
+
+func (e ItemRelation) IsValid() bool {
+	switch e {
+	case ItemRelationNeededWith, ItemRelationOftenSkippedWith:
+		return true
+	}
+	return false
+}
+
+func (e ItemRelation) String() string {
+	return string(e)
+}
+
+func (e *ItemRelation) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ItemRelation(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ItemRelation", str)
+	}
+	return nil
+}
+
+func (e ItemRelation) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ItemRelation) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ItemRelation) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type JobEventKind string
+
+const (
+	JobEventKindAgreement   JobEventKind = "agreement"
+	JobEventKindSignature   JobEventKind = "signature"
+	JobEventKindFunding     JobEventKind = "funding"
+	JobEventKindRelease     JobEventKind = "release"
+	JobEventKindRefund      JobEventKind = "refund"
+	JobEventKindReport      JobEventKind = "report"
+	JobEventKindChangeOrder JobEventKind = "change_order"
+	JobEventKindDecision    JobEventKind = "decision"
+	JobEventKindIssue       JobEventKind = "issue"
+	JobEventKindMessage     JobEventKind = "message"
+	JobEventKindClock       JobEventKind = "clock"
+	JobEventKindHandover    JobEventKind = "handover"
+	JobEventKindDelivery    JobEventKind = "delivery"
+	JobEventKindPhoto       JobEventKind = "photo"
+	JobEventKindSubmission  JobEventKind = "submission"
+)
+
+var AllJobEventKind = []JobEventKind{
+	JobEventKindAgreement,
+	JobEventKindSignature,
+	JobEventKindFunding,
+	JobEventKindRelease,
+	JobEventKindRefund,
+	JobEventKindReport,
+	JobEventKindChangeOrder,
+	JobEventKindDecision,
+	JobEventKindIssue,
+	JobEventKindMessage,
+	JobEventKindClock,
+	JobEventKindHandover,
+	JobEventKindDelivery,
+	JobEventKindPhoto,
+	JobEventKindSubmission,
+}
+
+func (e JobEventKind) IsValid() bool {
+	switch e {
+	case JobEventKindAgreement, JobEventKindSignature, JobEventKindFunding, JobEventKindRelease, JobEventKindRefund, JobEventKindReport, JobEventKindChangeOrder, JobEventKindDecision, JobEventKindIssue, JobEventKindMessage, JobEventKindClock, JobEventKindHandover, JobEventKindDelivery, JobEventKindPhoto, JobEventKindSubmission:
+		return true
+	}
+	return false
+}
+
+func (e JobEventKind) String() string {
+	return string(e)
+}
+
+func (e *JobEventKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = JobEventKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid JobEventKind", str)
+	}
+	return nil
+}
+
+func (e JobEventKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *JobEventKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e JobEventKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type JobSource string
+
+const (
+	JobSourceContractorInvite JobSource = "contractor_invite"
+	// `renora_brief` jobs may carry the match fee.
+	JobSourceRenoraBrief JobSource = "renora_brief"
+)
+
+var AllJobSource = []JobSource{
+	JobSourceContractorInvite,
+	JobSourceRenoraBrief,
+}
+
+func (e JobSource) IsValid() bool {
+	switch e {
+	case JobSourceContractorInvite, JobSourceRenoraBrief:
+		return true
+	}
+	return false
+}
+
+func (e JobSource) String() string {
+	return string(e)
+}
+
+func (e *JobSource) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = JobSource(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid JobSource", str)
+	}
+	return nil
+}
+
+func (e JobSource) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *JobSource) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e JobSource) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type JobStatus string
+
+const (
+	JobStatusDraft              JobStatus = "draft"
+	JobStatusAwaitingSignatures JobStatus = "awaiting_signatures"
+	JobStatusActive             JobStatus = "active"
+	JobStatusPaused             JobStatus = "paused"
+	JobStatusHandover           JobStatus = "handover"
+	JobStatusCompleted          JobStatus = "completed"
+	JobStatusCancelled          JobStatus = "cancelled"
+)
+
+var AllJobStatus = []JobStatus{
+	JobStatusDraft,
+	JobStatusAwaitingSignatures,
+	JobStatusActive,
+	JobStatusPaused,
+	JobStatusHandover,
+	JobStatusCompleted,
+	JobStatusCancelled,
+}
+
+func (e JobStatus) IsValid() bool {
+	switch e {
+	case JobStatusDraft, JobStatusAwaitingSignatures, JobStatusActive, JobStatusPaused, JobStatusHandover, JobStatusCompleted, JobStatusCancelled:
+		return true
+	}
+	return false
+}
+
+func (e JobStatus) String() string {
+	return string(e)
+}
+
+func (e *JobStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = JobStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid JobStatus", str)
+	}
+	return nil
+}
+
+func (e JobStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *JobStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e JobStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// The 8 key terms every agreement and bid must write down.
+type KeyTerm string
+
+const (
+	KeyTermPrice        KeyTerm = "price"
+	KeyTermStages       KeyTerm = "stages"
+	KeyTermFinishDate   KeyTerm = "finish_date"
+	KeyTermExtraWork    KeyTerm = "extra_work"
+	KeyTermWarranty     KeyTerm = "warranty"
+	KeyTermCancellation KeyTerm = "cancellation"
+	KeyTermMaterials    KeyTerm = "materials"
+	KeyTermIdentity     KeyTerm = "identity"
+)
+
+var AllKeyTerm = []KeyTerm{
+	KeyTermPrice,
+	KeyTermStages,
+	KeyTermFinishDate,
+	KeyTermExtraWork,
+	KeyTermWarranty,
+	KeyTermCancellation,
+	KeyTermMaterials,
+	KeyTermIdentity,
+}
+
+func (e KeyTerm) IsValid() bool {
+	switch e {
+	case KeyTermPrice, KeyTermStages, KeyTermFinishDate, KeyTermExtraWork, KeyTermWarranty, KeyTermCancellation, KeyTermMaterials, KeyTermIdentity:
+		return true
+	}
+	return false
+}
+
+func (e KeyTerm) String() string {
+	return string(e)
+}
+
+func (e *KeyTerm) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = KeyTerm(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid KeyTerm", str)
+	}
+	return nil
+}
+
+func (e KeyTerm) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *KeyTerm) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e KeyTerm) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Language string
+
+const (
+	LanguageID Language = "id"
+	LanguageEn Language = "en"
+)
+
+var AllLanguage = []Language{
+	LanguageID,
+	LanguageEn,
+}
+
+func (e Language) IsValid() bool {
+	switch e {
+	case LanguageID, LanguageEn:
+		return true
+	}
+	return false
+}
+
+func (e Language) String() string {
+	return string(e)
+}
+
+func (e *Language) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Language(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Language", str)
+	}
+	return nil
+}
+
+func (e Language) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Language) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Language) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LedgerStatus string
+
+const (
+	LedgerStatusInEscrow LedgerStatus = "in_escrow"
+	LedgerStatusSending  LedgerStatus = "sending"
+	LedgerStatusArrived  LedgerStatus = "arrived"
+	LedgerStatusFailed   LedgerStatus = "failed"
+)
+
+var AllLedgerStatus = []LedgerStatus{
+	LedgerStatusInEscrow,
+	LedgerStatusSending,
+	LedgerStatusArrived,
+	LedgerStatusFailed,
+}
+
+func (e LedgerStatus) IsValid() bool {
+	switch e {
+	case LedgerStatusInEscrow, LedgerStatusSending, LedgerStatusArrived, LedgerStatusFailed:
+		return true
+	}
+	return false
+}
+
+func (e LedgerStatus) String() string {
+	return string(e)
+}
+
+func (e *LedgerStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LedgerStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LedgerStatus", str)
+	}
+	return nil
+}
+
+func (e LedgerStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LedgerStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LedgerStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LineBuyer string
+
+const (
+	LineBuyerContractor     LineBuyer = "contractor"
+	LineBuyerOwnerViaRenora LineBuyer = "owner_via_renora"
+)
+
+var AllLineBuyer = []LineBuyer{
+	LineBuyerContractor,
+	LineBuyerOwnerViaRenora,
+}
+
+func (e LineBuyer) IsValid() bool {
+	switch e {
+	case LineBuyerContractor, LineBuyerOwnerViaRenora:
+		return true
+	}
+	return false
+}
+
+func (e LineBuyer) String() string {
+	return string(e)
+}
+
+func (e *LineBuyer) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LineBuyer(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LineBuyer", str)
+	}
+	return nil
+}
+
+func (e LineBuyer) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LineBuyer) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LineBuyer) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Each line is labour only or labour plus materials (never a profit line).
+type LineScope string
+
+const (
+	LineScopeLabourOnly         LineScope = "labour_only"
+	LineScopeLabourAndMaterials LineScope = "labour_and_materials"
+)
+
+var AllLineScope = []LineScope{
+	LineScopeLabourOnly,
+	LineScopeLabourAndMaterials,
+}
+
+func (e LineScope) IsValid() bool {
+	switch e {
+	case LineScopeLabourOnly, LineScopeLabourAndMaterials:
+		return true
+	}
+	return false
+}
+
+func (e LineScope) String() string {
+	return string(e)
+}
+
+func (e *LineScope) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LineScope(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LineScope", str)
+	}
+	return nil
+}
+
+func (e LineScope) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LineScope) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LineScope) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LinkKind string
+
+const (
+	LinkKindOwnerInvite   LinkKind = "owner_invite"
+	LinkKindOwnerJob      LinkKind = "owner_job"
+	LinkKindOwnerFund     LinkKind = "owner_fund"
+	LinkKindCrew          LinkKind = "crew"
+	LinkKindDriver        LinkKind = "driver"
+	LinkKindQuoteQuestion LinkKind = "quote_question"
+)
+
+var AllLinkKind = []LinkKind{
+	LinkKindOwnerInvite,
+	LinkKindOwnerJob,
+	LinkKindOwnerFund,
+	LinkKindCrew,
+	LinkKindDriver,
+	LinkKindQuoteQuestion,
+}
+
+func (e LinkKind) IsValid() bool {
+	switch e {
+	case LinkKindOwnerInvite, LinkKindOwnerJob, LinkKindOwnerFund, LinkKindCrew, LinkKindDriver, LinkKindQuoteQuestion:
+		return true
+	}
+	return false
+}
+
+func (e LinkKind) String() string {
+	return string(e)
+}
+
+func (e *LinkKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LinkKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LinkKind", str)
+	}
+	return nil
+}
+
+func (e LinkKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LinkKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LinkKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LinkStatus string
+
+const (
+	LinkStatusActive   LinkStatus = "active"
+	LinkStatusExpired  LinkStatus = "expired"
+	LinkStatusReplaced LinkStatus = "replaced"
+)
+
+var AllLinkStatus = []LinkStatus{
+	LinkStatusActive,
+	LinkStatusExpired,
+	LinkStatusReplaced,
+}
+
+func (e LinkStatus) IsValid() bool {
+	switch e {
+	case LinkStatusActive, LinkStatusExpired, LinkStatusReplaced:
+		return true
+	}
+	return false
+}
+
+func (e LinkStatus) String() string {
+	return string(e)
+}
+
+func (e *LinkStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LinkStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LinkStatus", str)
+	}
+	return nil
+}
+
+func (e LinkStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LinkStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LinkStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LookElementState string
+
+const (
+	LookElementStateShown    LookElementState = "shown"
+	LookElementStateNotShown LookElementState = "not_shown"
+	LookElementStateUnclear  LookElementState = "unclear"
+)
+
+var AllLookElementState = []LookElementState{
+	LookElementStateShown,
+	LookElementStateNotShown,
+	LookElementStateUnclear,
+}
+
+func (e LookElementState) IsValid() bool {
+	switch e {
+	case LookElementStateShown, LookElementStateNotShown, LookElementStateUnclear:
+		return true
+	}
+	return false
+}
+
+func (e LookElementState) String() string {
+	return string(e)
+}
+
+func (e *LookElementState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LookElementState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LookElementState", str)
+	}
+	return nil
+}
+
+func (e LookElementState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LookElementState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LookElementState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// The design studio's quick changes, so a client sends the same value in any language.
+type LookPreset string
+
+const (
+	LookPresetLighterWood        LookPreset = "lighter_wood"
+	LookPresetOpenShelf          LookPreset = "open_shelf"
+	LookPresetHandlelessCabinets LookPreset = "handleless_cabinets"
+	LookPresetKeepWindow         LookPreset = "keep_window"
+)
+
+var AllLookPreset = []LookPreset{
+	LookPresetLighterWood,
+	LookPresetOpenShelf,
+	LookPresetHandlelessCabinets,
+	LookPresetKeepWindow,
+}
+
+func (e LookPreset) IsValid() bool {
+	switch e {
+	case LookPresetLighterWood, LookPresetOpenShelf, LookPresetHandlelessCabinets, LookPresetKeepWindow:
+		return true
+	}
+	return false
+}
+
+func (e LookPreset) String() string {
+	return string(e)
+}
+
+func (e *LookPreset) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LookPreset(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LookPreset", str)
+	}
+	return nil
+}
+
+func (e LookPreset) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LookPreset) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LookPreset) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MatchFeeWaiver string
+
+const (
+	MatchFeeWaiverFoundingContractor MatchFeeWaiver = "founding_contractor"
+	MatchFeeWaiverRepeatOwner        MatchFeeWaiver = "repeat_owner"
+	MatchFeeWaiverOwnClient          MatchFeeWaiver = "own_client"
+)
+
+var AllMatchFeeWaiver = []MatchFeeWaiver{
+	MatchFeeWaiverFoundingContractor,
+	MatchFeeWaiverRepeatOwner,
+	MatchFeeWaiverOwnClient,
+}
+
+func (e MatchFeeWaiver) IsValid() bool {
+	switch e {
+	case MatchFeeWaiverFoundingContractor, MatchFeeWaiverRepeatOwner, MatchFeeWaiverOwnClient:
+		return true
+	}
+	return false
+}
+
+func (e MatchFeeWaiver) String() string {
+	return string(e)
+}
+
+func (e *MatchFeeWaiver) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MatchFeeWaiver(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MatchFeeWaiver", str)
+	}
+	return nil
+}
+
+func (e MatchFeeWaiver) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MatchFeeWaiver) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MatchFeeWaiver) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Matching string
+
+const (
+	MatchingOwnerPicks    Matching = "owner_picks"
+	MatchingRenoraMatches Matching = "renora_matches"
+)
+
+var AllMatching = []Matching{
+	MatchingOwnerPicks,
+	MatchingRenoraMatches,
+}
+
+func (e Matching) IsValid() bool {
+	switch e {
+	case MatchingOwnerPicks, MatchingRenoraMatches:
+		return true
+	}
+	return false
+}
+
+func (e Matching) String() string {
+	return string(e)
+}
+
+func (e *Matching) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Matching(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Matching", str)
+	}
+	return nil
+}
+
+func (e Matching) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Matching) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Matching) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MaterialLineStatus string
+
+const (
+	MaterialLineStatusListNotSent     MaterialLineStatus = "list_not_sent"
+	MaterialLineStatusToBuy           MaterialLineStatus = "to_buy"
+	MaterialLineStatusInCart          MaterialLineStatus = "in_cart"
+	MaterialLineStatusOrdered         MaterialLineStatus = "ordered"
+	MaterialLineStatusDelivered       MaterialLineStatus = "delivered"
+	MaterialLineStatusWaitingDecision MaterialLineStatus = "waiting_decision"
+)
+
+var AllMaterialLineStatus = []MaterialLineStatus{
+	MaterialLineStatusListNotSent,
+	MaterialLineStatusToBuy,
+	MaterialLineStatusInCart,
+	MaterialLineStatusOrdered,
+	MaterialLineStatusDelivered,
+	MaterialLineStatusWaitingDecision,
+}
+
+func (e MaterialLineStatus) IsValid() bool {
+	switch e {
+	case MaterialLineStatusListNotSent, MaterialLineStatusToBuy, MaterialLineStatusInCart, MaterialLineStatusOrdered, MaterialLineStatusDelivered, MaterialLineStatusWaitingDecision:
+		return true
+	}
+	return false
+}
+
+func (e MaterialLineStatus) String() string {
+	return string(e)
+}
+
+func (e *MaterialLineStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MaterialLineStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MaterialLineStatus", str)
+	}
+	return nil
+}
+
+func (e MaterialLineStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MaterialLineStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MaterialLineStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MaterialsBuyer string
+
+const (
+	MaterialsBuyerOwnerViaRenora MaterialsBuyer = "owner_via_renora"
+	MaterialsBuyerContractor     MaterialsBuyer = "contractor"
+	MaterialsBuyerNotSure        MaterialsBuyer = "not_sure"
+)
+
+var AllMaterialsBuyer = []MaterialsBuyer{
+	MaterialsBuyerOwnerViaRenora,
+	MaterialsBuyerContractor,
+	MaterialsBuyerNotSure,
+}
+
+func (e MaterialsBuyer) IsValid() bool {
+	switch e {
+	case MaterialsBuyerOwnerViaRenora, MaterialsBuyerContractor, MaterialsBuyerNotSure:
+		return true
+	}
+	return false
+}
+
+func (e MaterialsBuyer) String() string {
+	return string(e)
+}
+
+func (e *MaterialsBuyer) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MaterialsBuyer(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MaterialsBuyer", str)
+	}
+	return nil
+}
+
+func (e MaterialsBuyer) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MaterialsBuyer) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MaterialsBuyer) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MediaKind string
+
+const (
+	MediaKindPhoto    MediaKind = "photo"
+	MediaKindVoice    MediaKind = "voice"
+	MediaKindDocument MediaKind = "document"
+)
+
+var AllMediaKind = []MediaKind{
+	MediaKindPhoto,
+	MediaKindVoice,
+	MediaKindDocument,
+}
+
+func (e MediaKind) IsValid() bool {
+	switch e {
+	case MediaKindPhoto, MediaKindVoice, MediaKindDocument:
+		return true
+	}
+	return false
+}
+
+func (e MediaKind) String() string {
+	return string(e)
+}
+
+func (e *MediaKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MediaKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MediaKind", str)
+	}
+	return nil
+}
+
+func (e MediaKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MediaKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MediaKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Where a file came from. `whatsapp_forward` is shared into Renora from WhatsApp; it is never `original` or `onSite`.
+type MediaSource string
+
+const (
+	MediaSourceCamera          MediaSource = "camera"
+	MediaSourceGallery         MediaSource = "gallery"
+	MediaSourceWhatsappForward MediaSource = "whatsapp_forward"
+)
+
+var AllMediaSource = []MediaSource{
+	MediaSourceCamera,
+	MediaSourceGallery,
+	MediaSourceWhatsappForward,
+}
+
+func (e MediaSource) IsValid() bool {
+	switch e {
+	case MediaSourceCamera, MediaSourceGallery, MediaSourceWhatsappForward:
+		return true
+	}
+	return false
+}
+
+func (e MediaSource) String() string {
+	return string(e)
+}
+
+func (e *MediaSource) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MediaSource(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MediaSource", str)
+	}
+	return nil
+}
+
+func (e MediaSource) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MediaSource) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MediaSource) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MediatorOutcome string
+
+const (
+	MediatorOutcomeFixByDate      MediatorOutcome = "fix_by_date"
+	MediatorOutcomePartialRelease MediatorOutcome = "partial_release"
+	MediatorOutcomeFullRelease    MediatorOutcome = "full_release"
+	MediatorOutcomeRefund         MediatorOutcome = "refund"
+)
+
+var AllMediatorOutcome = []MediatorOutcome{
+	MediatorOutcomeFixByDate,
+	MediatorOutcomePartialRelease,
+	MediatorOutcomeFullRelease,
+	MediatorOutcomeRefund,
+}
+
+func (e MediatorOutcome) IsValid() bool {
+	switch e {
+	case MediatorOutcomeFixByDate, MediatorOutcomePartialRelease, MediatorOutcomeFullRelease, MediatorOutcomeRefund:
+		return true
+	}
+	return false
+}
+
+func (e MediatorOutcome) String() string {
+	return string(e)
+}
+
+func (e *MediatorOutcome) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MediatorOutcome(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MediatorOutcome", str)
+	}
+	return nil
+}
+
+func (e MediatorOutcome) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MediatorOutcome) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MediatorOutcome) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MessageKind string
+
+const (
+	MessageKindText     MessageKind = "text"
+	MessageKindVoice    MessageKind = "voice"
+	MessageKindPhoto    MessageKind = "photo"
+	MessageKindCard     MessageKind = "card"
+	MessageKindSystem   MessageKind = "system"
+	MessageKindAiAnswer MessageKind = "ai_answer"
+)
+
+var AllMessageKind = []MessageKind{
+	MessageKindText,
+	MessageKindVoice,
+	MessageKindPhoto,
+	MessageKindCard,
+	MessageKindSystem,
+	MessageKindAiAnswer,
+}
+
+func (e MessageKind) IsValid() bool {
+	switch e {
+	case MessageKindText, MessageKindVoice, MessageKindPhoto, MessageKindCard, MessageKindSystem, MessageKindAiAnswer:
+		return true
+	}
+	return false
+}
+
+func (e MessageKind) String() string {
+	return string(e)
+}
+
+func (e *MessageKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MessageKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MessageKind", str)
+	}
+	return nil
+}
+
+func (e MessageKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MessageKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MessageKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MessageVia string
+
+const (
+	MessageViaApp             MessageVia = "app"
+	MessageViaWhatsappRelay   MessageVia = "whatsapp_relay"
+	MessageViaWhatsappForward MessageVia = "whatsapp_forward"
+)
+
+var AllMessageVia = []MessageVia{
+	MessageViaApp,
+	MessageViaWhatsappRelay,
+	MessageViaWhatsappForward,
+}
+
+func (e MessageVia) IsValid() bool {
+	switch e {
+	case MessageViaApp, MessageViaWhatsappRelay, MessageViaWhatsappForward:
+		return true
+	}
+	return false
+}
+
+func (e MessageVia) String() string {
+	return string(e)
+}
+
+func (e *MessageVia) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MessageVia(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MessageVia", str)
+	}
+	return nil
+}
+
+func (e MessageVia) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MessageVia) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MessageVia) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MetricState string
+
+const (
+	MetricStateOnTarget MetricState = "on_target"
+	MetricStateOnTrack  MetricState = "on_track"
+	MetricStateOffTrack MetricState = "off_track"
+	MetricStateNoData   MetricState = "no_data"
+)
+
+var AllMetricState = []MetricState{
+	MetricStateOnTarget,
+	MetricStateOnTrack,
+	MetricStateOffTrack,
+	MetricStateNoData,
+}
+
+func (e MetricState) IsValid() bool {
+	switch e {
+	case MetricStateOnTarget, MetricStateOnTrack, MetricStateOffTrack, MetricStateNoData:
+		return true
+	}
+	return false
+}
+
+func (e MetricState) String() string {
+	return string(e)
+}
+
+func (e *MetricState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MetricState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MetricState", str)
+	}
+	return nil
+}
+
+func (e MetricState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MetricState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MetricState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MetricUnit string
+
+const (
+	MetricUnitCount   MetricUnit = "count"
+	MetricUnitMinutes MetricUnit = "minutes"
+	MetricUnitHours   MetricUnit = "hours"
+	MetricUnitBps     MetricUnit = "bps"
+	MetricUnitIdr     MetricUnit = "idr"
+)
+
+var AllMetricUnit = []MetricUnit{
+	MetricUnitCount,
+	MetricUnitMinutes,
+	MetricUnitHours,
+	MetricUnitBps,
+	MetricUnitIdr,
+}
+
+func (e MetricUnit) IsValid() bool {
+	switch e {
+	case MetricUnitCount, MetricUnitMinutes, MetricUnitHours, MetricUnitBps, MetricUnitIdr:
+		return true
+	}
+	return false
+}
+
+func (e MetricUnit) String() string {
+	return string(e)
+}
+
+func (e *MetricUnit) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MetricUnit(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MetricUnit", str)
+	}
+	return nil
+}
+
+func (e MetricUnit) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MetricUnit) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MetricUnit) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ModelUse string
+
+const (
+	ModelUseText   ModelUse = "text"
+	ModelUseSpeech ModelUse = "speech"
+	ModelUsePhoto  ModelUse = "photo"
+	ModelUseImage  ModelUse = "image"
+)
+
+var AllModelUse = []ModelUse{
+	ModelUseText,
+	ModelUseSpeech,
+	ModelUsePhoto,
+	ModelUseImage,
+}
+
+func (e ModelUse) IsValid() bool {
+	switch e {
+	case ModelUseText, ModelUseSpeech, ModelUsePhoto, ModelUseImage:
+		return true
+	}
+	return false
+}
+
+func (e ModelUse) String() string {
+	return string(e)
+}
+
+func (e *ModelUse) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ModelUse(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ModelUse", str)
+	}
+	return nil
+}
+
+func (e ModelUse) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ModelUse) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ModelUse) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MoneyRowKind string
+
+const (
+	MoneyRowKindStage       MoneyRowKind = "stage"
+	MoneyRowKindRetention   MoneyRowKind = "retention"
+	MoneyRowKindChangeOrder MoneyRowKind = "change_order"
+	MoneyRowKindOrder       MoneyRowKind = "order"
+)
+
+var AllMoneyRowKind = []MoneyRowKind{
+	MoneyRowKindStage,
+	MoneyRowKindRetention,
+	MoneyRowKindChangeOrder,
+	MoneyRowKindOrder,
+}
+
+func (e MoneyRowKind) IsValid() bool {
+	switch e {
+	case MoneyRowKindStage, MoneyRowKindRetention, MoneyRowKindChangeOrder, MoneyRowKindOrder:
+		return true
+	}
+	return false
+}
+
+func (e MoneyRowKind) String() string {
+	return string(e)
+}
+
+func (e *MoneyRowKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MoneyRowKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MoneyRowKind", str)
+	}
+	return nil
+}
+
+func (e MoneyRowKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MoneyRowKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MoneyRowKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type MoneyRowState string
+
+const (
+	MoneyRowStateReleased MoneyRowState = "released"
+	MoneyRowStateSafe     MoneyRowState = "safe"
+	MoneyRowStateInReview MoneyRowState = "in_review"
+	MoneyRowStateToFund   MoneyRowState = "to_fund"
+	MoneyRowStateToBuy    MoneyRowState = "to_buy"
+	MoneyRowStateRefunded MoneyRowState = "refunded"
+)
+
+var AllMoneyRowState = []MoneyRowState{
+	MoneyRowStateReleased,
+	MoneyRowStateSafe,
+	MoneyRowStateInReview,
+	MoneyRowStateToFund,
+	MoneyRowStateToBuy,
+	MoneyRowStateRefunded,
+}
+
+func (e MoneyRowState) IsValid() bool {
+	switch e {
+	case MoneyRowStateReleased, MoneyRowStateSafe, MoneyRowStateInReview, MoneyRowStateToFund, MoneyRowStateToBuy, MoneyRowStateRefunded:
+		return true
+	}
+	return false
+}
+
+func (e MoneyRowState) String() string {
+	return string(e)
+}
+
+func (e *MoneyRowState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MoneyRowState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MoneyRowState", str)
+	}
+	return nil
+}
+
+func (e MoneyRowState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MoneyRowState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MoneyRowState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Movement string
+
+const (
+	MovementFunded     Movement = "funded"
+	MovementReleased   Movement = "released"
+	MovementRefunded   Movement = "refunded"
+	MovementShopPayout Movement = "shop_payout"
+	MovementFee        Movement = "fee"
+)
+
+var AllMovement = []Movement{
+	MovementFunded,
+	MovementReleased,
+	MovementRefunded,
+	MovementShopPayout,
+	MovementFee,
+}
+
+func (e Movement) IsValid() bool {
+	switch e {
+	case MovementFunded, MovementReleased, MovementRefunded, MovementShopPayout, MovementFee:
+		return true
+	}
+	return false
+}
+
+func (e Movement) String() string {
+	return string(e)
+}
+
+func (e *Movement) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Movement(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Movement", str)
+	}
+	return nil
+}
+
+func (e Movement) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Movement) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Movement) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type NameCheck string
+
+const (
+	NameCheckPending    NameCheck = "pending"
+	NameCheckMatchesKtp NameCheck = "matches_ktp"
+	NameCheckMatchesNib NameCheck = "matches_nib"
+	NameCheckMismatch   NameCheck = "mismatch"
+)
+
+var AllNameCheck = []NameCheck{
+	NameCheckPending,
+	NameCheckMatchesKtp,
+	NameCheckMatchesNib,
+	NameCheckMismatch,
+}
+
+func (e NameCheck) IsValid() bool {
+	switch e {
+	case NameCheckPending, NameCheckMatchesKtp, NameCheckMatchesNib, NameCheckMismatch:
+		return true
+	}
+	return false
+}
+
+func (e NameCheck) String() string {
+	return string(e)
+}
+
+func (e *NameCheck) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = NameCheck(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid NameCheck", str)
+	}
+	return nil
+}
+
+func (e NameCheck) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *NameCheck) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e NameCheck) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type NeedsYouKind string
+
+const (
+	NeedsYouKindStageReview NeedsYouKind = "stage_review"
+	NeedsYouKindFunding     NeedsYouKind = "funding"
+	NeedsYouKindChangeOrder NeedsYouKind = "change_order"
+	NeedsYouKindDecision    NeedsYouKind = "decision"
+	NeedsYouKindIssue       NeedsYouKind = "issue"
+	NeedsYouKindHandover    NeedsYouKind = "handover"
+	NeedsYouKindMaterials   NeedsYouKind = "materials"
+	NeedsYouKindDelivery    NeedsYouKind = "delivery"
+	NeedsYouKindInvite      NeedsYouKind = "invite"
+	NeedsYouKindBid         NeedsYouKind = "bid"
+	NeedsYouKindAgreement   NeedsYouKind = "agreement"
+	NeedsYouKindWages       NeedsYouKind = "wages"
+	NeedsYouKindStageStart  NeedsYouKind = "stage_start"
+	NeedsYouKindAutoRelease NeedsYouKind = "auto_release"
+)
+
+var AllNeedsYouKind = []NeedsYouKind{
+	NeedsYouKindStageReview,
+	NeedsYouKindFunding,
+	NeedsYouKindChangeOrder,
+	NeedsYouKindDecision,
+	NeedsYouKindIssue,
+	NeedsYouKindHandover,
+	NeedsYouKindMaterials,
+	NeedsYouKindDelivery,
+	NeedsYouKindInvite,
+	NeedsYouKindBid,
+	NeedsYouKindAgreement,
+	NeedsYouKindWages,
+	NeedsYouKindStageStart,
+	NeedsYouKindAutoRelease,
+}
+
+func (e NeedsYouKind) IsValid() bool {
+	switch e {
+	case NeedsYouKindStageReview, NeedsYouKindFunding, NeedsYouKindChangeOrder, NeedsYouKindDecision, NeedsYouKindIssue, NeedsYouKindHandover, NeedsYouKindMaterials, NeedsYouKindDelivery, NeedsYouKindInvite, NeedsYouKindBid, NeedsYouKindAgreement, NeedsYouKindWages, NeedsYouKindStageStart, NeedsYouKindAutoRelease:
+		return true
+	}
+	return false
+}
+
+func (e NeedsYouKind) String() string {
+	return string(e)
+}
+
+func (e *NeedsYouKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = NeedsYouKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid NeedsYouKind", str)
+	}
+	return nil
+}
+
+func (e NeedsYouKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *NeedsYouKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e NeedsYouKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type NewPriceSourceType string
+
+const (
+	NewPriceSourceTypeSurveyPriceList NewPriceSourceType = "survey_price_list"
+	NewPriceSourceTypeSurveyInterview NewPriceSourceType = "survey_interview"
+	NewPriceSourceTypeSignedJob       NewPriceSourceType = "signed_job"
+	NewPriceSourceTypeShopNota        NewPriceSourceType = "shop_nota"
+)
+
+var AllNewPriceSourceType = []NewPriceSourceType{
+	NewPriceSourceTypeSurveyPriceList,
+	NewPriceSourceTypeSurveyInterview,
+	NewPriceSourceTypeSignedJob,
+	NewPriceSourceTypeShopNota,
+}
+
+func (e NewPriceSourceType) IsValid() bool {
+	switch e {
+	case NewPriceSourceTypeSurveyPriceList, NewPriceSourceTypeSurveyInterview, NewPriceSourceTypeSignedJob, NewPriceSourceTypeShopNota:
+		return true
+	}
+	return false
+}
+
+func (e NewPriceSourceType) String() string {
+	return string(e)
+}
+
+func (e *NewPriceSourceType) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = NewPriceSourceType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid NewPriceSourceType", str)
+	}
+	return nil
+}
+
+func (e NewPriceSourceType) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *NewPriceSourceType) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e NewPriceSourceType) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type NewThreadKind string
+
+const (
+	NewThreadKindSupport NewThreadKind = "support"
+	NewThreadKindJob     NewThreadKind = "job"
+	NewThreadKindCrew    NewThreadKind = "crew"
+)
+
+var AllNewThreadKind = []NewThreadKind{
+	NewThreadKindSupport,
+	NewThreadKindJob,
+	NewThreadKindCrew,
+}
+
+func (e NewThreadKind) IsValid() bool {
+	switch e {
+	case NewThreadKindSupport, NewThreadKindJob, NewThreadKindCrew:
+		return true
+	}
+	return false
+}
+
+func (e NewThreadKind) String() string {
+	return string(e)
+}
+
+func (e *NewThreadKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = NewThreadKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid NewThreadKind", str)
+	}
+	return nil
+}
+
+func (e NewThreadKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *NewThreadKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e NewThreadKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type NoWorkReason string
+
+const (
+	NoWorkReasonRain             NoWorkReason = "rain"
+	NoWorkReasonWaitingMaterials NoWorkReason = "waiting_materials"
+	NoWorkReasonSick             NoWorkReason = "sick"
+	NoWorkReasonDayOff           NoWorkReason = "day_off"
+	NoWorkReasonOwnerPaused      NoWorkReason = "owner_paused"
+	NoWorkReasonOther            NoWorkReason = "other"
+)
+
+var AllNoWorkReason = []NoWorkReason{
+	NoWorkReasonRain,
+	NoWorkReasonWaitingMaterials,
+	NoWorkReasonSick,
+	NoWorkReasonDayOff,
+	NoWorkReasonOwnerPaused,
+	NoWorkReasonOther,
+}
+
+func (e NoWorkReason) IsValid() bool {
+	switch e {
+	case NoWorkReasonRain, NoWorkReasonWaitingMaterials, NoWorkReasonSick, NoWorkReasonDayOff, NoWorkReasonOwnerPaused, NoWorkReasonOther:
+		return true
+	}
+	return false
+}
+
+func (e NoWorkReason) String() string {
+	return string(e)
+}
+
+func (e *NoWorkReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = NoWorkReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid NoWorkReason", str)
+	}
+	return nil
+}
+
+func (e NoWorkReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *NoWorkReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e NoWorkReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// `funding_due` covers funding requests and the confirmation that a stage is funded. Shop events:
+// `new_order`, `answer_reminder`, `payout`, `low_stock`, `monthly_statement`.
+type NotificationEvent string
+
+const (
+	NotificationEventStageReview      NotificationEvent = "stage_review"
+	NotificationEventFundingDue       NotificationEvent = "funding_due"
+	NotificationEventChangeOrDecision NotificationEvent = "change_or_decision"
+	NotificationEventDailyReport      NotificationEvent = "daily_report"
+	NotificationEventIssue            NotificationEvent = "issue"
+	NotificationEventDelivery         NotificationEvent = "delivery"
+	NotificationEventPayout           NotificationEvent = "payout"
+	NotificationEventCrewAnswer       NotificationEvent = "crew_answer"
+	NotificationEventWageReminder     NotificationEvent = "wage_reminder"
+	NotificationEventBids             NotificationEvent = "bids"
+	NotificationEventTips             NotificationEvent = "tips"
+	NotificationEventMessage          NotificationEvent = "message"
+	NotificationEventHandover         NotificationEvent = "handover"
+	NotificationEventNewOrder         NotificationEvent = "new_order"
+	NotificationEventAnswerReminder   NotificationEvent = "answer_reminder"
+	NotificationEventLowStock         NotificationEvent = "low_stock"
+	NotificationEventMonthlyStatement NotificationEvent = "monthly_statement"
+)
+
+var AllNotificationEvent = []NotificationEvent{
+	NotificationEventStageReview,
+	NotificationEventFundingDue,
+	NotificationEventChangeOrDecision,
+	NotificationEventDailyReport,
+	NotificationEventIssue,
+	NotificationEventDelivery,
+	NotificationEventPayout,
+	NotificationEventCrewAnswer,
+	NotificationEventWageReminder,
+	NotificationEventBids,
+	NotificationEventTips,
+	NotificationEventMessage,
+	NotificationEventHandover,
+	NotificationEventNewOrder,
+	NotificationEventAnswerReminder,
+	NotificationEventLowStock,
+	NotificationEventMonthlyStatement,
+}
+
+func (e NotificationEvent) IsValid() bool {
+	switch e {
+	case NotificationEventStageReview, NotificationEventFundingDue, NotificationEventChangeOrDecision, NotificationEventDailyReport, NotificationEventIssue, NotificationEventDelivery, NotificationEventPayout, NotificationEventCrewAnswer, NotificationEventWageReminder, NotificationEventBids, NotificationEventTips, NotificationEventMessage, NotificationEventHandover, NotificationEventNewOrder, NotificationEventAnswerReminder, NotificationEventLowStock, NotificationEventMonthlyStatement:
+		return true
+	}
+	return false
+}
+
+func (e NotificationEvent) String() string {
+	return string(e)
+}
+
+func (e *NotificationEvent) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = NotificationEvent(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid NotificationEvent", str)
+	}
+	return nil
+}
+
+func (e NotificationEvent) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *NotificationEvent) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e NotificationEvent) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Groups: `money` is stage reviews, funding, payouts and statements; `crew` is crew answers and wages.
+type NotificationFilter string
+
+const (
+	NotificationFilterAll      NotificationFilter = "all"
+	NotificationFilterNeedsYou NotificationFilter = "needs_you"
+	NotificationFilterMoney    NotificationFilter = "money"
+	NotificationFilterJobs     NotificationFilter = "jobs"
+	NotificationFilterCrew     NotificationFilter = "crew"
+)
+
+var AllNotificationFilter = []NotificationFilter{
+	NotificationFilterAll,
+	NotificationFilterNeedsYou,
+	NotificationFilterMoney,
+	NotificationFilterJobs,
+	NotificationFilterCrew,
+}
+
+func (e NotificationFilter) IsValid() bool {
+	switch e {
+	case NotificationFilterAll, NotificationFilterNeedsYou, NotificationFilterMoney, NotificationFilterJobs, NotificationFilterCrew:
+		return true
+	}
+	return false
+}
+
+func (e NotificationFilter) String() string {
+	return string(e)
+}
+
+func (e *NotificationFilter) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = NotificationFilter(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid NotificationFilter", str)
+	}
+	return nil
+}
+
+func (e NotificationFilter) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *NotificationFilter) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e NotificationFilter) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ObservationStatus string
+
+const (
+	ObservationStatusSuggested  ObservationStatus = "suggested"
+	ObservationStatusTicked     ObservationStatus = "ticked"
+	ObservationStatusUnticked   ObservationStatus = "unticked"
+	ObservationStatusCannotTell ObservationStatus = "cannot_tell"
+)
+
+var AllObservationStatus = []ObservationStatus{
+	ObservationStatusSuggested,
+	ObservationStatusTicked,
+	ObservationStatusUnticked,
+	ObservationStatusCannotTell,
+}
+
+func (e ObservationStatus) IsValid() bool {
+	switch e {
+	case ObservationStatusSuggested, ObservationStatusTicked, ObservationStatusUnticked, ObservationStatusCannotTell:
+		return true
+	}
+	return false
+}
+
+func (e ObservationStatus) String() string {
+	return string(e)
+}
+
+func (e *ObservationStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ObservationStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ObservationStatus", str)
+	}
+	return nil
+}
+
+func (e ObservationStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ObservationStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ObservationStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type OfferLabel string
+
+const (
+	OfferLabelContractorPick OfferLabel = "contractor_pick"
+	OfferLabelLowest         OfferLabel = "lowest"
+)
+
+var AllOfferLabel = []OfferLabel{
+	OfferLabelContractorPick,
+	OfferLabelLowest,
+}
+
+func (e OfferLabel) IsValid() bool {
+	switch e {
+	case OfferLabelContractorPick, OfferLabelLowest:
+		return true
+	}
+	return false
+}
+
+func (e OfferLabel) String() string {
+	return string(e)
+}
+
+func (e *OfferLabel) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OfferLabel(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OfferLabel", str)
+	}
+	return nil
+}
+
+func (e OfferLabel) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *OfferLabel) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e OfferLabel) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type OrderChannel string
+
+const (
+	OrderChannelApp      OrderChannel = "app"
+	OrderChannelWhatsapp OrderChannel = "whatsapp"
+)
+
+var AllOrderChannel = []OrderChannel{
+	OrderChannelApp,
+	OrderChannelWhatsapp,
+}
+
+func (e OrderChannel) IsValid() bool {
+	switch e {
+	case OrderChannelApp, OrderChannelWhatsapp:
+		return true
+	}
+	return false
+}
+
+func (e OrderChannel) String() string {
+	return string(e)
+}
+
+func (e *OrderChannel) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OrderChannel(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OrderChannel", str)
+	}
+	return nil
+}
+
+func (e OrderChannel) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *OrderChannel) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e OrderChannel) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type OrderEventKind string
+
+const (
+	OrderEventKindPaid          OrderEventKind = "paid"
+	OrderEventKindAccepted      OrderEventKind = "accepted"
+	OrderEventKindPacked        OrderEventKind = "packed"
+	OrderEventKindLeft          OrderEventKind = "left"
+	OrderEventKindArrived       OrderEventKind = "arrived"
+	OrderEventKindSitePhoto     OrderEventKind = "site_photo"
+	OrderEventKindPayoutSent    OrderEventKind = "payout_sent"
+	OrderEventKindPayoutArrived OrderEventKind = "payout_arrived"
+	OrderEventKindDeclined      OrderEventKind = "declined"
+	OrderEventKindRerouted      OrderEventKind = "rerouted"
+	OrderEventKindRefunded      OrderEventKind = "refunded"
+	OrderEventKindRunningLate   OrderEventKind = "running_late"
+)
+
+var AllOrderEventKind = []OrderEventKind{
+	OrderEventKindPaid,
+	OrderEventKindAccepted,
+	OrderEventKindPacked,
+	OrderEventKindLeft,
+	OrderEventKindArrived,
+	OrderEventKindSitePhoto,
+	OrderEventKindPayoutSent,
+	OrderEventKindPayoutArrived,
+	OrderEventKindDeclined,
+	OrderEventKindRerouted,
+	OrderEventKindRefunded,
+	OrderEventKindRunningLate,
+}
+
+func (e OrderEventKind) IsValid() bool {
+	switch e {
+	case OrderEventKindPaid, OrderEventKindAccepted, OrderEventKindPacked, OrderEventKindLeft, OrderEventKindArrived, OrderEventKindSitePhoto, OrderEventKindPayoutSent, OrderEventKindPayoutArrived, OrderEventKindDeclined, OrderEventKindRerouted, OrderEventKindRefunded, OrderEventKindRunningLate:
+		return true
+	}
+	return false
+}
+
+func (e OrderEventKind) String() string {
+	return string(e)
+}
+
+func (e *OrderEventKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OrderEventKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OrderEventKind", str)
+	}
+	return nil
+}
+
+func (e OrderEventKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *OrderEventKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e OrderEventKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type OrderMoneyState string
+
+const (
+	OrderMoneyStateSafeAtPartner  OrderMoneyState = "safe_at_partner"
+	OrderMoneyStateReleased       OrderMoneyState = "released"
+	OrderMoneyStateRefunded       OrderMoneyState = "refunded"
+	OrderMoneyStatePartlyRefunded OrderMoneyState = "partly_refunded"
+)
+
+var AllOrderMoneyState = []OrderMoneyState{
+	OrderMoneyStateSafeAtPartner,
+	OrderMoneyStateReleased,
+	OrderMoneyStateRefunded,
+	OrderMoneyStatePartlyRefunded,
+}
+
+func (e OrderMoneyState) IsValid() bool {
+	switch e {
+	case OrderMoneyStateSafeAtPartner, OrderMoneyStateReleased, OrderMoneyStateRefunded, OrderMoneyStatePartlyRefunded:
+		return true
+	}
+	return false
+}
+
+func (e OrderMoneyState) String() string {
+	return string(e)
+}
+
+func (e *OrderMoneyState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OrderMoneyState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OrderMoneyState", str)
+	}
+	return nil
+}
+
+func (e OrderMoneyState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *OrderMoneyState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e OrderMoneyState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// `arrived` = driver drop-off photo; `delivered` = contractor site photo; `paid_out` = released to the shop.
+type OrderStatus string
+
+const (
+	OrderStatusAwaitingShop OrderStatus = "awaiting_shop"
+	OrderStatusAccepted     OrderStatus = "accepted"
+	OrderStatusPacking      OrderStatus = "packing"
+	OrderStatusOnTheWay     OrderStatus = "on_the_way"
+	OrderStatusArrived      OrderStatus = "arrived"
+	OrderStatusDelivered    OrderStatus = "delivered"
+	OrderStatusPaidOut      OrderStatus = "paid_out"
+	OrderStatusDeclined     OrderStatus = "declined"
+	OrderStatusExpired      OrderStatus = "expired"
+	OrderStatusRerouted     OrderStatus = "rerouted"
+	OrderStatusRefunded     OrderStatus = "refunded"
+)
+
+var AllOrderStatus = []OrderStatus{
+	OrderStatusAwaitingShop,
+	OrderStatusAccepted,
+	OrderStatusPacking,
+	OrderStatusOnTheWay,
+	OrderStatusArrived,
+	OrderStatusDelivered,
+	OrderStatusPaidOut,
+	OrderStatusDeclined,
+	OrderStatusExpired,
+	OrderStatusRerouted,
+	OrderStatusRefunded,
+}
+
+func (e OrderStatus) IsValid() bool {
+	switch e {
+	case OrderStatusAwaitingShop, OrderStatusAccepted, OrderStatusPacking, OrderStatusOnTheWay, OrderStatusArrived, OrderStatusDelivered, OrderStatusPaidOut, OrderStatusDeclined, OrderStatusExpired, OrderStatusRerouted, OrderStatusRefunded:
+		return true
+	}
+	return false
+}
+
+func (e OrderStatus) String() string {
+	return string(e)
+}
+
+func (e *OrderStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OrderStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OrderStatus", str)
+	}
+	return nil
+}
+
+func (e OrderStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *OrderStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e OrderStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type OwnerInviteStatus string
+
+const (
+	OwnerInviteStatusSent    OwnerInviteStatus = "sent"
+	OwnerInviteStatusOpened  OwnerInviteStatus = "opened"
+	OwnerInviteStatusSigned  OwnerInviteStatus = "signed"
+	OwnerInviteStatusExpired OwnerInviteStatus = "expired"
+)
+
+var AllOwnerInviteStatus = []OwnerInviteStatus{
+	OwnerInviteStatusSent,
+	OwnerInviteStatusOpened,
+	OwnerInviteStatusSigned,
+	OwnerInviteStatusExpired,
+}
+
+func (e OwnerInviteStatus) IsValid() bool {
+	switch e {
+	case OwnerInviteStatusSent, OwnerInviteStatusOpened, OwnerInviteStatusSigned, OwnerInviteStatusExpired:
+		return true
+	}
+	return false
+}
+
+func (e OwnerInviteStatus) String() string {
+	return string(e)
+}
+
+func (e *OwnerInviteStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OwnerInviteStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OwnerInviteStatus", str)
+	}
+	return nil
+}
+
+func (e OwnerInviteStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *OwnerInviteStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e OwnerInviteStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type OwnerRecordChoice string
+
+const (
+	OwnerRecordChoiceShown         OwnerRecordChoice = "shown"
+	OwnerRecordChoiceKeptPrivate   OwnerRecordChoice = "kept_private"
+	OwnerRecordChoiceAskAtHandover OwnerRecordChoice = "ask_at_handover"
+)
+
+var AllOwnerRecordChoice = []OwnerRecordChoice{
+	OwnerRecordChoiceShown,
+	OwnerRecordChoiceKeptPrivate,
+	OwnerRecordChoiceAskAtHandover,
+}
+
+func (e OwnerRecordChoice) IsValid() bool {
+	switch e {
+	case OwnerRecordChoiceShown, OwnerRecordChoiceKeptPrivate, OwnerRecordChoiceAskAtHandover:
+		return true
+	}
+	return false
+}
+
+func (e OwnerRecordChoice) String() string {
+	return string(e)
+}
+
+func (e *OwnerRecordChoice) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OwnerRecordChoice(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OwnerRecordChoice", str)
+	}
+	return nil
+}
+
+func (e OwnerRecordChoice) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *OwnerRecordChoice) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e OwnerRecordChoice) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PartialReleaseStatus string
+
+const (
+	PartialReleaseStatusProposed  PartialReleaseStatus = "proposed"
+	PartialReleaseStatusSigned    PartialReleaseStatus = "signed"
+	PartialReleaseStatusReleased  PartialReleaseStatus = "released"
+	PartialReleaseStatusWithdrawn PartialReleaseStatus = "withdrawn"
+)
+
+var AllPartialReleaseStatus = []PartialReleaseStatus{
+	PartialReleaseStatusProposed,
+	PartialReleaseStatusSigned,
+	PartialReleaseStatusReleased,
+	PartialReleaseStatusWithdrawn,
+}
+
+func (e PartialReleaseStatus) IsValid() bool {
+	switch e {
+	case PartialReleaseStatusProposed, PartialReleaseStatusSigned, PartialReleaseStatusReleased, PartialReleaseStatusWithdrawn:
+		return true
+	}
+	return false
+}
+
+func (e PartialReleaseStatus) String() string {
+	return string(e)
+}
+
+func (e *PartialReleaseStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PartialReleaseStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PartialReleaseStatus", str)
+	}
+	return nil
+}
+
+func (e PartialReleaseStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PartialReleaseStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PartialReleaseStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Where a person appears on a job, a thread or an order.
+type PartyRole string
+
+const (
+	PartyRoleOwner      PartyRole = "owner"
+	PartyRoleContractor PartyRole = "contractor"
+	PartyRoleCrew       PartyRole = "crew"
+	PartyRoleSupplier   PartyRole = "supplier"
+	PartyRoleDriver     PartyRole = "driver"
+	PartyRoleOps        PartyRole = "ops"
+	PartyRoleSystem     PartyRole = "system"
+)
+
+var AllPartyRole = []PartyRole{
+	PartyRoleOwner,
+	PartyRoleContractor,
+	PartyRoleCrew,
+	PartyRoleSupplier,
+	PartyRoleDriver,
+	PartyRoleOps,
+	PartyRoleSystem,
+}
+
+func (e PartyRole) IsValid() bool {
+	switch e {
+	case PartyRoleOwner, PartyRoleContractor, PartyRoleCrew, PartyRoleSupplier, PartyRoleDriver, PartyRoleOps, PartyRoleSystem:
+		return true
+	}
+	return false
+}
+
+func (e PartyRole) String() string {
+	return string(e)
+}
+
+func (e *PartyRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PartyRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PartyRole", str)
+	}
+	return nil
+}
+
+func (e PartyRole) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PartyRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PartyRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PauseStatus string
+
+const (
+	PauseStatusNoticeSent PauseStatus = "notice_sent"
+	PauseStatusActive     PauseStatus = "active"
+	PauseStatusCancelled  PauseStatus = "cancelled"
+	PauseStatusEnded      PauseStatus = "ended"
+)
+
+var AllPauseStatus = []PauseStatus{
+	PauseStatusNoticeSent,
+	PauseStatusActive,
+	PauseStatusCancelled,
+	PauseStatusEnded,
+}
+
+func (e PauseStatus) IsValid() bool {
+	switch e {
+	case PauseStatusNoticeSent, PauseStatusActive, PauseStatusCancelled, PauseStatusEnded:
+		return true
+	}
+	return false
+}
+
+func (e PauseStatus) String() string {
+	return string(e)
+}
+
+func (e *PauseStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PauseStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PauseStatus", str)
+	}
+	return nil
+}
+
+func (e PauseStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PauseStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PauseStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PayoutKind string
+
+const (
+	PayoutKindStageRelease       PayoutKind = "stage_release"
+	PayoutKindChangeOrderRelease PayoutKind = "change_order_release"
+	PayoutKindRetentionRelease   PayoutKind = "retention_release"
+	PayoutKindPartialRelease     PayoutKind = "partial_release"
+	PayoutKindShopPayout         PayoutKind = "shop_payout"
+)
+
+var AllPayoutKind = []PayoutKind{
+	PayoutKindStageRelease,
+	PayoutKindChangeOrderRelease,
+	PayoutKindRetentionRelease,
+	PayoutKindPartialRelease,
+	PayoutKindShopPayout,
+}
+
+func (e PayoutKind) IsValid() bool {
+	switch e {
+	case PayoutKindStageRelease, PayoutKindChangeOrderRelease, PayoutKindRetentionRelease, PayoutKindPartialRelease, PayoutKindShopPayout:
+		return true
+	}
+	return false
+}
+
+func (e PayoutKind) String() string {
+	return string(e)
+}
+
+func (e *PayoutKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PayoutKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PayoutKind", str)
+	}
+	return nil
+}
+
+func (e PayoutKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PayoutKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PayoutKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// BI-FAST up to Rp 250.000.000 per transfer; larger amounts the next working day.
+type PayoutRail string
+
+const (
+	PayoutRailBiFast         PayoutRail = "bi_fast"
+	PayoutRailOnlineTransfer PayoutRail = "online_transfer"
+	PayoutRailNextWorkingDay PayoutRail = "next_working_day"
+)
+
+var AllPayoutRail = []PayoutRail{
+	PayoutRailBiFast,
+	PayoutRailOnlineTransfer,
+	PayoutRailNextWorkingDay,
+}
+
+func (e PayoutRail) IsValid() bool {
+	switch e {
+	case PayoutRailBiFast, PayoutRailOnlineTransfer, PayoutRailNextWorkingDay:
+		return true
+	}
+	return false
+}
+
+func (e PayoutRail) String() string {
+	return string(e)
+}
+
+func (e *PayoutRail) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PayoutRail(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PayoutRail", str)
+	}
+	return nil
+}
+
+func (e PayoutRail) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PayoutRail) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PayoutRail) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PayoutStatus string
+
+const (
+	PayoutStatusQueued   PayoutStatus = "queued"
+	PayoutStatusSending  PayoutStatus = "sending"
+	PayoutStatusRetrying PayoutStatus = "retrying"
+	PayoutStatusArrived  PayoutStatus = "arrived"
+	PayoutStatusFailed   PayoutStatus = "failed"
+)
+
+var AllPayoutStatus = []PayoutStatus{
+	PayoutStatusQueued,
+	PayoutStatusSending,
+	PayoutStatusRetrying,
+	PayoutStatusArrived,
+	PayoutStatusFailed,
+}
+
+func (e PayoutStatus) IsValid() bool {
+	switch e {
+	case PayoutStatusQueued, PayoutStatusSending, PayoutStatusRetrying, PayoutStatusArrived, PayoutStatusFailed:
+		return true
+	}
+	return false
+}
+
+func (e PayoutStatus) String() string {
+	return string(e)
+}
+
+func (e *PayoutStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PayoutStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PayoutStatus", str)
+	}
+	return nil
+}
+
+func (e PayoutStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PayoutStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PayoutStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PermitResult string
+
+const (
+	PermitResultPbgProbablyNotNeeded PermitResult = "pbg_probably_not_needed"
+	PermitResultPbgLikelyNeeded      PermitResult = "pbg_likely_needed"
+)
+
+var AllPermitResult = []PermitResult{
+	PermitResultPbgProbablyNotNeeded,
+	PermitResultPbgLikelyNeeded,
+}
+
+func (e PermitResult) IsValid() bool {
+	switch e {
+	case PermitResultPbgProbablyNotNeeded, PermitResultPbgLikelyNeeded:
+		return true
+	}
+	return false
+}
+
+func (e PermitResult) String() string {
+	return string(e)
+}
+
+func (e *PermitResult) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PermitResult(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PermitResult", str)
+	}
+	return nil
+}
+
+func (e PermitResult) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PermitResult) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PermitResult) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PilotMetricName string
+
+const (
+	// Median minutes from sign-up to the first agreement sent; target ≤ 10.
+	PilotMetricNameTimeToFirstSendMin PilotMetricName = "time_to_first_send_min"
+	// Target 35 by day 90.
+	PilotMetricNameWeeklyActiveContractors PilotMetricName = "weekly_active_contractors"
+	// D30 / D60 / D90 retention, targets 70 / 60 / 50%.
+	PilotMetricNameRetentionD30Bps PilotMetricName = "retention_d30_bps"
+	PilotMetricNameRetentionD60Bps PilotMetricName = "retention_d60_bps"
+	PilotMetricNameRetentionD90Bps PilotMetricName = "retention_d90_bps"
+	// Target ≥ 50 by day 90.
+	PilotMetricNameActivatedContractors PilotMetricName = "activated_contractors"
+	// Target ≤ Rp 650.000 each.
+	PilotMetricNameActivationCostIdr PilotMetricName = "activation_cost_idr"
+	PilotMetricNameOwnersJoinedBps   PilotMetricName = "owners_joined_bps"
+	// Owners signed within 7 days; target ≥ 40%.
+	PilotMetricNameOwnersSigned7dBps PilotMetricName = "owners_signed_7d_bps"
+	// Median hours to the first bid; target ≤ 36 h.
+	PilotMetricNameMedianFirstBidHours PilotMetricName = "median_first_bid_hours"
+	// Briefs with 2+ bids; target 80%.
+	PilotMetricNameBriefsTwoPlusBidsBps PilotMetricName = "briefs_two_plus_bids_bps"
+	// Jobs with a funded stage; target 3 by day 90.
+	PilotMetricNameJobsWithFundedStage PilotMetricName = "jobs_with_funded_stage"
+	// Share of jobs with a funded stage; target ≥ 15% by month 6.
+	PilotMetricNameJobsWithFundedStageBps PilotMetricName = "jobs_with_funded_stage_bps"
+	// Orders per shop in its first 30 days; target 3.
+	PilotMetricNameShopOrdersFirst30d PilotMetricName = "shop_orders_first_30d"
+	// Switch strategy at ≥ 12% monthly churn.
+	PilotMetricNameMonthlyChurnBps PilotMetricName = "monthly_churn_bps"
+)
+
+var AllPilotMetricName = []PilotMetricName{
+	PilotMetricNameTimeToFirstSendMin,
+	PilotMetricNameWeeklyActiveContractors,
+	PilotMetricNameRetentionD30Bps,
+	PilotMetricNameRetentionD60Bps,
+	PilotMetricNameRetentionD90Bps,
+	PilotMetricNameActivatedContractors,
+	PilotMetricNameActivationCostIdr,
+	PilotMetricNameOwnersJoinedBps,
+	PilotMetricNameOwnersSigned7dBps,
+	PilotMetricNameMedianFirstBidHours,
+	PilotMetricNameBriefsTwoPlusBidsBps,
+	PilotMetricNameJobsWithFundedStage,
+	PilotMetricNameJobsWithFundedStageBps,
+	PilotMetricNameShopOrdersFirst30d,
+	PilotMetricNameMonthlyChurnBps,
+}
+
+func (e PilotMetricName) IsValid() bool {
+	switch e {
+	case PilotMetricNameTimeToFirstSendMin, PilotMetricNameWeeklyActiveContractors, PilotMetricNameRetentionD30Bps, PilotMetricNameRetentionD60Bps, PilotMetricNameRetentionD90Bps, PilotMetricNameActivatedContractors, PilotMetricNameActivationCostIdr, PilotMetricNameOwnersJoinedBps, PilotMetricNameOwnersSigned7dBps, PilotMetricNameMedianFirstBidHours, PilotMetricNameBriefsTwoPlusBidsBps, PilotMetricNameJobsWithFundedStage, PilotMetricNameJobsWithFundedStageBps, PilotMetricNameShopOrdersFirst30d, PilotMetricNameMonthlyChurnBps:
+		return true
+	}
+	return false
+}
+
+func (e PilotMetricName) String() string {
+	return string(e)
+}
+
+func (e *PilotMetricName) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PilotMetricName(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PilotMetricName", str)
+	}
+	return nil
+}
+
+func (e PilotMetricName) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PilotMetricName) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PilotMetricName) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PortfolioStatus string
+
+const (
+	PortfolioStatusNotVerified                PortfolioStatus = "not_verified"
+	PortfolioStatusVerified                   PortfolioStatus = "verified"
+	PortfolioStatusOwnerConfirmedBeforeRenora PortfolioStatus = "owner_confirmed_before_renora"
+)
+
+var AllPortfolioStatus = []PortfolioStatus{
+	PortfolioStatusNotVerified,
+	PortfolioStatusVerified,
+	PortfolioStatusOwnerConfirmedBeforeRenora,
+}
+
+func (e PortfolioStatus) IsValid() bool {
+	switch e {
+	case PortfolioStatusNotVerified, PortfolioStatusVerified, PortfolioStatusOwnerConfirmedBeforeRenora:
+		return true
+	}
+	return false
+}
+
+func (e PortfolioStatus) String() string {
+	return string(e)
+}
+
+func (e *PortfolioStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PortfolioStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PortfolioStatus", str)
+	}
+	return nil
+}
+
+func (e PortfolioStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PortfolioStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PortfolioStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PresenceSource string
+
+const (
+	PresenceSourceContractor PresenceSource = "contractor"
+	PresenceSourceCrewLink   PresenceSource = "crew_link"
+)
+
+var AllPresenceSource = []PresenceSource{
+	PresenceSourceContractor,
+	PresenceSourceCrewLink,
+}
+
+func (e PresenceSource) IsValid() bool {
+	switch e {
+	case PresenceSourceContractor, PresenceSourceCrewLink:
+		return true
+	}
+	return false
+}
+
+func (e PresenceSource) String() string {
+	return string(e)
+}
+
+func (e *PresenceSource) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PresenceSource(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PresenceSource", str)
+	}
+	return nil
+}
+
+func (e PresenceSource) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PresenceSource) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PresenceSource) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PriceCheckStatus string
+
+const (
+	PriceCheckStatusOn            PriceCheckStatus = "on"
+	PriceCheckStatusNotEnoughData PriceCheckStatus = "not_enough_data"
+	PriceCheckStatusOneSourceType PriceCheckStatus = "one_source_type"
+	PriceCheckStatusNoRange       PriceCheckStatus = "no_range"
+)
+
+var AllPriceCheckStatus = []PriceCheckStatus{
+	PriceCheckStatusOn,
+	PriceCheckStatusNotEnoughData,
+	PriceCheckStatusOneSourceType,
+	PriceCheckStatusNoRange,
+}
+
+func (e PriceCheckStatus) IsValid() bool {
+	switch e {
+	case PriceCheckStatusOn, PriceCheckStatusNotEnoughData, PriceCheckStatusOneSourceType, PriceCheckStatusNoRange:
+		return true
+	}
+	return false
+}
+
+func (e PriceCheckStatus) String() string {
+	return string(e)
+}
+
+func (e *PriceCheckStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PriceCheckStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PriceCheckStatus", str)
+	}
+	return nil
+}
+
+func (e PriceCheckStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PriceCheckStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PriceCheckStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PriceLineStatus string
+
+const (
+	PriceLineStatusOk       PriceLineStatus = "ok"
+	PriceLineStatusNeedsFix PriceLineStatus = "needs_fix"
+	PriceLineStatusSkipped  PriceLineStatus = "skipped"
+)
+
+var AllPriceLineStatus = []PriceLineStatus{
+	PriceLineStatusOk,
+	PriceLineStatusNeedsFix,
+	PriceLineStatusSkipped,
+}
+
+func (e PriceLineStatus) IsValid() bool {
+	switch e {
+	case PriceLineStatusOk, PriceLineStatusNeedsFix, PriceLineStatusSkipped:
+		return true
+	}
+	return false
+}
+
+func (e PriceLineStatus) String() string {
+	return string(e)
+}
+
+func (e *PriceLineStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PriceLineStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PriceLineStatus", str)
+	}
+	return nil
+}
+
+func (e PriceLineStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PriceLineStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PriceLineStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PriceListImportStatus string
+
+const (
+	PriceListImportStatusReading   PriceListImportStatus = "reading"
+	PriceListImportStatusReady     PriceListImportStatus = "ready"
+	PriceListImportStatusCommitted PriceListImportStatus = "committed"
+	PriceListImportStatusFailed    PriceListImportStatus = "failed"
+)
+
+var AllPriceListImportStatus = []PriceListImportStatus{
+	PriceListImportStatusReading,
+	PriceListImportStatusReady,
+	PriceListImportStatusCommitted,
+	PriceListImportStatusFailed,
+}
+
+func (e PriceListImportStatus) IsValid() bool {
+	switch e {
+	case PriceListImportStatusReading, PriceListImportStatusReady, PriceListImportStatusCommitted, PriceListImportStatusFailed:
+		return true
+	}
+	return false
+}
+
+func (e PriceListImportStatus) String() string {
+	return string(e)
+}
+
+func (e *PriceListImportStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PriceListImportStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PriceListImportStatus", str)
+	}
+	return nil
+}
+
+func (e PriceListImportStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PriceListImportStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PriceListImportStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PriceListSource string
+
+const (
+	PriceListSourcePhoto       PriceListSource = "photo"
+	PriceListSourceSpreadsheet PriceListSource = "spreadsheet"
+)
+
+var AllPriceListSource = []PriceListSource{
+	PriceListSourcePhoto,
+	PriceListSourceSpreadsheet,
+}
+
+func (e PriceListSource) IsValid() bool {
+	switch e {
+	case PriceListSourcePhoto, PriceListSourceSpreadsheet:
+		return true
+	}
+	return false
+}
+
+func (e PriceListSource) String() string {
+	return string(e)
+}
+
+func (e *PriceListSource) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PriceListSource(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PriceListSource", str)
+	}
+	return nil
+}
+
+func (e PriceListSource) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PriceListSource) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PriceListSource) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PriceRowStatus string
+
+const (
+	PriceRowStatusFresh   PriceRowStatus = "fresh"
+	PriceRowStatusStale   PriceRowStatus = "stale"
+	PriceRowStatusDropped PriceRowStatus = "dropped"
+)
+
+var AllPriceRowStatus = []PriceRowStatus{
+	PriceRowStatusFresh,
+	PriceRowStatusStale,
+	PriceRowStatusDropped,
+}
+
+func (e PriceRowStatus) IsValid() bool {
+	switch e {
+	case PriceRowStatusFresh, PriceRowStatusStale, PriceRowStatusDropped:
+		return true
+	}
+	return false
+}
+
+func (e PriceRowStatus) String() string {
+	return string(e)
+}
+
+func (e *PriceRowStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PriceRowStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PriceRowStatus", str)
+	}
+	return nil
+}
+
+func (e PriceRowStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PriceRowStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PriceRowStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type PriceSourceType string
+
+const (
+	PriceSourceTypeSurvey    PriceSourceType = "survey"
+	PriceSourceTypeAgreement PriceSourceType = "agreement"
+	PriceSourceTypeNota      PriceSourceType = "nota"
+	PriceSourceTypeDerived   PriceSourceType = "derived"
+	PriceSourceTypeNews      PriceSourceType = "news"
+)
+
+var AllPriceSourceType = []PriceSourceType{
+	PriceSourceTypeSurvey,
+	PriceSourceTypeAgreement,
+	PriceSourceTypeNota,
+	PriceSourceTypeDerived,
+	PriceSourceTypeNews,
+}
+
+func (e PriceSourceType) IsValid() bool {
+	switch e {
+	case PriceSourceTypeSurvey, PriceSourceTypeAgreement, PriceSourceTypeNota, PriceSourceTypeDerived, PriceSourceTypeNews:
+		return true
+	}
+	return false
+}
+
+func (e PriceSourceType) String() string {
+	return string(e)
+}
+
+func (e *PriceSourceType) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PriceSourceType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PriceSourceType", str)
+	}
+	return nil
+}
+
+func (e PriceSourceType) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PriceSourceType) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PriceSourceType) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Never "overpriced" or "scam" (R9): only where a price sits against a dated range.
+type PriceVerdict string
+
+const (
+	PriceVerdictWithin        PriceVerdict = "within"
+	PriceVerdictAbove         PriceVerdict = "above"
+	PriceVerdictBelow         PriceVerdict = "below"
+	PriceVerdictRangeOnly     PriceVerdict = "range_only"
+	PriceVerdictNotEnoughData PriceVerdict = "not_enough_data"
+	PriceVerdictNotPricedYet  PriceVerdict = "not_priced_yet"
+)
+
+var AllPriceVerdict = []PriceVerdict{
+	PriceVerdictWithin,
+	PriceVerdictAbove,
+	PriceVerdictBelow,
+	PriceVerdictRangeOnly,
+	PriceVerdictNotEnoughData,
+	PriceVerdictNotPricedYet,
+}
+
+func (e PriceVerdict) IsValid() bool {
+	switch e {
+	case PriceVerdictWithin, PriceVerdictAbove, PriceVerdictBelow, PriceVerdictRangeOnly, PriceVerdictNotEnoughData, PriceVerdictNotPricedYet:
+		return true
+	}
+	return false
+}
+
+func (e PriceVerdict) String() string {
+	return string(e)
+}
+
+func (e *PriceVerdict) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PriceVerdict(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PriceVerdict", str)
+	}
+	return nil
+}
+
+func (e PriceVerdict) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PriceVerdict) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PriceVerdict) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Stable, machine-readable codes for domain problems returned as data in mutation results. Transport and
+// auth problems never appear here: they go in `errors[].extensions.code` (`UNAUTHENTICATED`, `FORBIDDEN`,
+// `CSRF_FAILED`, `RATE_LIMITED`, `BAD_USER_INPUT`, `INTERNAL`).
+type ProblemCode string
+
+const (
+	// Input failed a rule; `InvalidInput.field` and `reason` say which.
+	ProblemCodeInvalidInput ProblemCode = "invalid_input"
+	ProblemCodeNotFound     ProblemCode = "not_found"
+	// A personal link has expired or was replaced. Offer `requestNewLink`.
+	ProblemCodeLinkExpired ProblemCode = "link_expired"
+	// Only the worker or driver a link was sent to answers on it. A signed-in owner, contractor or staff member
+	// opening it sees it read-only.
+	ProblemCodeNotLinkHolder ProblemCode = "not_link_holder"
+	// The same idempotency key was sent with a different input.
+	ProblemCodeIdempotencyMismatch ProblemCode = "idempotency_mismatch"
+	ProblemCodeAlreadyFunded       ProblemCode = "already_funded"
+	ProblemCodeNotFunded           ProblemCode = "not_funded"
+	ProblemCodeNotInReview         ProblemCode = "not_in_review"
+	ProblemCodeNotInProgress       ProblemCode = "not_in_progress"
+	ProblemCodeExtensionUsed       ProblemCode = "extension_used"
+	ProblemCodeNotDraft            ProblemCode = "not_draft"
+	ProblemCodeLocked              ProblemCode = "locked"
+	ProblemCodeAlreadySigned       ProblemCode = "already_signed"
+	ProblemCodeAlreadyAgreed       ProblemCode = "already_agreed"
+	ProblemCodeAlreadyAnswered     ProblemCode = "already_answered"
+	ProblemCodeAlreadySeen         ProblemCode = "already_seen"
+	ProblemCodeAlreadyStarted      ProblemCode = "already_started"
+	ProblemCodeAlreadyChosen       ProblemCode = "already_chosen"
+	ProblemCodeAlreadySent         ProblemCode = "already_sent"
+	// No mediator suggestion is waiting for an answer.
+	ProblemCodeNoSuggestion         ProblemCode = "no_suggestion"
+	ProblemCodeIssueClosed          ProblemCode = "issue_closed"
+	ProblemCodeSeatsFull            ProblemCode = "seats_full"
+	ProblemCodeNotPacked            ProblemCode = "not_packed"
+	ProblemCodeNotOnTheWay          ProblemCode = "not_on_the_way"
+	ProblemCodePayoutAccountPending ProblemCode = "payout_account_pending"
+	ProblemCodeCartEmpty            ProblemCode = "cart_empty"
+	// The material line is in the owner's cart; she removes it first.
+	ProblemCodeInOwnerCart ProblemCode = "in_owner_cart"
+	// The material line is already ordered or delivered.
+	ProblemCodeAlreadyOrdered   ProblemCode = "already_ordered"
+	ProblemCodeBriefPublished   ProblemCode = "brief_published"
+	ProblemCodeBiddersFull      ProblemCode = "bidders_full"
+	ProblemCodeInvitesFull      ProblemCode = "invites_full"
+	ProblemCodeBidSent          ProblemCode = "bid_sent"
+	ProblemCodeBidWindowClosed  ProblemCode = "bid_window_closed"
+	ProblemCodeQuotaExhausted   ProblemCode = "quota_exhausted"
+	ProblemCodeNotRetryable     ProblemCode = "not_retryable"
+	ProblemCodeChallengeExpired ProblemCode = "challenge_expired"
+	ProblemCodeWrongCode        ProblemCode = "wrong_code"
+	// Not yet allowed by its clock (a pause before 3 days, a second reminder the same day).
+	ProblemCodeTooEarly ProblemCode = "too_early"
+	// The warranty is not active (before handover, or expired).
+	ProblemCodeNotActive ProblemCode = "not_active"
+)
+
+var AllProblemCode = []ProblemCode{
+	ProblemCodeInvalidInput,
+	ProblemCodeNotFound,
+	ProblemCodeLinkExpired,
+	ProblemCodeNotLinkHolder,
+	ProblemCodeIdempotencyMismatch,
+	ProblemCodeAlreadyFunded,
+	ProblemCodeNotFunded,
+	ProblemCodeNotInReview,
+	ProblemCodeNotInProgress,
+	ProblemCodeExtensionUsed,
+	ProblemCodeNotDraft,
+	ProblemCodeLocked,
+	ProblemCodeAlreadySigned,
+	ProblemCodeAlreadyAgreed,
+	ProblemCodeAlreadyAnswered,
+	ProblemCodeAlreadySeen,
+	ProblemCodeAlreadyStarted,
+	ProblemCodeAlreadyChosen,
+	ProblemCodeAlreadySent,
+	ProblemCodeNoSuggestion,
+	ProblemCodeIssueClosed,
+	ProblemCodeSeatsFull,
+	ProblemCodeNotPacked,
+	ProblemCodeNotOnTheWay,
+	ProblemCodePayoutAccountPending,
+	ProblemCodeCartEmpty,
+	ProblemCodeInOwnerCart,
+	ProblemCodeAlreadyOrdered,
+	ProblemCodeBriefPublished,
+	ProblemCodeBiddersFull,
+	ProblemCodeInvitesFull,
+	ProblemCodeBidSent,
+	ProblemCodeBidWindowClosed,
+	ProblemCodeQuotaExhausted,
+	ProblemCodeNotRetryable,
+	ProblemCodeChallengeExpired,
+	ProblemCodeWrongCode,
+	ProblemCodeTooEarly,
+	ProblemCodeNotActive,
+}
+
+func (e ProblemCode) IsValid() bool {
+	switch e {
+	case ProblemCodeInvalidInput, ProblemCodeNotFound, ProblemCodeLinkExpired, ProblemCodeNotLinkHolder, ProblemCodeIdempotencyMismatch, ProblemCodeAlreadyFunded, ProblemCodeNotFunded, ProblemCodeNotInReview, ProblemCodeNotInProgress, ProblemCodeExtensionUsed, ProblemCodeNotDraft, ProblemCodeLocked, ProblemCodeAlreadySigned, ProblemCodeAlreadyAgreed, ProblemCodeAlreadyAnswered, ProblemCodeAlreadySeen, ProblemCodeAlreadyStarted, ProblemCodeAlreadyChosen, ProblemCodeAlreadySent, ProblemCodeNoSuggestion, ProblemCodeIssueClosed, ProblemCodeSeatsFull, ProblemCodeNotPacked, ProblemCodeNotOnTheWay, ProblemCodePayoutAccountPending, ProblemCodeCartEmpty, ProblemCodeInOwnerCart, ProblemCodeAlreadyOrdered, ProblemCodeBriefPublished, ProblemCodeBiddersFull, ProblemCodeInvitesFull, ProblemCodeBidSent, ProblemCodeBidWindowClosed, ProblemCodeQuotaExhausted, ProblemCodeNotRetryable, ProblemCodeChallengeExpired, ProblemCodeWrongCode, ProblemCodeTooEarly, ProblemCodeNotActive:
+		return true
+	}
+	return false
+}
+
+func (e ProblemCode) String() string {
+	return string(e)
+}
+
+func (e *ProblemCode) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ProblemCode(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ProblemCode", str)
+	}
+	return nil
+}
+
+func (e ProblemCode) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ProblemCode) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ProblemCode) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ProblemKind string
+
+const (
+	ProblemKindShort   ProblemKind = "short"
+	ProblemKindDamaged ProblemKind = "damaged"
+	ProblemKindWrong   ProblemKind = "wrong"
+)
+
+var AllProblemKind = []ProblemKind{
+	ProblemKindShort,
+	ProblemKindDamaged,
+	ProblemKindWrong,
+}
+
+func (e ProblemKind) IsValid() bool {
+	switch e {
+	case ProblemKindShort, ProblemKindDamaged, ProblemKindWrong:
+		return true
+	}
+	return false
+}
+
+func (e ProblemKind) String() string {
+	return string(e)
+}
+
+func (e *ProblemKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ProblemKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ProblemKind", str)
+	}
+	return nil
+}
+
+func (e ProblemKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ProblemKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ProblemKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ProductCategory string
+
+const (
+	ProductCategoryTiles      ProductCategory = "tiles"
+	ProductCategoryGrout      ProductCategory = "grout"
+	ProductCategoryAdhesive   ProductCategory = "adhesive"
+	ProductCategoryPlumbing   ProductCategory = "plumbing"
+	ProductCategoryElectrical ProductCategory = "electrical"
+	ProductCategoryPaint      ProductCategory = "paint"
+	ProductCategoryWood       ProductCategory = "wood"
+	ProductCategoryHardware   ProductCategory = "hardware"
+	ProductCategoryOther      ProductCategory = "other"
+	ProductCategoryCement     ProductCategory = "cement"
+)
+
+var AllProductCategory = []ProductCategory{
+	ProductCategoryTiles,
+	ProductCategoryGrout,
+	ProductCategoryAdhesive,
+	ProductCategoryPlumbing,
+	ProductCategoryElectrical,
+	ProductCategoryPaint,
+	ProductCategoryWood,
+	ProductCategoryHardware,
+	ProductCategoryOther,
+	ProductCategoryCement,
+}
+
+func (e ProductCategory) IsValid() bool {
+	switch e {
+	case ProductCategoryTiles, ProductCategoryGrout, ProductCategoryAdhesive, ProductCategoryPlumbing, ProductCategoryElectrical, ProductCategoryPaint, ProductCategoryWood, ProductCategoryHardware, ProductCategoryOther, ProductCategoryCement:
+		return true
+	}
+	return false
+}
+
+func (e ProductCategory) String() string {
+	return string(e)
+}
+
+func (e *ProductCategory) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ProductCategory(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ProductCategory", str)
+	}
+	return nil
+}
+
+func (e ProductCategory) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ProductCategory) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ProductCategory) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ProductGrade string
+
+const (
+	ProductGradeKw1 ProductGrade = "KW1"
+	ProductGradeKw2 ProductGrade = "KW2"
+	ProductGradeKw3 ProductGrade = "KW3"
+)
+
+var AllProductGrade = []ProductGrade{
+	ProductGradeKw1,
+	ProductGradeKw2,
+	ProductGradeKw3,
+}
+
+func (e ProductGrade) IsValid() bool {
+	switch e {
+	case ProductGradeKw1, ProductGradeKw2, ProductGradeKw3:
+		return true
+	}
+	return false
+}
+
+func (e ProductGrade) String() string {
+	return string(e)
+}
+
+func (e *ProductGrade) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ProductGrade(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ProductGrade", str)
+	}
+	return nil
+}
+
+func (e ProductGrade) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ProductGrade) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ProductGrade) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ProvenanceKind string
+
+const (
+	ProvenanceKindChat        ProvenanceKind = "chat"
+	ProvenanceKindVoice       ProvenanceKind = "voice"
+	ProvenanceKindPhoto       ProvenanceKind = "photo"
+	ProvenanceKindChip        ProvenanceKind = "chip"
+	ProvenanceKindBid         ProvenanceKind = "bid"
+	ProvenanceKindChangeOrder ProvenanceKind = "change_order"
+	ProvenanceKindPriceBook   ProvenanceKind = "price_book"
+	ProvenanceKindManual      ProvenanceKind = "manual"
+	ProvenanceKindDefaultTerm ProvenanceKind = "default_term"
+	ProvenanceKindForm        ProvenanceKind = "form"
+	ProvenanceKindAi          ProvenanceKind = "ai"
+)
+
+var AllProvenanceKind = []ProvenanceKind{
+	ProvenanceKindChat,
+	ProvenanceKindVoice,
+	ProvenanceKindPhoto,
+	ProvenanceKindChip,
+	ProvenanceKindBid,
+	ProvenanceKindChangeOrder,
+	ProvenanceKindPriceBook,
+	ProvenanceKindManual,
+	ProvenanceKindDefaultTerm,
+	ProvenanceKindForm,
+	ProvenanceKindAi,
+}
+
+func (e ProvenanceKind) IsValid() bool {
+	switch e {
+	case ProvenanceKindChat, ProvenanceKindVoice, ProvenanceKindPhoto, ProvenanceKindChip, ProvenanceKindBid, ProvenanceKindChangeOrder, ProvenanceKindPriceBook, ProvenanceKindManual, ProvenanceKindDefaultTerm, ProvenanceKindForm, ProvenanceKindAi:
+		return true
+	}
+	return false
+}
+
+func (e ProvenanceKind) String() string {
+	return string(e)
+}
+
+func (e *ProvenanceKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ProvenanceKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ProvenanceKind", str)
+	}
+	return nil
+}
+
+func (e ProvenanceKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ProvenanceKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ProvenanceKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// How the backend sends to the token: straight to FCM or APNs (the apps send raw device tokens), or Expo.
+type PushProvider string
+
+const (
+	PushProviderFcm  PushProvider = "fcm"
+	PushProviderApns PushProvider = "apns"
+	PushProviderExpo PushProvider = "expo"
+)
+
+var AllPushProvider = []PushProvider{
+	PushProviderFcm,
+	PushProviderApns,
+	PushProviderExpo,
+}
+
+func (e PushProvider) IsValid() bool {
+	switch e {
+	case PushProviderFcm, PushProviderApns, PushProviderExpo:
+		return true
+	}
+	return false
+}
+
+func (e PushProvider) String() string {
+	return string(e)
+}
+
+func (e *PushProvider) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PushProvider(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PushProvider", str)
+	}
+	return nil
+}
+
+func (e PushProvider) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PushProvider) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PushProvider) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type QRStatus string
+
+const (
+	QRStatusWaiting  QRStatus = "waiting"
+	QRStatusApproved QRStatus = "approved"
+	QRStatusExpired  QRStatus = "expired"
+)
+
+var AllQRStatus = []QRStatus{
+	QRStatusWaiting,
+	QRStatusApproved,
+	QRStatusExpired,
+}
+
+func (e QRStatus) IsValid() bool {
+	switch e {
+	case QRStatusWaiting, QRStatusApproved, QRStatusExpired:
+		return true
+	}
+	return false
+}
+
+func (e QRStatus) String() string {
+	return string(e)
+}
+
+func (e *QRStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = QRStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid QrStatus", str)
+	}
+	return nil
+}
+
+func (e QRStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *QRStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e QRStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type QuantitySource string
+
+const (
+	QuantitySourceAiFromPhotos QuantitySource = "ai_from_photos"
+	QuantitySourceSiteMeasure  QuantitySource = "site_measure"
+	QuantitySourceManual       QuantitySource = "manual"
+)
+
+var AllQuantitySource = []QuantitySource{
+	QuantitySourceAiFromPhotos,
+	QuantitySourceSiteMeasure,
+	QuantitySourceManual,
+}
+
+func (e QuantitySource) IsValid() bool {
+	switch e {
+	case QuantitySourceAiFromPhotos, QuantitySourceSiteMeasure, QuantitySourceManual:
+		return true
+	}
+	return false
+}
+
+func (e QuantitySource) String() string {
+	return string(e)
+}
+
+func (e *QuantitySource) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = QuantitySource(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid QuantitySource", str)
+	}
+	return nil
+}
+
+func (e QuantitySource) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *QuantitySource) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e QuantitySource) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type RangeStatus string
+
+const (
+	RangeStatusOk            RangeStatus = "ok"
+	RangeStatusNotEnoughData RangeStatus = "not_enough_data"
+	RangeStatusNotPricedYet  RangeStatus = "not_priced_yet"
+)
+
+var AllRangeStatus = []RangeStatus{
+	RangeStatusOk,
+	RangeStatusNotEnoughData,
+	RangeStatusNotPricedYet,
+}
+
+func (e RangeStatus) IsValid() bool {
+	switch e {
+	case RangeStatusOk, RangeStatusNotEnoughData, RangeStatusNotPricedYet:
+		return true
+	}
+	return false
+}
+
+func (e RangeStatus) String() string {
+	return string(e)
+}
+
+func (e *RangeStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RangeStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RangeStatus", str)
+	}
+	return nil
+}
+
+func (e RangeStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *RangeStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e RangeStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ReconciliationStatus string
+
+const (
+	ReconciliationStatusMatched  ReconciliationStatus = "matched"
+	ReconciliationStatusMismatch ReconciliationStatus = "mismatch"
+)
+
+var AllReconciliationStatus = []ReconciliationStatus{
+	ReconciliationStatusMatched,
+	ReconciliationStatusMismatch,
+}
+
+func (e ReconciliationStatus) IsValid() bool {
+	switch e {
+	case ReconciliationStatusMatched, ReconciliationStatusMismatch:
+		return true
+	}
+	return false
+}
+
+func (e ReconciliationStatus) String() string {
+	return string(e)
+}
+
+func (e *ReconciliationStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ReconciliationStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ReconciliationStatus", str)
+	}
+	return nil
+}
+
+func (e ReconciliationStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ReconciliationStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ReconciliationStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type RecordCheckStatus string
+
+const (
+	RecordCheckStatusChecked  RecordCheckStatus = "checked"
+	RecordCheckStatusNotAdded RecordCheckStatus = "not_added"
+)
+
+var AllRecordCheckStatus = []RecordCheckStatus{
+	RecordCheckStatusChecked,
+	RecordCheckStatusNotAdded,
+}
+
+func (e RecordCheckStatus) IsValid() bool {
+	switch e {
+	case RecordCheckStatusChecked, RecordCheckStatusNotAdded:
+		return true
+	}
+	return false
+}
+
+func (e RecordCheckStatus) String() string {
+	return string(e)
+}
+
+func (e *RecordCheckStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RecordCheckStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RecordCheckStatus", str)
+	}
+	return nil
+}
+
+func (e RecordCheckStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *RecordCheckStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e RecordCheckStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type RecordIssueStatus string
+
+const (
+	RecordIssueStatusOpen           RecordIssueStatus = "open"
+	RecordIssueStatusFixed          RecordIssueStatus = "fixed"
+	RecordIssueStatusNotFixed14Days RecordIssueStatus = "not_fixed_14_days"
+)
+
+var AllRecordIssueStatus = []RecordIssueStatus{
+	RecordIssueStatusOpen,
+	RecordIssueStatusFixed,
+	RecordIssueStatusNotFixed14Days,
+}
+
+func (e RecordIssueStatus) IsValid() bool {
+	switch e {
+	case RecordIssueStatusOpen, RecordIssueStatusFixed, RecordIssueStatusNotFixed14Days:
+		return true
+	}
+	return false
+}
+
+func (e RecordIssueStatus) String() string {
+	return string(e)
+}
+
+func (e *RecordIssueStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RecordIssueStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RecordIssueStatus", str)
+	}
+	return nil
+}
+
+func (e RecordIssueStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *RecordIssueStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e RecordIssueStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type RecordJobStatus string
+
+const (
+	RecordJobStatusInProgress     RecordJobStatus = "in_progress"
+	RecordJobStatusStageApproved  RecordJobStatus = "stage_approved"
+	RecordJobStatusHandoverSigned RecordJobStatus = "handover_signed"
+)
+
+var AllRecordJobStatus = []RecordJobStatus{
+	RecordJobStatusInProgress,
+	RecordJobStatusStageApproved,
+	RecordJobStatusHandoverSigned,
+}
+
+func (e RecordJobStatus) IsValid() bool {
+	switch e {
+	case RecordJobStatusInProgress, RecordJobStatusStageApproved, RecordJobStatusHandoverSigned:
+		return true
+	}
+	return false
+}
+
+func (e RecordJobStatus) String() string {
+	return string(e)
+}
+
+func (e *RecordJobStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RecordJobStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RecordJobStatus", str)
+	}
+	return nil
+}
+
+func (e RecordJobStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *RecordJobStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e RecordJobStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type RecordVisibility string
+
+const (
+	RecordVisibilityShown    RecordVisibility = "shown"
+	RecordVisibilityPrivate  RecordVisibility = "private"
+	RecordVisibilityNotAsked RecordVisibility = "not_asked"
+)
+
+var AllRecordVisibility = []RecordVisibility{
+	RecordVisibilityShown,
+	RecordVisibilityPrivate,
+	RecordVisibilityNotAsked,
+}
+
+func (e RecordVisibility) IsValid() bool {
+	switch e {
+	case RecordVisibilityShown, RecordVisibilityPrivate, RecordVisibilityNotAsked:
+		return true
+	}
+	return false
+}
+
+func (e RecordVisibility) String() string {
+	return string(e)
+}
+
+func (e *RecordVisibility) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RecordVisibility(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RecordVisibility", str)
+	}
+	return nil
+}
+
+func (e RecordVisibility) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *RecordVisibility) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e RecordVisibility) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ReferralStatus string
+
+const (
+	ReferralStatusSent          ReferralStatus = "sent"
+	ReferralStatusOpened        ReferralStatus = "opened"
+	ReferralStatusRegistered    ReferralStatus = "registered"
+	ReferralStatusAgreementSent ReferralStatus = "agreement_sent"
+	ReferralStatusOwnerSigned   ReferralStatus = "owner_signed"
+)
+
+var AllReferralStatus = []ReferralStatus{
+	ReferralStatusSent,
+	ReferralStatusOpened,
+	ReferralStatusRegistered,
+	ReferralStatusAgreementSent,
+	ReferralStatusOwnerSigned,
+}
+
+func (e ReferralStatus) IsValid() bool {
+	switch e {
+	case ReferralStatusSent, ReferralStatusOpened, ReferralStatusRegistered, ReferralStatusAgreementSent, ReferralStatusOwnerSigned:
+		return true
+	}
+	return false
+}
+
+func (e ReferralStatus) String() string {
+	return string(e)
+}
+
+func (e *ReferralStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ReferralStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ReferralStatus", str)
+	}
+	return nil
+}
+
+func (e ReferralStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ReferralStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ReferralStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type RefundReason string
+
+const (
+	RefundReasonDeclinedNoShop24h RefundReason = "declined_no_shop_24h"
+	RefundReasonMediatorDecision  RefundReason = "mediator_decision"
+	RefundReasonJobCancelled      RefundReason = "job_cancelled"
+)
+
+var AllRefundReason = []RefundReason{
+	RefundReasonDeclinedNoShop24h,
+	RefundReasonMediatorDecision,
+	RefundReasonJobCancelled,
+}
+
+func (e RefundReason) IsValid() bool {
+	switch e {
+	case RefundReasonDeclinedNoShop24h, RefundReasonMediatorDecision, RefundReasonJobCancelled:
+		return true
+	}
+	return false
+}
+
+func (e RefundReason) String() string {
+	return string(e)
+}
+
+func (e *RefundReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RefundReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RefundReason", str)
+	}
+	return nil
+}
+
+func (e RefundReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *RefundReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e RefundReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ReleaseTrigger string
+
+const (
+	ReleaseTriggerOwnerApproval     ReleaseTrigger = "owner_approval"
+	ReleaseTriggerAutoClock         ReleaseTrigger = "auto_clock"
+	ReleaseTriggerSiteCheckIn       ReleaseTrigger = "site_check_in"
+	ReleaseTriggerMediator          ReleaseTrigger = "mediator"
+	ReleaseTriggerPartialAgreement  ReleaseTrigger = "partial_agreement"
+	ReleaseTriggerHandoverSignature ReleaseTrigger = "handover_signature"
+	ReleaseTriggerRetentionClock    ReleaseTrigger = "retention_clock"
+	ReleaseTriggerSitePhoto         ReleaseTrigger = "site_photo"
+	ReleaseTriggerDriverPhoto24h    ReleaseTrigger = "driver_photo_24h"
+)
+
+var AllReleaseTrigger = []ReleaseTrigger{
+	ReleaseTriggerOwnerApproval,
+	ReleaseTriggerAutoClock,
+	ReleaseTriggerSiteCheckIn,
+	ReleaseTriggerMediator,
+	ReleaseTriggerPartialAgreement,
+	ReleaseTriggerHandoverSignature,
+	ReleaseTriggerRetentionClock,
+	ReleaseTriggerSitePhoto,
+	ReleaseTriggerDriverPhoto24h,
+}
+
+func (e ReleaseTrigger) IsValid() bool {
+	switch e {
+	case ReleaseTriggerOwnerApproval, ReleaseTriggerAutoClock, ReleaseTriggerSiteCheckIn, ReleaseTriggerMediator, ReleaseTriggerPartialAgreement, ReleaseTriggerHandoverSignature, ReleaseTriggerRetentionClock, ReleaseTriggerSitePhoto, ReleaseTriggerDriverPhoto24h:
+		return true
+	}
+	return false
+}
+
+func (e ReleaseTrigger) String() string {
+	return string(e)
+}
+
+func (e *ReleaseTrigger) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ReleaseTrigger(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ReleaseTrigger", str)
+	}
+	return nil
+}
+
+func (e ReleaseTrigger) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ReleaseTrigger) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ReleaseTrigger) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ReminderKind string
+
+const (
+	ReminderKindEveningReport ReminderKind = "evening_report"
+	ReminderKindWages         ReminderKind = "wages"
+	ReminderKindStageReady    ReminderKind = "stage_ready"
+)
+
+var AllReminderKind = []ReminderKind{
+	ReminderKindEveningReport,
+	ReminderKindWages,
+	ReminderKindStageReady,
+}
+
+func (e ReminderKind) IsValid() bool {
+	switch e {
+	case ReminderKindEveningReport, ReminderKindWages, ReminderKindStageReady:
+		return true
+	}
+	return false
+}
+
+func (e ReminderKind) String() string {
+	return string(e)
+}
+
+func (e *ReminderKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ReminderKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ReminderKind", str)
+	}
+	return nil
+}
+
+func (e ReminderKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ReminderKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ReminderKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ReportAck string
+
+const (
+	ReportAckLooksGood ReportAck = "looks_good"
+)
+
+var AllReportAck = []ReportAck{
+	ReportAckLooksGood,
+}
+
+func (e ReportAck) IsValid() bool {
+	switch e {
+	case ReportAckLooksGood:
+		return true
+	}
+	return false
+}
+
+func (e ReportAck) String() string {
+	return string(e)
+}
+
+func (e *ReportAck) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ReportAck(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ReportAck", str)
+	}
+	return nil
+}
+
+func (e ReportAck) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ReportAck) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ReportAck) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ReportKind string
+
+const (
+	ReportKindDaily  ReportKind = "daily"
+	ReportKindNoWork ReportKind = "no_work"
+	// Photos sent with a stage submission.
+	ReportKindStageProof ReportKind = "stage_proof"
+	// Photos of a fix; see `issue`.
+	ReportKindIssueFix ReportKind = "issue_fix"
+)
+
+var AllReportKind = []ReportKind{
+	ReportKindDaily,
+	ReportKindNoWork,
+	ReportKindStageProof,
+	ReportKindIssueFix,
+}
+
+func (e ReportKind) IsValid() bool {
+	switch e {
+	case ReportKindDaily, ReportKindNoWork, ReportKindStageProof, ReportKindIssueFix:
+		return true
+	}
+	return false
+}
+
+func (e ReportKind) String() string {
+	return string(e)
+}
+
+func (e *ReportKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ReportKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ReportKind", str)
+	}
+	return nil
+}
+
+func (e ReportKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ReportKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ReportKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Who is looking. `owner`, `contractor`, `supplier` and `ops` sign in; `crew` and `driver` only ever open
+// personal link pages.
+type Role string
+
+const (
+	RoleOwner      Role = "owner"
+	RoleContractor Role = "contractor"
+	RoleSupplier   Role = "supplier"
+	RoleOps        Role = "ops"
+	RoleCrew       Role = "crew"
+	RoleDriver     Role = "driver"
+)
+
+var AllRole = []Role{
+	RoleOwner,
+	RoleContractor,
+	RoleSupplier,
+	RoleOps,
+	RoleCrew,
+	RoleDriver,
+}
+
+func (e Role) IsValid() bool {
+	switch e {
+	case RoleOwner, RoleContractor, RoleSupplier, RoleOps, RoleCrew, RoleDriver:
+		return true
+	}
+	return false
+}
+
+func (e Role) String() string {
+	return string(e)
+}
+
+func (e *Role) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Role(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Role", str)
+	}
+	return nil
+}
+
+func (e Role) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Role) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Role) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type RoomType string
+
+const (
+	RoomTypeKitchen    RoomType = "kitchen"
+	RoomTypeBathroom   RoomType = "bathroom"
+	RoomTypeFloor      RoomType = "floor"
+	RoomTypeRoofLeaks  RoomType = "roof_leaks"
+	RoomTypePaint      RoomType = "paint"
+	RoomTypeExtension  RoomType = "extension"
+	RoomTypeWholeHouse RoomType = "whole_house"
+	RoomTypeTerrace    RoomType = "terrace"
+)
+
+var AllRoomType = []RoomType{
+	RoomTypeKitchen,
+	RoomTypeBathroom,
+	RoomTypeFloor,
+	RoomTypeRoofLeaks,
+	RoomTypePaint,
+	RoomTypeExtension,
+	RoomTypeWholeHouse,
+	RoomTypeTerrace,
+}
+
+func (e RoomType) IsValid() bool {
+	switch e {
+	case RoomTypeKitchen, RoomTypeBathroom, RoomTypeFloor, RoomTypeRoofLeaks, RoomTypePaint, RoomTypeExtension, RoomTypeWholeHouse, RoomTypeTerrace:
+		return true
+	}
+	return false
+}
+
+func (e RoomType) String() string {
+	return string(e)
+}
+
+func (e *RoomType) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RoomType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RoomType", str)
+	}
+	return nil
+}
+
+func (e RoomType) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *RoomType) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e RoomType) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Schedule string
+
+const (
+	ScheduleOnTime Schedule = "on_time"
+	ScheduleBehind Schedule = "behind"
+	ScheduleAhead  Schedule = "ahead"
+)
+
+var AllSchedule = []Schedule{
+	ScheduleOnTime,
+	ScheduleBehind,
+	ScheduleAhead,
+}
+
+func (e Schedule) IsValid() bool {
+	switch e {
+	case ScheduleOnTime, ScheduleBehind, ScheduleAhead:
+		return true
+	}
+	return false
+}
+
+func (e Schedule) String() string {
+	return string(e)
+}
+
+func (e *Schedule) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Schedule(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Schedule", str)
+	}
+	return nil
+}
+
+func (e Schedule) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Schedule) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Schedule) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SenderRole string
+
+const (
+	SenderRoleOwner      SenderRole = "owner"
+	SenderRoleContractor SenderRole = "contractor"
+	SenderRoleOther      SenderRole = "other"
+)
+
+var AllSenderRole = []SenderRole{
+	SenderRoleOwner,
+	SenderRoleContractor,
+	SenderRoleOther,
+}
+
+func (e SenderRole) IsValid() bool {
+	switch e {
+	case SenderRoleOwner, SenderRoleContractor, SenderRoleOther:
+		return true
+	}
+	return false
+}
+
+func (e SenderRole) String() string {
+	return string(e)
+}
+
+func (e *SenderRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SenderRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SenderRole", str)
+	}
+	return nil
+}
+
+func (e SenderRole) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SenderRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SenderRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SetupStep string
+
+const (
+	SetupStepBusiness      SetupStep = "business"
+	SetupStepAreasSkills   SetupStep = "areas_skills"
+	SetupStepCrew          SetupStep = "crew"
+	SetupStepPayoutAccount SetupStep = "payout_account"
+	SetupStepKtp           SetupStep = "ktp"
+	SetupStepNib           SetupStep = "nib"
+)
+
+var AllSetupStep = []SetupStep{
+	SetupStepBusiness,
+	SetupStepAreasSkills,
+	SetupStepCrew,
+	SetupStepPayoutAccount,
+	SetupStepKtp,
+	SetupStepNib,
+}
+
+func (e SetupStep) IsValid() bool {
+	switch e {
+	case SetupStepBusiness, SetupStepAreasSkills, SetupStepCrew, SetupStepPayoutAccount, SetupStepKtp, SetupStepNib:
+		return true
+	}
+	return false
+}
+
+func (e SetupStep) String() string {
+	return string(e)
+}
+
+func (e *SetupStep) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SetupStep(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SetupStep", str)
+	}
+	return nil
+}
+
+func (e SetupStep) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SetupStep) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SetupStep) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ShopPauseReason string
+
+const (
+	ShopPauseReasonOwnerPaused ShopPauseReason = "owner_paused"
+	// 3 missed answer deadlines in 30 days pauses new orders until the shop taps "I'm back".
+	ShopPauseReasonMissedDeadlines ShopPauseReason = "missed_deadlines"
+)
+
+var AllShopPauseReason = []ShopPauseReason{
+	ShopPauseReasonOwnerPaused,
+	ShopPauseReasonMissedDeadlines,
+}
+
+func (e ShopPauseReason) IsValid() bool {
+	switch e {
+	case ShopPauseReasonOwnerPaused, ShopPauseReasonMissedDeadlines:
+		return true
+	}
+	return false
+}
+
+func (e ShopPauseReason) String() string {
+	return string(e)
+}
+
+func (e *ShopPauseReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ShopPauseReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ShopPauseReason", str)
+	}
+	return nil
+}
+
+func (e ShopPauseReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ShopPauseReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ShopPauseReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ShopPermission string
+
+const (
+	ShopPermissionOrders   ShopPermission = "orders"
+	ShopPermissionProducts ShopPermission = "products"
+	ShopPermissionPayouts  ShopPermission = "payouts"
+	ShopPermissionSettings ShopPermission = "settings"
+	ShopPermissionMessages ShopPermission = "messages"
+	ShopPermissionPacking  ShopPermission = "packing"
+)
+
+var AllShopPermission = []ShopPermission{
+	ShopPermissionOrders,
+	ShopPermissionProducts,
+	ShopPermissionPayouts,
+	ShopPermissionSettings,
+	ShopPermissionMessages,
+	ShopPermissionPacking,
+}
+
+func (e ShopPermission) IsValid() bool {
+	switch e {
+	case ShopPermissionOrders, ShopPermissionProducts, ShopPermissionPayouts, ShopPermissionSettings, ShopPermissionMessages, ShopPermissionPacking:
+		return true
+	}
+	return false
+}
+
+func (e ShopPermission) String() string {
+	return string(e)
+}
+
+func (e *ShopPermission) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ShopPermission(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ShopPermission", str)
+	}
+	return nil
+}
+
+func (e ShopPermission) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ShopPermission) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ShopPermission) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ShopSetupStep string
+
+const (
+	ShopSetupStepDetails  ShopSetupStep = "details"
+	ShopSetupStepDelivery ShopSetupStep = "delivery"
+	ShopSetupStepPayout   ShopSetupStep = "payout"
+	ShopSetupStepProducts ShopSetupStep = "products"
+	ShopSetupStepGoLive   ShopSetupStep = "go_live"
+)
+
+var AllShopSetupStep = []ShopSetupStep{
+	ShopSetupStepDetails,
+	ShopSetupStepDelivery,
+	ShopSetupStepPayout,
+	ShopSetupStepProducts,
+	ShopSetupStepGoLive,
+}
+
+func (e ShopSetupStep) IsValid() bool {
+	switch e {
+	case ShopSetupStepDetails, ShopSetupStepDelivery, ShopSetupStepPayout, ShopSetupStepProducts, ShopSetupStepGoLive:
+		return true
+	}
+	return false
+}
+
+func (e ShopSetupStep) String() string {
+	return string(e)
+}
+
+func (e *ShopSetupStep) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ShopSetupStep(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ShopSetupStep", str)
+	}
+	return nil
+}
+
+func (e ShopSetupStep) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ShopSetupStep) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ShopSetupStep) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ShopStaffRole string
+
+const (
+	ShopStaffRoleOwner ShopStaffRole = "owner"
+	ShopStaffRoleStaff ShopStaffRole = "staff"
+)
+
+var AllShopStaffRole = []ShopStaffRole{
+	ShopStaffRoleOwner,
+	ShopStaffRoleStaff,
+}
+
+func (e ShopStaffRole) IsValid() bool {
+	switch e {
+	case ShopStaffRoleOwner, ShopStaffRoleStaff:
+		return true
+	}
+	return false
+}
+
+func (e ShopStaffRole) String() string {
+	return string(e)
+}
+
+func (e *ShopStaffRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ShopStaffRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ShopStaffRole", str)
+	}
+	return nil
+}
+
+func (e ShopStaffRole) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ShopStaffRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ShopStaffRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ShopStatus string
+
+const (
+	ShopStatusSetup  ShopStatus = "setup"
+	ShopStatusLive   ShopStatus = "live"
+	ShopStatusPaused ShopStatus = "paused"
+)
+
+var AllShopStatus = []ShopStatus{
+	ShopStatusSetup,
+	ShopStatusLive,
+	ShopStatusPaused,
+}
+
+func (e ShopStatus) IsValid() bool {
+	switch e {
+	case ShopStatusSetup, ShopStatusLive, ShopStatusPaused:
+		return true
+	}
+	return false
+}
+
+func (e ShopStatus) String() string {
+	return string(e)
+}
+
+func (e *ShopStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ShopStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ShopStatus", str)
+	}
+	return nil
+}
+
+func (e ShopStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ShopStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ShopStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SignatureMethod string
+
+const (
+	SignatureMethodOtpWhatsapp     SignatureMethod = "otp_whatsapp"
+	SignatureMethodOtpSms          SignatureMethod = "otp_sms"
+	SignatureMethodDeviceBiometric SignatureMethod = "device_biometric"
+)
+
+var AllSignatureMethod = []SignatureMethod{
+	SignatureMethodOtpWhatsapp,
+	SignatureMethodOtpSms,
+	SignatureMethodDeviceBiometric,
+}
+
+func (e SignatureMethod) IsValid() bool {
+	switch e {
+	case SignatureMethodOtpWhatsapp, SignatureMethodOtpSms, SignatureMethodDeviceBiometric:
+		return true
+	}
+	return false
+}
+
+func (e SignatureMethod) String() string {
+	return string(e)
+}
+
+func (e *SignatureMethod) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SignatureMethod(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SignatureMethod", str)
+	}
+	return nil
+}
+
+func (e SignatureMethod) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SignatureMethod) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SignatureMethod) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SigningPurpose string
+
+const (
+	SigningPurposeAgreement      SigningPurpose = "agreement"
+	SigningPurposeChangeOrder    SigningPurpose = "change_order"
+	SigningPurposeHandover       SigningPurpose = "handover"
+	SigningPurposePartialRelease SigningPurpose = "partial_release"
+	SigningPurposeEndJob         SigningPurpose = "end_job"
+	SigningPurposeProgressCount  SigningPurpose = "progress_count"
+	// Step-up before releasing money (approving a stage).
+	SigningPurposeRelease SigningPurpose = "release"
+	// Accepting a mediator's suggestion that releases or refunds money (`answerMediatorSuggestion`): the issue.
+	SigningPurposeMediation SigningPurpose = "mediation"
+	// Step-up before adding a payout account (`addBankAccount`): the user, or the shop for a shop's account.
+	SigningPurposeBankAccount SigningPurpose = "bank_account"
+	// Giving a team member the owner seat (`updateTeamMember`): the team member.
+	SigningPurposeOwnerSeat SigningPurpose = "owner_seat"
+)
+
+var AllSigningPurpose = []SigningPurpose{
+	SigningPurposeAgreement,
+	SigningPurposeChangeOrder,
+	SigningPurposeHandover,
+	SigningPurposePartialRelease,
+	SigningPurposeEndJob,
+	SigningPurposeProgressCount,
+	SigningPurposeRelease,
+	SigningPurposeMediation,
+	SigningPurposeBankAccount,
+	SigningPurposeOwnerSeat,
+}
+
+func (e SigningPurpose) IsValid() bool {
+	switch e {
+	case SigningPurposeAgreement, SigningPurposeChangeOrder, SigningPurposeHandover, SigningPurposePartialRelease, SigningPurposeEndJob, SigningPurposeProgressCount, SigningPurposeRelease, SigningPurposeMediation, SigningPurposeBankAccount, SigningPurposeOwnerSeat:
+		return true
+	}
+	return false
+}
+
+func (e SigningPurpose) String() string {
+	return string(e)
+}
+
+func (e *SigningPurpose) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SigningPurpose(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SigningPurpose", str)
+	}
+	return nil
+}
+
+func (e SigningPurpose) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SigningPurpose) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SigningPurpose) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SiteTaskDoneBy string
+
+const (
+	SiteTaskDoneByContractor SiteTaskDoneBy = "contractor"
+	SiteTaskDoneByCrewLink   SiteTaskDoneBy = "crew_link"
+)
+
+var AllSiteTaskDoneBy = []SiteTaskDoneBy{
+	SiteTaskDoneByContractor,
+	SiteTaskDoneByCrewLink,
+}
+
+func (e SiteTaskDoneBy) IsValid() bool {
+	switch e {
+	case SiteTaskDoneByContractor, SiteTaskDoneByCrewLink:
+		return true
+	}
+	return false
+}
+
+func (e SiteTaskDoneBy) String() string {
+	return string(e)
+}
+
+func (e *SiteTaskDoneBy) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SiteTaskDoneBy(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SiteTaskDoneBy", str)
+	}
+	return nil
+}
+
+func (e SiteTaskDoneBy) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SiteTaskDoneBy) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SiteTaskDoneBy) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SiteVisitAction string
+
+const (
+	SiteVisitActionConfirm     SiteVisitAction = "confirm"
+	SiteVisitActionSuggest     SiteVisitAction = "suggest"
+	SiteVisitActionCancel      SiteVisitAction = "cancel"
+	SiteVisitActionOwnerAbsent SiteVisitAction = "owner_absent"
+	SiteVisitActionDone        SiteVisitAction = "done"
+)
+
+var AllSiteVisitAction = []SiteVisitAction{
+	SiteVisitActionConfirm,
+	SiteVisitActionSuggest,
+	SiteVisitActionCancel,
+	SiteVisitActionOwnerAbsent,
+	SiteVisitActionDone,
+}
+
+func (e SiteVisitAction) IsValid() bool {
+	switch e {
+	case SiteVisitActionConfirm, SiteVisitActionSuggest, SiteVisitActionCancel, SiteVisitActionOwnerAbsent, SiteVisitActionDone:
+		return true
+	}
+	return false
+}
+
+func (e SiteVisitAction) String() string {
+	return string(e)
+}
+
+func (e *SiteVisitAction) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SiteVisitAction(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SiteVisitAction", str)
+	}
+	return nil
+}
+
+func (e SiteVisitAction) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SiteVisitAction) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SiteVisitAction) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SiteVisitStatus string
+
+const (
+	SiteVisitStatusRequested        SiteVisitStatus = "requested"
+	SiteVisitStatusConfirmed        SiteVisitStatus = "confirmed"
+	SiteVisitStatusDone             SiteVisitStatus = "done"
+	SiteVisitStatusCancelled        SiteVisitStatus = "cancelled"
+	SiteVisitStatusOwnerAbsent      SiteVisitStatus = "owner_absent"
+	SiteVisitStatusContractorNoShow SiteVisitStatus = "contractor_no_show"
+)
+
+var AllSiteVisitStatus = []SiteVisitStatus{
+	SiteVisitStatusRequested,
+	SiteVisitStatusConfirmed,
+	SiteVisitStatusDone,
+	SiteVisitStatusCancelled,
+	SiteVisitStatusOwnerAbsent,
+	SiteVisitStatusContractorNoShow,
+}
+
+func (e SiteVisitStatus) IsValid() bool {
+	switch e {
+	case SiteVisitStatusRequested, SiteVisitStatusConfirmed, SiteVisitStatusDone, SiteVisitStatusCancelled, SiteVisitStatusOwnerAbsent, SiteVisitStatusContractorNoShow:
+		return true
+	}
+	return false
+}
+
+func (e SiteVisitStatus) String() string {
+	return string(e)
+}
+
+func (e *SiteVisitStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SiteVisitStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SiteVisitStatus", str)
+	}
+	return nil
+}
+
+func (e SiteVisitStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SiteVisitStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SiteVisitStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Skill string
+
+const (
+	SkillTiles      Skill = "tiles"
+	SkillPlumbing   Skill = "plumbing"
+	SkillElectrical Skill = "electrical"
+	SkillCarpentry  Skill = "carpentry"
+	SkillPainting   Skill = "painting"
+	SkillRoofsLeaks Skill = "roofs_leaks"
+)
+
+var AllSkill = []Skill{
+	SkillTiles,
+	SkillPlumbing,
+	SkillElectrical,
+	SkillCarpentry,
+	SkillPainting,
+	SkillRoofsLeaks,
+}
+
+func (e Skill) IsValid() bool {
+	switch e {
+	case SkillTiles, SkillPlumbing, SkillElectrical, SkillCarpentry, SkillPainting, SkillRoofsLeaks:
+		return true
+	}
+	return false
+}
+
+func (e Skill) String() string {
+	return string(e)
+}
+
+func (e *Skill) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Skill(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Skill", str)
+	}
+	return nil
+}
+
+func (e Skill) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Skill) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Skill) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StaffFactor string
+
+const (
+	StaffFactorSecurityKey   StaffFactor = "security_key"
+	StaffFactorAuthenticator StaffFactor = "authenticator"
+)
+
+var AllStaffFactor = []StaffFactor{
+	StaffFactorSecurityKey,
+	StaffFactorAuthenticator,
+}
+
+func (e StaffFactor) IsValid() bool {
+	switch e {
+	case StaffFactorSecurityKey, StaffFactorAuthenticator:
+		return true
+	}
+	return false
+}
+
+func (e StaffFactor) String() string {
+	return string(e)
+}
+
+func (e *StaffFactor) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StaffFactor(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StaffFactor", str)
+	}
+	return nil
+}
+
+func (e StaffFactor) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StaffFactor) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StaffFactor) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StaffPermission string
+
+const (
+	StaffPermissionReadMoney     StaffPermission = "read_money"
+	StaffPermissionRetryPayouts  StaffPermission = "retry_payouts"
+	StaffPermissionDecideCases   StaffPermission = "decide_cases"
+	StaffPermissionVerifyUsers   StaffPermission = "verify_users"
+	StaffPermissionEditPriceBook StaffPermission = "edit_price_book"
+	StaffPermissionReplySupport  StaffPermission = "reply_support"
+)
+
+var AllStaffPermission = []StaffPermission{
+	StaffPermissionReadMoney,
+	StaffPermissionRetryPayouts,
+	StaffPermissionDecideCases,
+	StaffPermissionVerifyUsers,
+	StaffPermissionEditPriceBook,
+	StaffPermissionReplySupport,
+}
+
+func (e StaffPermission) IsValid() bool {
+	switch e {
+	case StaffPermissionReadMoney, StaffPermissionRetryPayouts, StaffPermissionDecideCases, StaffPermissionVerifyUsers, StaffPermissionEditPriceBook, StaffPermissionReplySupport:
+		return true
+	}
+	return false
+}
+
+func (e StaffPermission) String() string {
+	return string(e)
+}
+
+func (e *StaffPermission) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StaffPermission(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StaffPermission", str)
+	}
+	return nil
+}
+
+func (e StaffPermission) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StaffPermission) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StaffPermission) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StaffRole string
+
+const (
+	StaffRoleMediator     StaffRole = "mediator"
+	StaffRoleSupport      StaffRole = "support"
+	StaffRoleFinance      StaffRole = "finance"
+	StaffRoleLead         StaffRole = "lead"
+	StaffRoleVerification StaffRole = "verification"
+)
+
+var AllStaffRole = []StaffRole{
+	StaffRoleMediator,
+	StaffRoleSupport,
+	StaffRoleFinance,
+	StaffRoleLead,
+	StaffRoleVerification,
+}
+
+func (e StaffRole) IsValid() bool {
+	switch e {
+	case StaffRoleMediator, StaffRoleSupport, StaffRoleFinance, StaffRoleLead, StaffRoleVerification:
+		return true
+	}
+	return false
+}
+
+func (e StaffRole) String() string {
+	return string(e)
+}
+
+func (e *StaffRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StaffRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StaffRole", str)
+	}
+	return nil
+}
+
+func (e StaffRole) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StaffRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StaffRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StageKind string
+
+const (
+	StageKindWork      StageKind = "work"
+	StageKindRetention StageKind = "retention"
+)
+
+var AllStageKind = []StageKind{
+	StageKindWork,
+	StageKindRetention,
+}
+
+func (e StageKind) IsValid() bool {
+	switch e {
+	case StageKindWork, StageKindRetention:
+		return true
+	}
+	return false
+}
+
+func (e StageKind) String() string {
+	return string(e)
+}
+
+func (e *StageKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StageKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StageKind", str)
+	}
+	return nil
+}
+
+func (e StageKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StageKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StageKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StageReminderKind string
+
+const (
+	StageReminderKindSubmitted StageReminderKind = "submitted"
+	StageReminderKindH48       StageReminderKind = "h48"
+	StageReminderKindH24       StageReminderKind = "h24"
+	StageReminderKindH2        StageReminderKind = "h2"
+)
+
+var AllStageReminderKind = []StageReminderKind{
+	StageReminderKindSubmitted,
+	StageReminderKindH48,
+	StageReminderKindH24,
+	StageReminderKindH2,
+}
+
+func (e StageReminderKind) IsValid() bool {
+	switch e {
+	case StageReminderKindSubmitted, StageReminderKindH48, StageReminderKindH24, StageReminderKindH2:
+		return true
+	}
+	return false
+}
+
+func (e StageReminderKind) String() string {
+	return string(e)
+}
+
+func (e *StageReminderKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StageReminderKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StageReminderKind", str)
+	}
+	return nil
+}
+
+func (e StageReminderKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StageReminderKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StageReminderKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// `planned` not funded yet (\"Belum didanai · Jangan mulai dulu\"); `funded` safe at the partner, work may
+// start; `in_progress` under way; `submitted` in review, the 4-day clock runs; `released` approved and paid;
+// `refunded` returned to the owner. Stage 1 releases at the day-1 check-in, so it shows `in_progress` with
+// `releasedAt` set until it is submitted and approved.
+type StageStatus string
+
+const (
+	StageStatusPlanned    StageStatus = "planned"
+	StageStatusFunded     StageStatus = "funded"
+	StageStatusInProgress StageStatus = "in_progress"
+	StageStatusSubmitted  StageStatus = "submitted"
+	StageStatusReleased   StageStatus = "released"
+	StageStatusRefunded   StageStatus = "refunded"
+)
+
+var AllStageStatus = []StageStatus{
+	StageStatusPlanned,
+	StageStatusFunded,
+	StageStatusInProgress,
+	StageStatusSubmitted,
+	StageStatusReleased,
+	StageStatusRefunded,
+}
+
+func (e StageStatus) IsValid() bool {
+	switch e {
+	case StageStatusPlanned, StageStatusFunded, StageStatusInProgress, StageStatusSubmitted, StageStatusReleased, StageStatusRefunded:
+		return true
+	}
+	return false
+}
+
+func (e StageStatus) String() string {
+	return string(e)
+}
+
+func (e *StageStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StageStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StageStatus", str)
+	}
+	return nil
+}
+
+func (e StageStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StageStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StageStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Stance string
+
+const (
+	StanceProposesFix Stance = "proposes_fix"
+	StanceExplains    Stance = "explains"
+	StanceDisagrees   Stance = "disagrees"
+	StanceAccepts     Stance = "accepts"
+	StancePending     Stance = "pending"
+)
+
+var AllStance = []Stance{
+	StanceProposesFix,
+	StanceExplains,
+	StanceDisagrees,
+	StanceAccepts,
+	StancePending,
+}
+
+func (e Stance) IsValid() bool {
+	switch e {
+	case StanceProposesFix, StanceExplains, StanceDisagrees, StanceAccepts, StancePending:
+		return true
+	}
+	return false
+}
+
+func (e Stance) String() string {
+	return string(e)
+}
+
+func (e *Stance) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Stance(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Stance", str)
+	}
+	return nil
+}
+
+func (e Stance) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Stance) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Stance) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StatementKind string
+
+const (
+	StatementKindFunding StatementKind = "funding"
+	StatementKindRelease StatementKind = "release"
+	StatementKindRefund  StatementKind = "refund"
+	StatementKindPayout  StatementKind = "payout"
+)
+
+var AllStatementKind = []StatementKind{
+	StatementKindFunding,
+	StatementKindRelease,
+	StatementKindRefund,
+	StatementKindPayout,
+}
+
+func (e StatementKind) IsValid() bool {
+	switch e {
+	case StatementKindFunding, StatementKindRelease, StatementKindRefund, StatementKindPayout:
+		return true
+	}
+	return false
+}
+
+func (e StatementKind) String() string {
+	return string(e)
+}
+
+func (e *StatementKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StatementKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StatementKind", str)
+	}
+	return nil
+}
+
+func (e StatementKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StatementKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StatementKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StepChannel string
+
+const (
+	StepChannelApp      StepChannel = "app"
+	StepChannelWeb      StepChannel = "web"
+	StepChannelWhatsapp StepChannel = "whatsapp"
+)
+
+var AllStepChannel = []StepChannel{
+	StepChannelApp,
+	StepChannelWeb,
+	StepChannelWhatsapp,
+}
+
+func (e StepChannel) IsValid() bool {
+	switch e {
+	case StepChannelApp, StepChannelWeb, StepChannelWhatsapp:
+		return true
+	}
+	return false
+}
+
+func (e StepChannel) String() string {
+	return string(e)
+}
+
+func (e *StepChannel) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StepChannel(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StepChannel", str)
+	}
+	return nil
+}
+
+func (e StepChannel) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StepChannel) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StepChannel) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StepStatus string
+
+const (
+	StepStatusDone  StepStatus = "done"
+	StepStatusNow   StepStatus = "now"
+	StepStatusLater StepStatus = "later"
+)
+
+var AllStepStatus = []StepStatus{
+	StepStatusDone,
+	StepStatusNow,
+	StepStatusLater,
+}
+
+func (e StepStatus) IsValid() bool {
+	switch e {
+	case StepStatusDone, StepStatusNow, StepStatusLater:
+		return true
+	}
+	return false
+}
+
+func (e StepStatus) String() string {
+	return string(e)
+}
+
+func (e *StepStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StepStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StepStatus", str)
+	}
+	return nil
+}
+
+func (e StepStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StepStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StepStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StockOption string
+
+const (
+	StockOptionSubstitute StockOption = "substitute"
+	StockOptionSplit      StockOption = "split"
+	StockOptionDropLine   StockOption = "drop_line"
+)
+
+var AllStockOption = []StockOption{
+	StockOptionSubstitute,
+	StockOptionSplit,
+	StockOptionDropLine,
+}
+
+func (e StockOption) IsValid() bool {
+	switch e {
+	case StockOptionSubstitute, StockOptionSplit, StockOptionDropLine:
+		return true
+	}
+	return false
+}
+
+func (e StockOption) String() string {
+	return string(e)
+}
+
+func (e *StockOption) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StockOption(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StockOption", str)
+	}
+	return nil
+}
+
+func (e StockOption) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StockOption) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StockOption) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StockProposalStatus string
+
+const (
+	StockProposalStatusPending   StockProposalStatus = "pending"
+	StockProposalStatusApproved  StockProposalStatus = "approved"
+	StockProposalStatusRejected  StockProposalStatus = "rejected"
+	StockProposalStatusDefaulted StockProposalStatus = "defaulted"
+)
+
+var AllStockProposalStatus = []StockProposalStatus{
+	StockProposalStatusPending,
+	StockProposalStatusApproved,
+	StockProposalStatusRejected,
+	StockProposalStatusDefaulted,
+}
+
+func (e StockProposalStatus) IsValid() bool {
+	switch e {
+	case StockProposalStatusPending, StockProposalStatusApproved, StockProposalStatusRejected, StockProposalStatusDefaulted:
+		return true
+	}
+	return false
+}
+
+func (e StockProposalStatus) String() string {
+	return string(e)
+}
+
+func (e *StockProposalStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StockProposalStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StockProposalStatus", str)
+	}
+	return nil
+}
+
+func (e StockProposalStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StockProposalStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StockProposalStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StockStatus string
+
+const (
+	StockStatusInStock StockStatus = "in_stock"
+	StockStatusLow     StockStatus = "low"
+	StockStatusOut     StockStatus = "out"
+)
+
+var AllStockStatus = []StockStatus{
+	StockStatusInStock,
+	StockStatusLow,
+	StockStatusOut,
+}
+
+func (e StockStatus) IsValid() bool {
+	switch e {
+	case StockStatusInStock, StockStatusLow, StockStatusOut:
+		return true
+	}
+	return false
+}
+
+func (e StockStatus) String() string {
+	return string(e)
+}
+
+func (e *StockStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StockStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StockStatus", str)
+	}
+	return nil
+}
+
+func (e StockStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StockStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StockStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SuggestionAnswer string
+
+const (
+	SuggestionAnswerAccepted SuggestionAnswer = "accepted"
+	SuggestionAnswerIgnored  SuggestionAnswer = "ignored"
+)
+
+var AllSuggestionAnswer = []SuggestionAnswer{
+	SuggestionAnswerAccepted,
+	SuggestionAnswerIgnored,
+}
+
+func (e SuggestionAnswer) IsValid() bool {
+	switch e {
+	case SuggestionAnswerAccepted, SuggestionAnswerIgnored:
+		return true
+	}
+	return false
+}
+
+func (e SuggestionAnswer) String() string {
+	return string(e)
+}
+
+func (e *SuggestionAnswer) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SuggestionAnswer(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SuggestionAnswer", str)
+	}
+	return nil
+}
+
+func (e SuggestionAnswer) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SuggestionAnswer) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SuggestionAnswer) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SystemHealth string
+
+const (
+	SystemHealthNormal   SystemHealth = "normal"
+	SystemHealthDegraded SystemHealth = "degraded"
+	SystemHealthDown     SystemHealth = "down"
+)
+
+var AllSystemHealth = []SystemHealth{
+	SystemHealthNormal,
+	SystemHealthDegraded,
+	SystemHealthDown,
+}
+
+func (e SystemHealth) IsValid() bool {
+	switch e {
+	case SystemHealthNormal, SystemHealthDegraded, SystemHealthDown:
+		return true
+	}
+	return false
+}
+
+func (e SystemHealth) String() string {
+	return string(e)
+}
+
+func (e *SystemHealth) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SystemHealth(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SystemHealth", str)
+	}
+	return nil
+}
+
+func (e SystemHealth) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SystemHealth) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SystemHealth) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type TeamMemberStatus string
+
+const (
+	TeamMemberStatusInvited TeamMemberStatus = "invited"
+	TeamMemberStatusActive  TeamMemberStatus = "active"
+)
+
+var AllTeamMemberStatus = []TeamMemberStatus{
+	TeamMemberStatusInvited,
+	TeamMemberStatusActive,
+}
+
+func (e TeamMemberStatus) IsValid() bool {
+	switch e {
+	case TeamMemberStatusInvited, TeamMemberStatusActive:
+		return true
+	}
+	return false
+}
+
+func (e TeamMemberStatus) String() string {
+	return string(e)
+}
+
+func (e *TeamMemberStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TeamMemberStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TeamMemberStatus", str)
+	}
+	return nil
+}
+
+func (e TeamMemberStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TeamMemberStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TeamMemberStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type TeamSeat string
+
+const (
+	TeamSeatOwner  TeamSeat = "owner"
+	TeamSeatOffice TeamSeat = "office"
+)
+
+var AllTeamSeat = []TeamSeat{
+	TeamSeatOwner,
+	TeamSeatOffice,
+}
+
+func (e TeamSeat) IsValid() bool {
+	switch e {
+	case TeamSeatOwner, TeamSeatOffice:
+		return true
+	}
+	return false
+}
+
+func (e TeamSeat) String() string {
+	return string(e)
+}
+
+func (e *TeamSeat) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TeamSeat(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TeamSeat", str)
+	}
+	return nil
+}
+
+func (e TeamSeat) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TeamSeat) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TeamSeat) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type TermState string
+
+const (
+	TermStateWritten TermState = "written"
+	TermStateMissing TermState = "missing"
+)
+
+var AllTermState = []TermState{
+	TermStateWritten,
+	TermStateMissing,
+}
+
+func (e TermState) IsValid() bool {
+	switch e {
+	case TermStateWritten, TermStateMissing:
+		return true
+	}
+	return false
+}
+
+func (e TermState) String() string {
+	return string(e)
+}
+
+func (e *TermState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TermState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TermState", str)
+	}
+	return nil
+}
+
+func (e TermState) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TermState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TermState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type TestResult string
+
+const (
+	TestResultPass TestResult = "pass"
+	TestResultFail TestResult = "fail"
+)
+
+var AllTestResult = []TestResult{
+	TestResultPass,
+	TestResultFail,
+}
+
+func (e TestResult) IsValid() bool {
+	switch e {
+	case TestResultPass, TestResultFail:
+		return true
+	}
+	return false
+}
+
+func (e TestResult) String() string {
+	return string(e)
+}
+
+func (e *TestResult) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TestResult(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TestResult", str)
+	}
+	return nil
+}
+
+func (e TestResult) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TestResult) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TestResult) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ThreadKind string
+
+const (
+	ThreadKindJob     ThreadKind = "job"
+	ThreadKindOrder   ThreadKind = "order"
+	ThreadKindIssue   ThreadKind = "issue"
+	ThreadKindBid     ThreadKind = "bid"
+	ThreadKindSupport ThreadKind = "support"
+	ThreadKindCrew    ThreadKind = "crew"
+)
+
+var AllThreadKind = []ThreadKind{
+	ThreadKindJob,
+	ThreadKindOrder,
+	ThreadKindIssue,
+	ThreadKindBid,
+	ThreadKindSupport,
+	ThreadKindCrew,
+}
+
+func (e ThreadKind) IsValid() bool {
+	switch e {
+	case ThreadKindJob, ThreadKindOrder, ThreadKindIssue, ThreadKindBid, ThreadKindSupport, ThreadKindCrew:
+		return true
+	}
+	return false
+}
+
+func (e ThreadKind) String() string {
+	return string(e)
+}
+
+func (e *ThreadKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ThreadKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ThreadKind", str)
+	}
+	return nil
+}
+
+func (e ThreadKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ThreadKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ThreadKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type TicketChannel string
+
+const (
+	TicketChannelApp      TicketChannel = "app"
+	TicketChannelWhatsapp TicketChannel = "whatsapp"
+	TicketChannelEmail    TicketChannel = "email"
+)
+
+var AllTicketChannel = []TicketChannel{
+	TicketChannelApp,
+	TicketChannelWhatsapp,
+	TicketChannelEmail,
+}
+
+func (e TicketChannel) IsValid() bool {
+	switch e {
+	case TicketChannelApp, TicketChannelWhatsapp, TicketChannelEmail:
+		return true
+	}
+	return false
+}
+
+func (e TicketChannel) String() string {
+	return string(e)
+}
+
+func (e *TicketChannel) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TicketChannel(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TicketChannel", str)
+	}
+	return nil
+}
+
+func (e TicketChannel) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TicketChannel) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TicketChannel) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type TicketStatus string
+
+const (
+	TicketStatusNeedsYou   TicketStatus = "needs_you"
+	TicketStatusInProgress TicketStatus = "in_progress"
+	TicketStatusWaiting24h TicketStatus = "waiting_24h"
+	TicketStatusPending    TicketStatus = "pending"
+	TicketStatusClosed     TicketStatus = "closed"
+)
+
+var AllTicketStatus = []TicketStatus{
+	TicketStatusNeedsYou,
+	TicketStatusInProgress,
+	TicketStatusWaiting24h,
+	TicketStatusPending,
+	TicketStatusClosed,
+}
+
+func (e TicketStatus) IsValid() bool {
+	switch e {
+	case TicketStatusNeedsYou, TicketStatusInProgress, TicketStatusWaiting24h, TicketStatusPending, TicketStatusClosed:
+		return true
+	}
+	return false
+}
+
+func (e TicketStatus) String() string {
+	return string(e)
+}
+
+func (e *TicketStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TicketStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TicketStatus", str)
+	}
+	return nil
+}
+
+func (e TicketStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TicketStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TicketStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Unit string
+
+const (
+	UnitM2     Unit = "m2"
+	UnitM      Unit = "m"
+	UnitLot    Unit = "lot"
+	UnitPoint  Unit = "point"
+	UnitUnit   Unit = "unit"
+	UnitSet    Unit = "set"
+	UnitBox    Unit = "box"
+	UnitBag    Unit = "bag"
+	UnitSheet  Unit = "sheet"
+	UnitPiece  Unit = "piece"
+	UnitKg     Unit = "kg"
+	UnitDay    Unit = "day"
+	UnitLength Unit = "length"
+	UnitLoad   Unit = "load"
+)
+
+var AllUnit = []Unit{
+	UnitM2,
+	UnitM,
+	UnitLot,
+	UnitPoint,
+	UnitUnit,
+	UnitSet,
+	UnitBox,
+	UnitBag,
+	UnitSheet,
+	UnitPiece,
+	UnitKg,
+	UnitDay,
+	UnitLength,
+	UnitLoad,
+}
+
+func (e Unit) IsValid() bool {
+	switch e {
+	case UnitM2, UnitM, UnitLot, UnitPoint, UnitUnit, UnitSet, UnitBox, UnitBag, UnitSheet, UnitPiece, UnitKg, UnitDay, UnitLength, UnitLoad:
+		return true
+	}
+	return false
+}
+
+func (e Unit) String() string {
+	return string(e)
+}
+
+func (e *Unit) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Unit(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Unit", str)
+	}
+	return nil
+}
+
+func (e Unit) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Unit) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Unit) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type VerificationCaseStatus string
+
+const (
+	VerificationCaseStatusOpen        VerificationCaseStatus = "open"
+	VerificationCaseStatusNamesDiffer VerificationCaseStatus = "names_differ"
+	VerificationCaseStatusPending     VerificationCaseStatus = "pending"
+	VerificationCaseStatusDone        VerificationCaseStatus = "done"
+)
+
+var AllVerificationCaseStatus = []VerificationCaseStatus{
+	VerificationCaseStatusOpen,
+	VerificationCaseStatusNamesDiffer,
+	VerificationCaseStatusPending,
+	VerificationCaseStatusDone,
+}
+
+func (e VerificationCaseStatus) IsValid() bool {
+	switch e {
+	case VerificationCaseStatusOpen, VerificationCaseStatusNamesDiffer, VerificationCaseStatusPending, VerificationCaseStatusDone:
+		return true
+	}
+	return false
+}
+
+func (e VerificationCaseStatus) String() string {
+	return string(e)
+}
+
+func (e *VerificationCaseStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = VerificationCaseStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid VerificationCaseStatus", str)
+	}
+	return nil
+}
+
+func (e VerificationCaseStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *VerificationCaseStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e VerificationCaseStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type VerificationKind string
+
+const (
+	VerificationKindKtp         VerificationKind = "ktp"
+	VerificationKindNib         VerificationKind = "nib"
+	VerificationKindBankAccount VerificationKind = "bank_account"
+	VerificationKindSbu         VerificationKind = "sbu"
+	VerificationKindPhone       VerificationKind = "phone"
+)
+
+var AllVerificationKind = []VerificationKind{
+	VerificationKindKtp,
+	VerificationKindNib,
+	VerificationKindBankAccount,
+	VerificationKindSbu,
+	VerificationKindPhone,
+}
+
+func (e VerificationKind) IsValid() bool {
+	switch e {
+	case VerificationKindKtp, VerificationKindNib, VerificationKindBankAccount, VerificationKindSbu, VerificationKindPhone:
+		return true
+	}
+	return false
+}
+
+func (e VerificationKind) String() string {
+	return string(e)
+}
+
+func (e *VerificationKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = VerificationKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid VerificationKind", str)
+	}
+	return nil
+}
+
+func (e VerificationKind) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *VerificationKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e VerificationKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type VerificationRejectReason string
+
+const (
+	VerificationRejectReasonNameMismatch     VerificationRejectReason = "name_mismatch"
+	VerificationRejectReasonBlurredPhoto     VerificationRejectReason = "blurred_photo"
+	VerificationRejectReasonNibOtherBusiness VerificationRejectReason = "nib_other_business"
+	VerificationRejectReasonOther            VerificationRejectReason = "other"
+)
+
+var AllVerificationRejectReason = []VerificationRejectReason{
+	VerificationRejectReasonNameMismatch,
+	VerificationRejectReasonBlurredPhoto,
+	VerificationRejectReasonNibOtherBusiness,
+	VerificationRejectReasonOther,
+}
+
+func (e VerificationRejectReason) IsValid() bool {
+	switch e {
+	case VerificationRejectReasonNameMismatch, VerificationRejectReasonBlurredPhoto, VerificationRejectReasonNibOtherBusiness, VerificationRejectReasonOther:
+		return true
+	}
+	return false
+}
+
+func (e VerificationRejectReason) String() string {
+	return string(e)
+}
+
+func (e *VerificationRejectReason) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = VerificationRejectReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid VerificationRejectReason", str)
+	}
+	return nil
+}
+
+func (e VerificationRejectReason) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *VerificationRejectReason) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e VerificationRejectReason) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type VerificationStatus string
+
+const (
+	VerificationStatusNotStarted VerificationStatus = "not_started"
+	VerificationStatusPending    VerificationStatus = "pending"
+	VerificationStatusVerified   VerificationStatus = "verified"
+	VerificationStatusRejected   VerificationStatus = "rejected"
+)
+
+var AllVerificationStatus = []VerificationStatus{
+	VerificationStatusNotStarted,
+	VerificationStatusPending,
+	VerificationStatusVerified,
+	VerificationStatusRejected,
+}
+
+func (e VerificationStatus) IsValid() bool {
+	switch e {
+	case VerificationStatusNotStarted, VerificationStatusPending, VerificationStatusVerified, VerificationStatusRejected:
+		return true
+	}
+	return false
+}
+
+func (e VerificationStatus) String() string {
+	return string(e)
+}
+
+func (e *VerificationStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = VerificationStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid VerificationStatus", str)
+	}
+	return nil
+}
+
+func (e VerificationStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *VerificationStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e VerificationStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type WageConfirmation string
+
+const (
+	WageConfirmationPending  WageConfirmation = "pending"
+	WageConfirmationReceived WageConfirmation = "received"
+	WageConfirmationDiffers  WageConfirmation = "differs"
+)
+
+var AllWageConfirmation = []WageConfirmation{
+	WageConfirmationPending,
+	WageConfirmationReceived,
+	WageConfirmationDiffers,
+}
+
+func (e WageConfirmation) IsValid() bool {
+	switch e {
+	case WageConfirmationPending, WageConfirmationReceived, WageConfirmationDiffers:
+		return true
+	}
+	return false
+}
+
+func (e WageConfirmation) String() string {
+	return string(e)
+}
+
+func (e *WageConfirmation) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = WageConfirmation(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid WageConfirmation", str)
+	}
+	return nil
+}
+
+func (e WageConfirmation) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *WageConfirmation) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e WageConfirmation) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type WarrantyClaimAction string
+
+const (
+	WarrantyClaimActionScheduleVisit WarrantyClaimAction = "schedule_visit"
+	WarrantyClaimActionMarkFixed     WarrantyClaimAction = "mark_fixed"
+	WarrantyClaimActionConfirmFixed  WarrantyClaimAction = "confirm_fixed"
+	WarrantyClaimActionDecline       WarrantyClaimAction = "decline"
+)
+
+var AllWarrantyClaimAction = []WarrantyClaimAction{
+	WarrantyClaimActionScheduleVisit,
+	WarrantyClaimActionMarkFixed,
+	WarrantyClaimActionConfirmFixed,
+	WarrantyClaimActionDecline,
+}
+
+func (e WarrantyClaimAction) IsValid() bool {
+	switch e {
+	case WarrantyClaimActionScheduleVisit, WarrantyClaimActionMarkFixed, WarrantyClaimActionConfirmFixed, WarrantyClaimActionDecline:
+		return true
+	}
+	return false
+}
+
+func (e WarrantyClaimAction) String() string {
+	return string(e)
+}
+
+func (e *WarrantyClaimAction) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = WarrantyClaimAction(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid WarrantyClaimAction", str)
+	}
+	return nil
+}
+
+func (e WarrantyClaimAction) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *WarrantyClaimAction) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e WarrantyClaimAction) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type WarrantyClaimStatus string
+
+const (
+	WarrantyClaimStatusOpen           WarrantyClaimStatus = "open"
+	WarrantyClaimStatusVisitScheduled WarrantyClaimStatus = "visit_scheduled"
+	WarrantyClaimStatusFixed          WarrantyClaimStatus = "fixed"
+	WarrantyClaimStatusConfirmed      WarrantyClaimStatus = "confirmed"
+	WarrantyClaimStatusDeclined       WarrantyClaimStatus = "declined"
+)
+
+var AllWarrantyClaimStatus = []WarrantyClaimStatus{
+	WarrantyClaimStatusOpen,
+	WarrantyClaimStatusVisitScheduled,
+	WarrantyClaimStatusFixed,
+	WarrantyClaimStatusConfirmed,
+	WarrantyClaimStatusDeclined,
+}
+
+func (e WarrantyClaimStatus) IsValid() bool {
+	switch e {
+	case WarrantyClaimStatusOpen, WarrantyClaimStatusVisitScheduled, WarrantyClaimStatusFixed, WarrantyClaimStatusConfirmed, WarrantyClaimStatusDeclined:
+		return true
+	}
+	return false
+}
+
+func (e WarrantyClaimStatus) String() string {
+	return string(e)
+}
+
+func (e *WarrantyClaimStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = WarrantyClaimStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid WarrantyClaimStatus", str)
+	}
+	return nil
+}
+
+func (e WarrantyClaimStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *WarrantyClaimStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e WarrantyClaimStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type WarrantyStatus string
+
+const (
+	WarrantyStatusPending WarrantyStatus = "pending"
+	WarrantyStatusActive  WarrantyStatus = "active"
+	WarrantyStatusExpired WarrantyStatus = "expired"
+)
+
+var AllWarrantyStatus = []WarrantyStatus{
+	WarrantyStatusPending,
+	WarrantyStatusActive,
+	WarrantyStatusExpired,
+}
+
+func (e WarrantyStatus) IsValid() bool {
+	switch e {
+	case WarrantyStatusPending, WarrantyStatusActive, WarrantyStatusExpired:
+		return true
+	}
+	return false
+}
+
+func (e WarrantyStatus) String() string {
+	return string(e)
+}
+
+func (e *WarrantyStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = WarrantyStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid WarrantyStatus", str)
+	}
+	return nil
+}
+
+func (e WarrantyStatus) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *WarrantyStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e WarrantyStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Weekday string
+
+const (
+	WeekdayMon Weekday = "mon"
+	WeekdayTue Weekday = "tue"
+	WeekdayWed Weekday = "wed"
+	WeekdayThu Weekday = "thu"
+	WeekdayFri Weekday = "fri"
+	WeekdaySat Weekday = "sat"
+	WeekdaySun Weekday = "sun"
+)
+
+var AllWeekday = []Weekday{
+	WeekdayMon,
+	WeekdayTue,
+	WeekdayWed,
+	WeekdayThu,
+	WeekdayFri,
+	WeekdaySat,
+	WeekdaySun,
+}
+
+func (e Weekday) IsValid() bool {
+	switch e {
+	case WeekdayMon, WeekdayTue, WeekdayWed, WeekdayThu, WeekdayFri, WeekdaySat, WeekdaySun:
+		return true
+	}
+	return false
+}
+
+func (e Weekday) String() string {
+	return string(e)
+}
+
+func (e *Weekday) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Weekday(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Weekday", str)
+	}
+	return nil
+}
+
+func (e Weekday) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Weekday) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Weekday) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type WorkDaySource string
+
+const (
+	WorkDaySourceDiary      WorkDaySource = "diary"
+	WorkDaySourceCrewLink   WorkDaySource = "crew_link"
+	WorkDaySourceContractor WorkDaySource = "contractor"
+)
+
+var AllWorkDaySource = []WorkDaySource{
+	WorkDaySourceDiary,
+	WorkDaySourceCrewLink,
+	WorkDaySourceContractor,
+}
+
+func (e WorkDaySource) IsValid() bool {
+	switch e {
+	case WorkDaySourceDiary, WorkDaySourceCrewLink, WorkDaySourceContractor:
+		return true
+	}
+	return false
+}
+
+func (e WorkDaySource) String() string {
+	return string(e)
+}
+
+func (e *WorkDaySource) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = WorkDaySource(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid WorkDaySource", str)
+	}
+	return nil
+}
+
+func (e WorkDaySource) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *WorkDaySource) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e WorkDaySource) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	e.MarshalGQL(&buf)
 	return buf.Bytes(), nil

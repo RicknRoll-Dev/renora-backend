@@ -1,0 +1,507 @@
+extend type Query {
+  """
+  The caller's jobs in their role (an owner's projects, a contractor's jobs); every job for ops. Ordered by
+  status, then newest start first: work in progress (`active`, `paused`), then agreements not yet locked
+  (`draft`, `awaiting_signatures`), then `handover`, then finished (`completed`, `cancelled`). For ops,
+  attention first: jobs with an open case, a running stage-review or issue-reply clock, a pause or a payout
+  retry, the most recent of those first; then the rest, newest start first. Jobs created
+  after the clock are not listed. `search` matches the title, code, area or either side's name, ignoring case.
+  """
+  jobs(status: JobStatus, search: String, first: Int = 20, after: String): JobConnection!
+    @allow(roles: [owner, contractor, ops])
+  "A job the caller is a party to (or any job, for ops). Null when it is not visible."
+  job(id: ID!): Job
+  jobImport(id: ID!): JobImport @allow(roles: [contractor])
+  export(id: ID!): Export
+}
+
+extend type Mutation {
+  "Problems: `invalid_input` (title)."
+  createJob(input: CreateJobInput!): CreateJobResult! @allow(roles: [contractor])
+  updateJob(input: UpdateJobInput!): UpdateJobResult! @allow(roles: [contractor])
+  "The owner's choice for the contractor's public record (R3)."
+  setRecordVisibility(input: SetRecordVisibilityInput!): SetRecordVisibilityResult!
+    @allow(roles: [owner])
+  createJobExport(input: CreateJobExportInput!): CreateJobExportResult!
+  """
+  Starts an import: a WhatsApp chat export, a RAB photo or a voice note (upload it with `createUpload` first).
+  The AI reads it and returns suggestions; nothing enters the agreement until he accepts each one (R1).
+  """
+  createJobImport(input: CreateJobImportInput!): CreateJobImportResult! @allow(roles: [contractor])
+  updateJobImport(input: UpdateJobImportInput!): UpdateJobImportResult! @allow(roles: [contractor])
+}
+
+enum JobStatus {
+  draft
+  awaiting_signatures
+  active
+  paused
+  handover
+  completed
+  cancelled
+}
+
+enum Schedule {
+  on_time
+  behind
+  ahead
+}
+
+enum JobSource {
+  contractor_invite
+  "`renora_brief` jobs may carry the match fee."
+  renora_brief
+}
+
+enum RecordVisibility {
+  shown
+  private
+  not_asked
+}
+
+"""
+One renovation job: the record both sides share. Every role reads the same Job; fields one side may not
+see resolve to null for the other (see `@private`).
+"""
+type Job {
+  id: ID!
+  "Short code used in links and by ops."
+  code: String!
+  title: String!
+  roomType: RoomType!
+  area: String!
+  "The area's first part, e.g. \"Bintaro\" for \"Bintaro, Tangerang Selatan\"."
+  areaShort: String
+  "Only the owner, the contractor and his crew."
+  address: String @private(to: [owner, contractor, ops])
+  sitePoint: GeoPoint
+  status: JobStatus!
+  owner: Person!
+  contractor: Person!
+  "The contractor's business in the directory: record, badges, verified handovers."
+  contractorBusiness: Contractor
+  crew: [Person!]!
+  "The agreement price incl. everything in it, once there is one."
+  price: Money
+  startDate: Date
+  finishDate: Date
+  durationDays: Int
+  dayOfJob: Int
+  schedule: Schedule
+  "Finished jobs only."
+  onTime: Boolean
+  progressPercent: Int!
+  currentStage: Stage
+  currentStageNo: Int
+  stageCount: Int
+  "P2 protected payments on; false means payments are recorded and confirmed only (P1)."
+  protectedPayment: Boolean!
+  materialsBuyer: MaterialsBuyer
+  warrantyUntil: Date
+  "What the caller has to do now, in their own words. Titles never carry amounts."
+  needsYou: [NeedsYouItem!]!
+  needsYouCount: Int!
+  "What the other party still owes the caller."
+  waitingOn: [NeedsYouItem!]!
+  waitingOnCount: Int!
+  "Dated events ahead, in time order (deliveries, stage starts, auto-releases, handover)."
+  upcoming: [NeedsYouItem!]!
+  nextStep: String
+  nextAt: DateTime
+  nextWindow: TimeWindow
+  counts: JobCounts
+  fees: FeeSchedule
+  pause: Pause
+  source: JobSource
+  "Contractor: money released to him so far on this job."
+  received: Money @private(to: [contractor, ops])
+  "Money funded and safe at the partner right now."
+  safeAtPartner: Money
+  handoverResult: HandoverResult
+  coverPhoto: Media
+  "The owner's choice for the contractor's public record."
+  recordVisibility: RecordVisibility
+  activity(needsYou: Boolean, first: Int = 20, after: String): ActivityConnection!
+  documents: JobDocuments!
+  createdAt: DateTime
+}
+
+type JobConnection {
+  edges: [JobEdge!]!
+  nodes: [Job!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  counts: JobListCounts!
+}
+
+type JobEdge {
+  cursor: String!
+  node: Job!
+}
+
+"Totals across all pages."
+type JobListCounts {
+  all: Int!
+  active: Int!
+  "Open bid invitations."
+  invited: Int!
+  finished: Int!
+}
+
+type JobCounts {
+  photos: Int!
+  voiceNotes: Int!
+  messages: Int!
+  changeOrders: Int!
+}
+
+type HandoverResult {
+  checked: Int!
+  accepted: Int!
+  total: Int!
+  signedOn: Date
+}
+
+enum NeedsYouKind {
+  stage_review
+  funding
+  change_order
+  decision
+  issue
+  handover
+  materials
+  delivery
+  invite
+  bid
+  agreement
+  wages
+  stage_start
+  auto_release
+}
+
+union NeedsYouSubject =
+  | Job
+  | Stage
+  | Funding
+  | ChangeOrder
+  | Decision
+  | Issue
+  | MaterialLine
+  | AgreementVersion
+  | WageWeek
+
+type NeedsYouItem {
+  kind: NeedsYouKind!
+  "No amounts in the title."
+  title: String!
+  job: Job
+  "What to open."
+  subject: NeedsYouSubject
+  refId: ID!
+  dueAt: DateTime
+  "A slot rather than a deadline, such as a delivery."
+  window: TimeWindow
+  photoCount: Int
+  "Signed change in price, for change orders."
+  priceDelta: Money
+}
+
+"""
+Protection fee (owner, P2): 1% of the agreement price incl. PPN, collected as 1% of each stage when funded;
+minimum Rp 200.000 per job (shortfall at the first funding), cap Rp 2.500.000. Change orders: no fee up to
+25% of the agreement price, 1% above. Match fee (P4, when Renora brought the owner): 3% of the first job,
+cap Rp 5.000.000, taken from released payments; waived for founding contractors until 31 Dec 2027.
+Contractors pay nothing on their own clients.
+"""
+type FeeSchedule {
+  protection: ProtectionFee @private(to: [owner, ops])
+  changeOrders: ChangeOrderFeeRule!
+  match: MatchFee @private(to: [contractor, ops])
+}
+
+type ProtectionFee {
+  rate: Bps!
+  minPerJob: Money!
+  capPerJob: Money!
+  total: Money!
+  paid: Money!
+  includesPpn: Boolean!
+}
+
+type ChangeOrderFeeRule {
+  freeUpTo: Bps!
+  rateAbove: Bps!
+}
+
+enum MatchFeeWaiver {
+  founding_contractor
+  repeat_owner
+  own_client
+}
+
+type MatchFee {
+  rate: Bps!
+  cap: Money!
+  amount: Money!
+  waived: Boolean!
+  waiverReason: MatchFeeWaiver
+  waivedUntil: Date
+}
+
+enum PauseStatus {
+  notice_sent
+  active
+  cancelled
+  ended
+}
+
+"The contractor's right to pause when the next stage is unfunded 3 days after he submits."
+type Pause {
+  status: PauseStatus!
+  reason: String
+  noticeAt: DateTime!
+  "48 h after the notice unless the owner funds."
+  effectiveAt: DateTime!
+  endedAt: DateTime
+  "Paused days extend the finish date."
+  pausedDays: Int
+  "After 14 days unfunded and silent he may end the job for owner default."
+  ownerDefaultAvailableAt: DateTime
+}
+
+enum ActivityKind {
+  report
+  stage_submitted
+  stage_released
+  funding
+  change_order
+  decision
+  issue
+  delivery
+  reminder
+  handover
+  message
+}
+
+type ActivityItem {
+  id: ID!
+  kind: ActivityKind!
+  title: String!
+  at: DateTime!
+  needsYou: Boolean!
+  refId: ID
+  read: Boolean!
+}
+
+type ActivityConnection {
+  edges: [ActivityEdge!]!
+  nodes: [ActivityItem!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ActivityEdge {
+  cursor: String!
+  node: ActivityItem!
+}
+
+type JobDocuments {
+  "Every agreement version created by the clock, oldest first; for the owner only those sent to her."
+  versions: [AgreementVersion!]!
+  statements(first: Int = 20, after: String): StatementConnection
+    @private(to: [owner, contractor, ops])
+  warrantyCardUrl: String
+  exports: [Export!]!
+}
+
+input CreateJobInput {
+  title: String!
+  """
+  A confirmed job import. Its work items and the suggestions he accepted (price, start date, duration, stages,
+  warranty) become agreement v1; a suggestion he did not accept stays out, empty for him to fill (R1).
+  """
+  importId: ID
+  roomType: RoomType
+  area: String
+  ownerPhone: String
+  ownerName: String
+}
+
+type CreateJobPayload {
+  job: Job!
+}
+
+union CreateJobResult = CreateJobPayload | InvalidInput | NotFound
+
+input UpdateJobInput {
+  jobId: ID!
+  title: String
+  sitePoint: GeoPointInput
+  address: String
+}
+
+type UpdateJobPayload {
+  job: Job!
+}
+
+union UpdateJobResult = UpdateJobPayload | NotFound | InvalidInput
+
+input SetRecordVisibilityInput {
+  jobId: ID!
+  visibility: RecordVisibility!
+  shareMoodBoardPhotos: Boolean
+}
+
+type SetRecordVisibilityPayload {
+  job: Job!
+}
+
+union SetRecordVisibilityResult = SetRecordVisibilityPayload | NotFound
+
+input CreateJobExportInput {
+  jobId: ID!
+  kind: ExportKind!
+}
+
+type CreateJobExportPayload {
+  export: Export!
+}
+
+union CreateJobExportResult = CreateJobExportPayload | NotFound
+
+enum ImportSource {
+  whatsapp_chat
+  rab_photo
+  voice
+  blank
+}
+
+enum ImportStatus {
+  processing
+  ready
+  failed
+}
+
+enum SenderRole {
+  owner
+  contractor
+  other
+}
+
+type ImportStats {
+  messages: Int!
+  from: Date
+  to: Date
+  photos: Int!
+  voiceNotes: Int!
+}
+
+type ImportSender {
+  name: String!
+  messageCount: Int!
+  sampleLine: String
+  sampleAt: DateTime
+  role: SenderRole!
+}
+
+"A work item: volume × unit price on every line, tagged labour only or labour plus materials."
+type WorkItem {
+  id: ID!
+  code: String!
+  title: String!
+  "The title in Bahasa Indonesia, as the contractor said or wrote it."
+  titleBahasa: String
+  spec: String
+  quantity: Float!
+  unit: Unit!
+  scope: LineScope!
+  "Required when `unit` is `lot`."
+  lotContents: String
+  materialsBuyer: MaterialsBuyer
+  stageNo: Int
+  weight: Bps
+  "Selling price shown to the owner (R6)."
+  amount: Money
+  "Changed in this version."
+  changed: Boolean
+  "Set while the line is an AI draft (a voice start): `suggested` until he accepts it in `updateJobImport`."
+  ai: AiSuggestion
+}
+
+input WorkItemInput {
+  code: String!
+  title: String!
+  titleBahasa: String
+  spec: String
+  quantity: Float!
+  unit: Unit!
+  scope: LineScope!
+  lotContents: String
+  materialsBuyer: MaterialsBuyer
+  stageNo: Int
+  amount: Money
+}
+
+type JobImport {
+  id: ID!
+  source: ImportSource!
+  fileName: String
+  status: ImportStatus!
+  stats: ImportStats
+  senders: [ImportSender!]!
+  """
+  What the AI read: each waits for him to accept or ignore it. `field` is `title`, `owner_name`, `area`,
+  `price`, `start_date`, `duration_days`, `stages`, `warranty` or `work_item` (its `value` is the line's code).
+  """
+  suggestions: [AiSuggestion!]!
+  workItems: [WorkItem!]!
+  stages: [StagePlan!]!
+  termsCheck: TermsCheck
+  "The shareable quote (RAB) card from a voice start."
+  rabCard: ShareCard
+}
+
+input CreateJobImportInput {
+  source: ImportSource!
+  """
+  Uploaded chat export, RAB photo or voice note. A voice note drafts the work items as AI suggestions with
+  the quote and the second it was said; each stays `suggested` and not binding until he accepts it (R1).
+  """
+  mediaIds: [ID!]
+}
+
+type CreateJobImportPayload {
+  jobImport: JobImport!
+}
+
+union CreateJobImportResult = CreateJobImportPayload | InvalidInput
+
+input SenderRoleInput {
+  name: String!
+  role: SenderRole!
+}
+
+enum SuggestionAnswer {
+  accepted
+  ignored
+}
+
+input SuggestionAnswerInput {
+  id: ID!
+  answer: SuggestionAnswer!
+  "His corrected value, when he accepts it changed."
+  value: String
+}
+
+input UpdateJobImportInput {
+  importId: ID!
+  senders: [SenderRoleInput!]
+  suggestions: [SuggestionAnswerInput!]
+  workItems: [WorkItemInput!]
+}
+
+type UpdateJobImportPayload {
+  jobImport: JobImport!
+}
+
+union UpdateJobImportResult = UpdateJobImportPayload | NotFound

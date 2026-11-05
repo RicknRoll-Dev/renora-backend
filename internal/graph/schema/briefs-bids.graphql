@@ -1,0 +1,1143 @@
+extend type Query {
+  "The changes she can tick for a room type, in the reader's language."
+  changeOptions(roomType: RoomType!): [ChangeOption!]! @public
+  "Areas a contractor may serve, nearest first, within `withinKm` of a point (his base or a pin)."
+  areaSuggestions(near: GeoPointInput!, withinKm: Float = 10): [String!]! @public
+  "The owner's briefs (P4)."
+  briefs: [Brief!]! @allow(roles: [owner])
+  brief(id: ID!): Brief @allow(roles: [owner, ops])
+  "Real photos from verified handovers."
+  moodBoards(roomType: RoomType): [MoodBoard!]!
+  "The contractor's invitations to quote."
+  bidInvites(first: Int = 20, after: String): BidInviteConnection! @allow(roles: [contractor])
+  bidInvite(id: ID!): BidInvite
+  """
+  A bid. Bids are sealed: the bidder reads his own; the owner reads it once sent; no contractor ever reads
+  another's.
+  """
+  bid(id: ID!): Bid
+}
+
+extend type Mutation {
+  """
+  Works without a session: the payload carries a `draftToken` for later edits and `claimBrief`. Problems:
+  `invalid_input` (`budgetBand`, `band_rules`).
+  """
+  createBrief(input: BriefInput!): CreateBriefResult! @public
+  """
+  With a session (the owner) or the anonymous `draftToken`. Problems: `brief_published`, `invalid_input`
+  (`budgetBand`, `band_rules`: the band rules on `BudgetBand`).
+  """
+  updateBrief(input: UpdateBriefInput!): UpdateBriefResult! @public
+  "Saves an anonymous draft to the signed-in owner's account."
+  claimBrief(input: ClaimBriefInput!): ClaimBriefResult! @allow(roles: [owner])
+  "The AI drafts the work list from the photos, the changes and the voice note (R1: each line is a suggestion)."
+  suggestWorkList(input: SuggestWorkListInput!): SuggestWorkListResult! @allow(roles: [owner])
+  saveWorkList(input: SaveWorkListInput!): SaveWorkListResult! @allow(roles: [owner])
+  """
+  An AI picture of her own room (pilot arm only, at most 3 per project). Stamped \"AI illustration · not to
+  scale · not the agreed spec\"; contractors never see it. Problems: `quota_exhausted`.
+  """
+  generateLook(input: GenerateLookInput!): GenerateLookResult! @allow(roles: [owner])
+  """
+  Opens bidding for 3 days, closing at 21:00. Requires the budget band contractors see (\"a range, not a
+  target\"), within the band rules against her limit as it is now. Problems: `brief_published`, `invalid_input`
+  (`budgetBand`: `required`, `band_rules`).
+  """
+  publishBrief(input: PublishBriefInput!): PublishBriefResult! @allow(roles: [owner])
+  """
+  At most 3 bidding at once and 5 invites per brief; a backup waits on standby. Invitees answer within
+  24 h; silence is a decline. Problems: `bidders_full`, `invites_full`.
+  """
+  inviteContractor(input: InviteContractorInput!): InviteContractorResult! @allow(roles: [owner])
+  "Join (opens an AI-filled draft bid) or decline with a reason. Problems: `already_answered`."
+  respondToBidInvite(input: RespondToBidInviteInput!): RespondToBidInviteResult!
+    @allow(roles: [contractor])
+  "Free to the owner; at least 24 h before bids close. No-shows on either side earn a strike."
+  requestSiteVisit(input: RequestSiteVisitInput!): RequestSiteVisitResult!
+    @allow(roles: [contractor])
+  updateSiteVisit(input: UpdateSiteVisitInput!): UpdateSiteVisitResult!
+    @allow(roles: [owner, contractor])
+  "Saves the draft bid. Volume × unit price on every line; totals are recomputed by code. Problems: `bid_sent`."
+  saveBid(input: SaveBidInput!): SaveBidResult! @allow(roles: [contractor])
+  "Sends the sealed bid. All 8 key terms are required. Problems: `bid_sent`, `terms_missing` (invalid_input)."
+  submitBid(input: SubmitBidInput!): SubmitBidResult! @allow(roles: [contractor])
+  """
+  Withdraws a joined invite or a sent bid while the brief is still open. The bidding rules allow it; it
+  shows on his record as \"menarik diri\" (withdrew) and frees a bidder slot for the owner's backup.
+  Problems: `already_chosen`, `bid_window_closed`.
+  """
+  withdrawBid(input: WithdrawBidInput!): WithdrawBidResult! @allow(roles: [contractor])
+  """
+  The owner asks all bidders (or some); every answer is shared with all of them. A bidder (who joined the
+  bidding) asks the owner; her answer goes to every bidder, and other bidders never see who asked.
+  """
+  askBidQuestion(input: AskBidQuestionInput!): AskBidQuestionResult!
+    @allow(roles: [owner, contractor])
+  "A bidder answers the owner's question, or the owner answers a bidder's (`ownerAnswer`)."
+  answerBidQuestion(input: AnswerBidQuestionInput!): AnswerBidQuestionResult!
+    @allow(roles: [owner, contractor])
+  shareBidAnswer(input: ShareBidAnswerInput!): ShareBidAnswerResult! @allow(roles: [owner])
+  "The owner opened the question: every answer in so far is read (\"1 answer to read\" clears)."
+  markBidQuestionRead(input: MarkBidQuestionReadInput!): MarkBidQuestionReadResult!
+    @allow(roles: [owner])
+  """
+  The owner chooses within 7 days of the close; the others receive her reason chip, never rivals' prices.
+  The chosen bid becomes the job and its agreement draft. Problems: `already_chosen`.
+  """
+  chooseBid(input: ChooseBidInput!): ChooseBidResult! @allow(roles: [owner])
+  closeBriefWithoutChoice(input: CloseBriefInput!): CloseBriefResult! @allow(roles: [owner])
+}
+
+"""
+The band rules (Q4), checked by the server on every save and at publish: from Rp 0 up, the top never above
+her limit, and at least Rp 10.000.000 or 20% of the top wide (a band from Rp 0 is wide enough).
+"""
+type BudgetBand {
+  low: Money!
+  high: Money!
+}
+
+input BudgetBandInput {
+  low: Money!
+  high: Money!
+}
+
+enum FinishElement {
+  wall_tile
+  floor
+  cabinets
+  worktop
+  sink_tap
+  lighting
+  other
+}
+
+enum FinishStatus {
+  chosen
+  not_decided
+}
+
+type FinishOption {
+  label: String!
+  priceDelta: Money!
+}
+
+type Finish {
+  element: FinishElement!
+  "The newest price-book source behind `priceDelta`."
+  latestSourceDate: Date
+  workItemCode: String
+  spec: String!
+  status: FinishStatus!
+  "Signed price change against the basis."
+  priceDelta: Money
+  deltaBasis: String
+  allowance: Money
+  options: [FinishOption!]!
+  sourceCount: Int
+}
+
+input FinishOptionInput {
+  label: String!
+  priceDelta: Money!
+}
+
+input FinishInput {
+  element: FinishElement!
+  workItemCode: String
+  spec: String!
+  status: FinishStatus!
+  "Signed price change against the basis."
+  priceDelta: Money
+  deltaBasis: String
+  allowance: Money
+  options: [FinishOptionInput!]
+}
+
+enum PermitResult {
+  pbg_probably_not_needed
+  pbg_likely_needed
+}
+
+"A guide, not legal advice."
+type PermitCheck {
+  changeOfUse: Boolean!
+  structural: Boolean!
+  floorAreaGrows: Boolean!
+  facade: Boolean!
+  result: PermitResult
+  ruleSource: String
+}
+
+input PermitCheckInput {
+  changeOfUse: Boolean!
+  structural: Boolean!
+  floorAreaGrows: Boolean!
+  facade: Boolean!
+}
+
+enum ObservationStatus {
+  suggested
+  ticked
+  unticked
+  cannot_tell
+}
+
+"What the AI saw in her photos; she ticks what is right."
+type Observation {
+  id: ID!
+  text: String!
+  media: [Media!]!
+  status: ObservationStatus!
+}
+
+input ObservationInput {
+  id: ID!
+  status: ObservationStatus!
+}
+
+enum BriefStatus {
+  draft
+  collecting_bids
+  closed
+  chosen
+  closed_without_choice
+}
+
+enum BandWarning {
+  top_equals_limit
+  below_price_book_low
+}
+
+enum DesignArm {
+  mood_board_only
+  with_ai_picture
+}
+
+type BidRules {
+  maxBidders: Int!
+  maxInvites: Int!
+  "Bidding closes this long after publishing, at 21:00 WIB on that day."
+  closeAfterHours: Int!
+  "Fewer than 2 bids at the close: bidding stays open this much longer, once."
+  extensionHours: Int!
+  "The owner chooses within this many days of the close."
+  chooseWithinDays: Int!
+  "The most a bid's down payment may be: 20% when she buys the materials, 30% when the contractor does."
+  downPaymentCap: Bps!
+  answerWithinHours: Int!
+  siteVisitsFree: Boolean!
+  answersToAllBidders: Boolean!
+  allTermsRequired: Boolean!
+}
+
+"The owner's brief. Owner and ops only; bidders read `ContractorBriefView`."
+type Brief {
+  id: ID!
+  status: BriefStatus!
+  roomType: RoomType!
+  photos: [Media!]!
+  lengthM: Float
+  widthM: Float
+  areaM2: Float
+  observations: [Observation!]!
+  changes: [String!]!
+  keep: [String!]!
+  voiceNote: Media
+  transcript: String
+  area: String
+  "The area's first part, e.g. \"Bintaro\"."
+  areaShort: String
+  "Private until a contractor is chosen."
+  address: String @private(to: [owner, ops])
+  startAfter: Date
+  finishBefore: Date
+  "Composed from `hours`, in the reader's language."
+  workingHours: String
+  hours: WorkingHours
+  "Her limit. Private: contractors never see it."
+  limit: Money @private(to: [owner, ops])
+  materialsBuyer: MaterialsBuyer
+  contingency: Bps @private(to: [owner, ops])
+  "The required band contractors see, \"a range, not a target\"."
+  budgetBand: BudgetBand
+  """
+  The band she starts from, already within the band rules: our price-book range rounded out to Rp 5.000.000,
+  at least Rp 10.000.000 or 20% wide (from Rp 0 for a smaller job), never above her limit. With no estimate yet,
+  the band one step under her limit. Null with neither. Never shown to contractors.
+  """
+  suggestedBand: BudgetBand @private(to: [owner, ops])
+  "How bidders are found: she picks them, or Renora invites the best-matched for her (at publish)."
+  matching: Matching @private(to: [owner, ops])
+  bandWarnings: [BandWarning!] @private(to: [owner, ops])
+  moodBoard: MoodBoard
+  "The saved look she keeps as her reference. Only she sees it; it never enters the bids or the agreement."
+  look: Look @private(to: [owner, ops])
+  finishes: [Finish!]!
+  permitCheck: PermitCheck
+  closesAt: DateTime
+  workList: WorkList
+  designArm: DesignArm @private(to: [owner, ops])
+  publishedAt: DateTime
+  extendedOnce: Boolean!
+  bidRules: BidRules!
+  bidsIn: Int!
+  chosenBid: Bid
+  job: Job
+  createdAt: DateTime!
+  "When the anonymous draft was saved to her account."
+  claimedAt: DateTime
+  finishesPickedAt: DateTime
+  roughBudget: RoughBudget @private(to: [owner, ops])
+  looks: [Look!] @private(to: [owner, ops])
+  invites: [BidInvite!]!
+  "Sent bids only, most complete first (never cheapest first, R9)."
+  bids: [Bid!]!
+  """
+  The sent bids side by side, from the first bid in, also while bidding is still open: only the bids received
+  so far and the answers given by now. Most complete first, never cheapest first; the AI never picks (R9).
+  Null until a bid is in.
+  """
+  comparison: BidComparison
+  questions: [BidQuestion!]!
+  siteVisits: [SiteVisit!]!
+}
+
+enum BriefItemKind {
+  work
+  often_forgotten
+  assumed
+  not_in_job
+}
+
+enum BriefItemStatus {
+  suggested
+  confirmed
+  unticked
+}
+
+enum ItemRelation {
+  needed_with
+  often_skipped_with
+}
+
+type RelatedItem {
+  code: String!
+  relation: ItemRelation!
+}
+
+type BriefWorkItem {
+  id: ID!
+  "W1… for brief lines, `+` for often-forgotten ones; none on assumed lines."
+  code: String
+  title: String!
+  description: String
+  approxQuantity: Float
+  unit: Unit
+  "The rough size in words when it is not one quantity."
+  roughSize: String
+  kind: BriefItemKind!
+  "For often-forgotten lines: the line it goes with."
+  relatedTo: RelatedItem
+  status: BriefItemStatus!
+  sources: [Provenance!]!
+}
+
+input RelatedItemInput {
+  code: String!
+  relation: ItemRelation!
+}
+
+input BriefWorkItemInput {
+  id: ID!
+  code: String
+  title: String!
+  description: String
+  approxQuantity: Float
+  unit: Unit
+  kind: BriefItemKind!
+  "For often-forgotten lines: the line it goes with."
+  relatedTo: RelatedItemInput
+  status: BriefItemStatus!
+  """
+  Where the line came from, as the app shows it. The server keeps only sources it can verify against its own
+  records (the same `kind` and `ref` on the item already), so a client can't invent provenance (R1). A line
+  she adds (an id the server hasn't seen) is sourced to her: `form`, her name and the time.
+  """
+  sources: [ProvenanceInput!]
+}
+
+input ProvenanceInput {
+  kind: ProvenanceKind!
+  ref: ID
+  quote: String
+  offsetSec: Int
+}
+
+type WorkList {
+  items: [BriefWorkItem!]!
+  confirmedAt: DateTime
+}
+
+enum PriceSourceType {
+  survey
+  agreement
+  nota
+  derived
+  news
+}
+
+type SourceCount {
+  type: PriceSourceType!
+  count: Int!
+}
+
+type MoneyRange {
+  low: Money!
+  high: Money!
+}
+
+type RoughBudgetLine {
+  workItemCode: String
+  "The work-list lines this budget line prices."
+  workItems: [BriefWorkItem!]!
+  label: String!
+  priceBookRow: PriceBookRow
+  "The price-book row per unit."
+  unitRange: MoneyRange
+  quantity: Float
+  unit: Unit
+  "A rough size from the brief, not a measurement."
+  quantityApprox: Boolean
+  range: PriceRange!
+  sources: [SourceCount!]!
+  "False for a line left out of the total (unticked or not priced yet)."
+  inTotal: Boolean!
+}
+
+type RoughContingency {
+  tier: ContingencyTier!
+  reason: String
+  rate: Bps!
+  low: Money!
+  high: Money!
+  "Every tier she can pick, priced on this budget (10%, 15%, 20%)."
+  options: [ContingencyOption!]!
+}
+
+type ContingencyOption {
+  tier: ContingencyTier!
+  rate: Bps!
+  low: Money!
+  high: Money!
+}
+
+type Lever {
+  label: String!
+  "The finish it changes, matching `Brief.finishes[].element`."
+  finish: FinishElement
+  "The saving, or the bottom of it when it is a range."
+  saves: Money!
+  "When the saving is a range: its top."
+  savesHigh: Money
+}
+
+type LimitCheck {
+  limit: Money!
+  topPlusContingency: Money!
+  "Signed: negative means under the limit."
+  overLimit: Money!
+  levers: [Lever!]!
+}
+
+type WeekRange {
+  min: Int!
+  max: Int!
+}
+
+"""
+A range from the dated price book (R9): rounded to Rp 100.000, drawn with no centre line, its assumptions
+and sources shown; contingency is its own line. Owner only: contractors never see our estimate. Priced on
+every read, so it follows the brief: work-list lines against the price book for her room and region, per-m²
+lines sized to her room. A new size or work list re-prices it.
+"""
+type RoughBudget {
+  asOf: DateTime!
+  low: Money!
+  high: Money!
+  lines: [RoughBudgetLine!]!
+  "Lines left out as not priced yet."
+  excludedLines: Int
+  contingency: RoughContingency!
+  limitCheck: LimitCheck!
+  typicalWeeks: WeekRange
+  sourcesNote: String
+  assumptions: [String!]!
+}
+
+type MoodBoard {
+  id: ID!
+  title: String!
+  roomType: RoomType
+  photo: Media!
+  caption: String!
+}
+
+enum LookElementState {
+  shown
+  not_shown
+  unclear
+}
+
+type LookElement {
+  label: String!
+  state: LookElementState!
+}
+
+type LookWarning {
+  kind: String!
+  text: String!
+}
+
+type Look {
+  id: ID!
+  moodBoard: MoodBoard
+  title: String
+  imageUrl: String!
+  "Always \"AI illustration · not to scale · not the agreed spec\"."
+  stamp: String!
+  presets: [LookPreset!]!
+  modifiers: [String!]!
+  elements: [LookElement!]!
+  warnings: [LookWarning!]!
+  quotaLeft: Int!
+  ai: AiSuggestion!
+  createdAt: DateTime!
+}
+
+enum DeclineReasonBid {
+  budget_not_realistic
+  fully_booked
+  too_far
+  not_my_work
+  other
+}
+
+enum ChoiceReason {
+  more_complete
+  site_visit
+  price
+  timeline
+  terms
+  record
+}
+
+"The brief as bidders see it: no limit, no AI estimate, no contingency, no AI picture, no exact address."
+type ContractorBriefView {
+  id: ID!
+  ownerDisplayName: String!
+  roomType: RoomType!
+  area: String
+  "The area's first part, e.g. \"Bintaro\"."
+  areaShort: String
+  areaM2: Float
+  photos: [Media!]!
+  moodBoard: MoodBoard
+  keep: [String!]!
+  workList: [BriefWorkItem!]!
+  finishes: [Finish!]!
+  band: BudgetBand
+  startAfter: Date
+  finishBefore: Date
+  workingHours: String
+  hours: WorkingHours
+  materialsBuyer: MaterialsBuyer
+  closesAt: DateTime
+  "The brief's bidding rules, the same as `Brief.bidRules`: the down-payment cap and the windows."
+  bidRules: BidRules!
+  "Questions on this brief a bidder may read: the owner's to him or to all, and bidders' with her answers."
+  questions: [BidQuestion!]!
+}
+
+enum BidInviteStatus {
+  sent
+  seen
+  joined
+  declined
+  expired
+  withdrawn
+  bid_sent
+  chosen
+  not_chosen
+  "A backup not invited yet."
+  standby
+}
+
+type BidInvite {
+  id: ID!
+  contractor: Contractor!
+  status: BidInviteStatus!
+  backup: Boolean!
+  sentAt: DateTime
+  seenAt: DateTime
+  joinedAt: DateTime
+  "24 h after sending; silence counts as a decline."
+  answerByAt: DateTime
+  declineReason: DeclineReasonBid
+  whyYou: String
+  "The brief as bidders see it."
+  brief: ContractorBriefView!
+  "The brief's area, first part only, e.g. \"Bintaro\"."
+  areaShort: String
+  matchFee: MatchFee @private(to: [contractor, ops])
+  "Contractors bidding on the brief, this one included."
+  biddersCount: Int!
+  bid: Bid
+  bidSubmittedAt: DateTime
+  chosenAt: DateTime
+  job: Job
+  "The owner's reason chip, for a bid not chosen."
+  lossReason: ChoiceReason
+  "This contractor's site visit for the brief, if he asked for one."
+  siteVisit: SiteVisit
+}
+
+type BidInviteConnection {
+  edges: [BidInviteEdge!]!
+  nodes: [BidInvite!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type BidInviteEdge {
+  cursor: String!
+  node: BidInvite!
+}
+
+enum SiteVisitStatus {
+  requested
+  confirmed
+  done
+  cancelled
+  owner_absent
+  contractor_no_show
+}
+
+type SiteVisit {
+  id: ID!
+  contractor: Person!
+  status: SiteVisitStatus!
+  slots: [TimeWindow!]!
+  confirmedSlot: TimeWindow
+  requestedAt: DateTime!
+  confirmedAt: DateTime
+  addressShared: Boolean!
+}
+
+"""
+The price-book check of one line, recomputed whenever the bid is saved: a line with 5+ sources from 2+ source
+types is `above`, `below` or `within` its range per unit; otherwise `not_enough_data`.
+"""
+type PriceCheck {
+  verdict: PriceVerdict!
+  sourceCount: Int!
+  sourceTypeCount: Int
+  "The price book's range per unit for this line; null without enough data."
+  low: Money
+  high: Money
+}
+
+enum QuantitySource {
+  ai_from_photos
+  site_measure
+  manual
+}
+
+type PastJobRef {
+  job: Job
+  label: String!
+  finishedOn: Date
+}
+
+type BidLine {
+  id: ID!
+  briefItem: BriefWorkItem
+  code: String!
+  title: String!
+  quantity: Float!
+  unit: Unit!
+  unitPrice: Money!
+  "quantity × unitPrice, checked by code."
+  amount: Money!
+  scope: LineScope!
+  "Required for `unit: lot`."
+  lotContents: String
+  exclusions: String
+  priceReason: String
+  quantitySource: QuantitySource
+  "The AI's volume from photos, until he measures or confirms it."
+  quantityAi: AiSuggestion
+  briefQuantity: Float
+  "His own past job the unit price was carried over from."
+  unitPriceFrom: PastJobRef @private(to: [contractor, ops])
+  "Per-item check: only with 5+ sources from 2+ types, never the bidder's own."
+  check: PriceCheck
+}
+
+input BidLineInput {
+  id: ID
+  briefItemId: ID
+  code: String!
+  title: String!
+  quantity: Float!
+  unit: Unit!
+  unitPrice: Money!
+  scope: LineScope!
+  lotContents: String
+  exclusions: String
+  priceReason: String
+  quantitySource: QuantitySource
+}
+
+type BidClause {
+  keyTerm: KeyTerm!
+  textBahasa: String!
+}
+
+input BidClauseInput {
+  keyTerm: KeyTerm!
+  textBahasa: String!
+}
+
+enum CoverageStatus {
+  included
+  partial
+  extra
+  in_other_line
+  excluded
+  not_mentioned
+}
+
+"How the bid covers one brief item, in the bid's own words (AI tag, quoted)."
+type Coverage {
+  briefItem: BriefWorkItem
+  "The brief item, or the part of it, this entry covers."
+  label: String
+  status: CoverageStatus!
+  "The bid line that covers it, for `in_other_line`."
+  lineCode: String
+  quote: String
+  extra: Money
+  "The bidder's answer this coverage comes from."
+  answerId: ID
+  answeredAt: DateTime
+}
+
+enum BidStatus {
+  draft
+  submitted
+  withdrawn
+  chosen
+  not_chosen
+}
+
+type Bid {
+  id: ID!
+  invite: BidInvite!
+  contractor: Contractor!
+  status: BidStatus!
+  submittedAt: DateTime
+  lines: [BidLine!]!
+  startDate: Date
+  durationDays: Int!
+  finishDate: Date
+  stages: [StagePlan!]!
+  retention: Retention!
+  warrantyMonths: Int!
+  notIncluded: [String!]!
+  clauses: [BidClause!]!
+  priceHoldsAfterMeasure: Boolean
+  total: Money!
+  downPayment: Bps!
+  termsCheck: TermsCheck!
+  "Code check that every line and the total add up."
+  addsUp: Boolean!
+  coverage: [Coverage!]!
+  visited: Boolean!
+  visitedAt: DateTime
+  "Every page the owner reads carries it; no export before she chooses."
+  watermark: String
+}
+
+type ComparedBid {
+  bid: Bid!
+  contractorName: String!
+  verifiedHandovers: Int
+  total: Money!
+  "The total with every gap filled from the bidder's answers."
+  gapsFilledTotal: Money
+  durationDays: Int!
+  downPayment: Bps!
+  stageCount: Int!
+  warrantyMonths: Int!
+  visited: Boolean!
+  visitedAt: DateTime
+  termsWritten: Int!
+}
+
+type ComparisonCell {
+  bid: Bid!
+  amount: Money
+  coverage: Coverage!
+  check: PriceCheck
+}
+
+type ComparisonRow {
+  briefItem: BriefWorkItem
+  code: String!
+  title: String!
+  scope: LineScope
+  exclusions: String
+  cells: [ComparisonCell!]!
+}
+
+enum BidFlagKind {
+  down_payment_over_cap
+  item_not_mentioned
+  priced_without_visit
+  warranty_short
+  no_cancellation_term
+  no_business_address
+}
+
+"Found by code; worded by the AI as a question to ask, never as a fault."
+type BidFlag {
+  bid: Bid!
+  kind: BidFlagKind!
+  briefItem: BriefWorkItem
+  question: String!
+  note: String
+}
+
+"Bids side by side against her work list, most complete first. Never sorted by cheapest (R9)."
+type BidComparison {
+  closesAt: DateTime
+  bids: [ComparedBid!]!
+  rows: [ComparisonRow!]!
+  band: BudgetBand
+  sort: String!
+  flags: [BidFlag!]!
+}
+
+type BidAnswer {
+  id: ID!
+  bid: Bid!
+  contractorName: String!
+  text: UserText!
+  at: DateTime!
+  extra: Money
+  attachedToBid: Boolean!
+  sharedWithAll: Boolean!
+  "When the owner read it; null while it is still to read."
+  readAt: DateTime @private(to: [owner, ops])
+}
+
+type BidWaiting {
+  bid: Bid!
+  contractorName: String!
+  seenAt: DateTime
+}
+
+type BidQuestion {
+  id: ID!
+  text: String!
+  askedAt: DateTime!
+  toAll: Boolean!
+  "A bidder asked it (the owner answers); false when the owner asked the bidders."
+  fromBidder: Boolean!
+  "The caller asked it: a bidder sees his own questions marked."
+  mine: Boolean!
+  "Bidders read only their own answer and the ones shared with all."
+  answers: [BidAnswer!]!
+  "Who still owes an answer; owner and ops only."
+  waiting: [BidWaiting!]!
+  "The owner's answer to a bidder's question, shared with every bidder."
+  ownerAnswer: UserText
+  ownerAnsweredAt: DateTime
+}
+
+"Site hours on given days, `HH:MM` in Asia/Jakarta; visits and work happen inside them."
+type WorkingHours {
+  start: String!
+  end: String!
+  days: [Weekday!]!
+}
+
+input WorkingHoursInput {
+  start: String!
+  end: String!
+  days: [Weekday!]!
+}
+
+"A change she can tick for her room."
+type ChangeOption {
+  id: ID!
+  roomType: RoomType!
+  label: String!
+}
+
+input BriefInput {
+  roomType: RoomType
+  photoIds: [ID!]
+  lengthM: Float
+  widthM: Float
+  observations: [ObservationInput!]
+  changes: [String!]
+  keep: [String!]
+  voiceNoteId: ID
+  transcript: String
+  area: String
+  address: String
+  startAfter: Date
+  finishBefore: Date
+  "Free text; send `hours` instead, which sets `workingHours` too."
+  workingHours: String
+  hours: WorkingHoursInput
+  limit: Money
+  materialsBuyer: MaterialsBuyer
+  contingency: Bps
+  budgetBand: BudgetBandInput
+  moodBoardId: ID
+  lookId: ID
+  finishes: [FinishInput!]
+  permitCheck: PermitCheckInput
+}
+
+type CreateBriefPayload {
+  brief: Brief!
+  "Only when created without a session: keep it to edit and claim the draft."
+  draftToken: String
+}
+
+union CreateBriefResult = CreateBriefPayload | InvalidInput
+
+input UpdateBriefInput {
+  briefId: ID!
+  draftToken: String
+  brief: BriefInput!
+}
+
+type BriefPayload {
+  brief: Brief!
+}
+
+union UpdateBriefResult = BriefPayload | NotFound | Conflict | InvalidInput
+
+input ClaimBriefInput {
+  briefId: ID!
+  draftToken: String!
+}
+
+union ClaimBriefResult = BriefPayload | NotFound
+
+input SuggestWorkListInput {
+  briefId: ID!
+}
+
+type WorkListPayload {
+  workList: WorkList!
+}
+
+union SuggestWorkListResult = WorkListPayload | NotFound
+
+input SaveWorkListInput {
+  briefId: ID!
+  items: [BriefWorkItemInput!]!
+}
+
+union SaveWorkListResult = WorkListPayload | NotFound | Conflict
+
+"The design studio's quick changes, so a client sends the same value in any language."
+enum LookPreset {
+  lighter_wood
+  open_shelf
+  handleless_cabinets
+  keep_window
+}
+
+input GenerateLookInput {
+  briefId: ID!
+  moodBoardId: ID!
+  presets: [LookPreset!]
+  "Her own words, as typed."
+  modifiers: [String!]
+}
+
+type GenerateLookPayload {
+  look: Look!
+}
+
+union GenerateLookResult = GenerateLookPayload | NotFound | InvalidInput | QuotaReached
+
+enum Matching {
+  owner_picks
+  renora_matches
+}
+
+input PublishBriefInput {
+  briefId: ID!
+  matching: Matching = owner_picks
+}
+
+union PublishBriefResult = BriefPayload | NotFound | Conflict | InvalidInput
+
+input InviteContractorInput {
+  briefId: ID!
+  contractorId: ID!
+  backup: Boolean = false
+}
+
+type BidInvitePayload {
+  invite: BidInvite!
+}
+
+union InviteContractorResult = BidInvitePayload | NotFound | Conflict
+
+enum InviteAnswer {
+  join
+  decline
+}
+
+input RespondToBidInviteInput {
+  inviteId: ID!
+  answer: InviteAnswer!
+  declineReason: DeclineReasonBid
+}
+
+union RespondToBidInviteResult = BidInvitePayload | NotFound | Conflict | InvalidInput
+
+input RequestSiteVisitInput {
+  inviteId: ID!
+  slots: [TimeWindowInput!]!
+}
+
+type SiteVisitPayload {
+  siteVisit: SiteVisit!
+}
+
+union RequestSiteVisitResult = SiteVisitPayload | NotFound | InvalidInput
+
+enum SiteVisitAction {
+  confirm
+  suggest
+  cancel
+  owner_absent
+  done
+}
+
+input UpdateSiteVisitInput {
+  visitId: ID!
+  action: SiteVisitAction!
+  slot: TimeWindowInput
+  location: GeoPointInput
+}
+
+union UpdateSiteVisitResult = SiteVisitPayload | NotFound | InvalidInput
+
+input BidInput {
+  lines: [BidLineInput!]
+  startDate: Date
+  durationDays: Int
+  stages: [StagePlanInput!]
+  retention: RetentionInput
+  warrantyMonths: Int
+  notIncluded: [String!]
+  clauses: [BidClauseInput!]
+  priceHoldsAfterMeasure: Boolean
+}
+
+input SaveBidInput {
+  "Optional for drafts saved before this field existed; a replay with the same key returns the first result."
+  idempotencyKey: ID
+  inviteId: ID!
+  bid: BidInput!
+}
+
+type BidPayload {
+  bid: Bid!
+}
+
+union SaveBidResult = BidPayload | NotFound | Conflict | InvalidInput
+
+input SubmitBidInput {
+  idempotencyKey: ID!
+  bidId: ID!
+}
+
+union SubmitBidResult = BidPayload | NotFound | Conflict | InvalidInput
+
+input WithdrawBidInput {
+  idempotencyKey: ID!
+  bidId: ID!
+}
+
+union WithdrawBidResult = BidPayload | NotFound | Conflict
+
+input AskBidQuestionInput {
+  briefId: ID!
+  text: String!
+  "Some bidders only; all when left out."
+  bidIds: [ID!]
+}
+
+type BidQuestionPayload {
+  question: BidQuestion!
+}
+
+union AskBidQuestionResult = BidQuestionPayload | NotFound | InvalidInput
+
+input AnswerBidQuestionInput {
+  questionId: ID!
+  text: String!
+  extra: Money
+}
+
+union AnswerBidQuestionResult = BidQuestionPayload | NotFound | InvalidInput
+
+input ShareBidAnswerInput {
+  questionId: ID!
+  answerId: ID!
+}
+
+union ShareBidAnswerResult = BidQuestionPayload | NotFound
+
+input MarkBidQuestionReadInput {
+  questionId: ID!
+}
+
+union MarkBidQuestionReadResult = BidQuestionPayload | NotFound
+
+input ChooseBidInput {
+  briefId: ID!
+  bidId: ID!
+  reasonForOthers: ChoiceReason
+}
+
+union ChooseBidResult = BriefPayload | NotFound | Conflict
+
+enum CloseReason {
+  over_budget
+  not_ready
+  found_elsewhere
+  bids_incomplete
+  other
+}
+
+input CloseBriefInput {
+  briefId: ID!
+  reason: CloseReason!
+  note: String
+}
+
+union CloseBriefResult = BriefPayload | NotFound | Conflict

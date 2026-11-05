@@ -7,11 +7,15 @@ package graph
 import (
 	"time"
 
+	"github.com/renora/renora-api/internal/account"
+	"github.com/renora/renora-api/internal/authn"
 	"github.com/renora/renora-api/internal/platform/queue"
 )
 
 // Resolver carries the dependencies shared by every resolver.
 type Resolver struct {
-	Queue *queue.Client
-	Now   func() time.Time
+	Queue    *queue.Client
+	Now      func() time.Time
+	Accounts *account.Service
+	Cookies  authn.CookieConfig
 }

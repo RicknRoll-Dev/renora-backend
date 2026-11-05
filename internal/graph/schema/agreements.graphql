@@ -1,0 +1,319 @@
+extend type Query {
+  agreementVersion(id: ID!): AgreementVersion
+}
+
+extend type Mutation {
+  "Opens a new draft version (from a change order or a correction). The locked version stays as it was."
+  createAgreementVersion(input: CreateAgreementVersionInput!): CreateAgreementVersionResult!
+    @allow(roles: [contractor])
+  """
+  Edits a draft. Any edit makes earlier signatures on this version stale (R2). Stage shares plus retention
+  total 100%; the down payment is at most 20% when the owner buys materials, 30% when the contractor does.
+  Problems: `not_draft`, `invalid_input`.
+  """
+  updateAgreementVersion(input: UpdateAgreementVersionInput!): UpdateAgreementVersionResult!
+    @allow(roles: [contractor])
+  "The owner marks a clause right, or asks to change it (with a note)."
+  reviewClause(input: ReviewClauseInput!): ReviewClauseResult! @allow(roles: [owner, contractor])
+  """
+  Signs a version. When both have signed the same text it locks and gets its check code (R2); the success
+  haptic plays here. A version with no work items, no price, stages that don't add up to 100% with the
+  retention, or fewer than 8 key terms written can't be signed. Problems: `locked`, `wrong_code`,
+  `challenge_expired`, `invalid_input` (`version`, `incomplete`).
+  """
+  signAgreementVersion(input: SignAgreementVersionInput!): SignAgreementVersionResult!
+    @allow(roles: [owner, contractor])
+  "Sends the owner a personal link: she sees the job and the agreement first, with no account."
+  inviteOwner(input: InviteOwnerInput!): InviteOwnerResult! @allow(roles: [contractor])
+  remindOwner(input: RemindOwnerInput!): RemindOwnerResult! @allow(roles: [contractor])
+}
+
+extend type Job {
+  """
+  The latest version the caller may see, created by the clock. The owner gets the latest sent one
+  (`awaiting_signatures` or `locked`), never the contractor's unsent draft; the contractor and ops get the
+  latest that is not superseded, drafts included.
+  """
+  agreement: AgreementVersion
+  """
+  Every version created by the clock, oldest first. The owner sees only versions sent to her (waiting for
+  signatures, locked, or replaced after she saw them), never the contractor's unsent drafts.
+  """
+  agreementVersions: [AgreementVersion!]!
+  ownerInvite: OwnerInvite @private(to: [contractor, ops])
+}
+
+enum AgreementVersionStatus {
+  draft
+  awaiting_signatures
+  locked
+  superseded
+}
+
+"Draft codes are shown as \"Kode draf\"."
+enum CheckCodeKind {
+  draft
+  locked
+}
+
+type StagePlan {
+  no: Int!
+  name: String!
+  "Short label for tight rows, in English."
+  shortName: String
+  "The name in Bahasa Indonesia, as written in the agreement."
+  nameBahasa: String
+  shortNameBahasa: String
+  share: Bps!
+  amount: Money!
+  isDownPayment: Boolean!
+  plannedStart: Date
+  dueDate: Date
+}
+
+input StagePlanInput {
+  no: Int!
+  name: String!
+  nameBahasa: String
+  share: Bps!
+  amount: Money!
+  isDownPayment: Boolean
+  plannedStart: Date
+  dueDate: Date
+}
+
+type Retention {
+  share: Bps!
+  amount: Money!
+  days: Int!
+}
+
+input RetentionInput {
+  share: Bps!
+  amount: Money!
+  days: Int!
+}
+
+enum TermState {
+  written
+  missing
+}
+
+type KeyTermCheck {
+  term: KeyTerm!
+  status: TermState!
+  value: String
+  clause: Clause
+}
+
+"Code check of the 8 key terms."
+type TermsCheck {
+  written: Int!
+  total: Int!
+  terms: [KeyTermCheck!]!
+}
+
+enum ClausePart {
+  parties
+  scope
+  price
+  stages
+  dates
+  terms
+}
+
+type Clause {
+  id: ID!
+  number: String!
+  part: ClausePart!
+  keyTerm: KeyTerm
+  title: String!
+  "Plain-words summary, written by the AI and confirmed."
+  summary: String
+  summaryAi: AiSuggestion
+  "The signed text, in Bahasa Indonesia."
+  textBahasa: String!
+  "English translation; the Bahasa text is binding."
+  textEnglish: String!
+  "The latest source."
+  source: Provenance
+  "Every source, oldest first, when the clause has more than one."
+  sources: [Provenance!]!
+  changed: Boolean!
+  "The latest review: marked right, or a change asked for (with its note). Editing the clause clears it."
+  review: ClauseReview
+}
+
+type ClauseReview {
+  verdict: ClauseVerdict!
+  text: String
+  by: Person!
+  at: DateTime!
+}
+
+type EMeterai {
+  applied: Boolean!
+  amount: Money
+  "Renora pays the stamp duty: one per priced version."
+  paidBy: String
+}
+
+"""
+One version of the agreement. Both sign the same version, then it locks (R2). The signed text is Bahasa
+Indonesia with an English translation.
+"""
+type AgreementVersion {
+  id: ID!
+  job: Job!
+  label: String!
+  status: AgreementVersionStatus!
+  checkCode: String!
+  codeKind: CheckCodeKind!
+  lockedAt: DateTime
+  changeOrder: ChangeOrder
+  pdfUrl: String
+  "Full hash of the locked text; the check code is its short form."
+  textSha256: String
+  price: Money!
+  startDate: Date
+  finishDate: Date
+  durationDays: Int
+  warrantyMonths: Int
+  materialsBuyer: MaterialsBuyer
+  workItems: [WorkItem!]!
+  stages: [StagePlan!]!
+  retention: Retention
+  clauses: [Clause!]!
+  termsCheck: TermsCheck!
+  signatures: [Signature!]!
+  eMeterai: EMeterai
+  "Plain-words AI summary of the whole version, written for the reader. Not binding: the clauses are."
+  summary: String
+  summaryAi: AiSuggestion
+  supersedes: AgreementVersion
+  createdAt: DateTime
+}
+
+"""
+One clause to change, named by `clauseId` or by its `keyTerm` (the Work clause has none: use its id). The Bahasa
+text binds; `textEnglish` is its translation. `useDefault` puts back Renora's standard text (extra work,
+cancellation).
+"""
+input ClauseEditInput {
+  clauseId: ID
+  keyTerm: KeyTerm
+  textBahasa: String
+  textEnglish: String
+  useDefault: Boolean
+}
+
+input AgreementEditInput {
+  price: Money
+  startDate: Date
+  finishDate: Date
+  warrantyMonths: Int
+  materialsBuyer: MaterialsBuyer
+  workItems: [WorkItemInput!]
+  stages: [StagePlanInput!]
+  retention: RetentionInput
+  clauses: [ClauseEditInput!]
+}
+
+input CreateAgreementVersionInput {
+  jobId: ID!
+  edit: AgreementEditInput!
+}
+
+type CreateAgreementVersionPayload {
+  version: AgreementVersion!
+}
+
+union CreateAgreementVersionResult = CreateAgreementVersionPayload | NotFound | InvalidInput
+
+input UpdateAgreementVersionInput {
+  versionId: ID!
+  edit: AgreementEditInput!
+}
+
+type UpdateAgreementVersionPayload {
+  version: AgreementVersion!
+}
+
+union UpdateAgreementVersionResult =
+  | UpdateAgreementVersionPayload
+  | NotFound
+  | Conflict
+  | InvalidInput
+
+enum ClauseVerdict {
+  right
+  ask_to_change
+}
+
+input ReviewClauseInput {
+  versionId: ID!
+  clauseId: ID!
+  verdict: ClauseVerdict!
+  "Required with `ask_to_change`."
+  text: String
+}
+
+type ReviewClausePayload {
+  clause: Clause!
+}
+
+union ReviewClauseResult = ReviewClausePayload | NotFound | InvalidInput
+
+input SignAgreementVersionInput {
+  versionId: ID!
+  signature: SignatureInput!
+}
+
+type SignAgreementVersionPayload {
+  version: AgreementVersion!
+}
+
+union SignAgreementVersionResult = SignAgreementVersionPayload | NotFound | Conflict | InvalidInput
+
+enum OwnerInviteStatus {
+  sent
+  opened
+  signed
+  expired
+}
+
+type OwnerInvite {
+  id: ID!
+  url: String!
+  status: OwnerInviteStatus!
+  sentAt: DateTime!
+  openedAt: DateTime
+  expiresAt: DateTime!
+  nextReminderAt: DateTime
+}
+
+input InviteOwnerInput {
+  jobId: ID!
+  versionId: ID!
+  phone: String!
+  ownerName: String
+  displayName: String
+  message: String
+  sharePricesWithPriceBook: Boolean = false
+}
+
+type InviteOwnerPayload {
+  invite: OwnerInvite!
+}
+
+union InviteOwnerResult = InviteOwnerPayload | NotFound | InvalidInput
+
+input RemindOwnerInput {
+  inviteId: ID!
+}
+
+type RemindOwnerPayload {
+  invite: OwnerInvite!
+}
+
+union RemindOwnerResult = RemindOwnerPayload | NotFound | QuotaReached

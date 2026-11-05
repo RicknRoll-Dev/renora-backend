@@ -1,0 +1,90 @@
+extend type Query {
+  decision(id: ID!): Decision
+}
+
+extend type Mutation {
+  "A choice the contractor needs from the owner by a date, with at least 2 priced options."
+  createDecision(input: CreateDecisionInput!): CreateDecisionResult! @allow(roles: [contractor])
+  """
+  The owner picks an option. An option that changes the price opens a draft change order for the contractor
+  to send (`Decision.changeOrder`), counts in her forecast and contingency, and her material line waits for it;
+  a no-cost option sends the line straight to her list to buy. Offline-queued: a replay with the same
+  `clientRef` (or the same option) returns the first answer. Problems: `unknown_option` (invalid_input),
+  `already_answered`.
+  """
+  answerDecision(input: AnswerDecisionInput!): AnswerDecisionResult! @allow(roles: [owner])
+}
+
+extend type Job {
+  decisions: [Decision!]!
+}
+
+enum DecisionStatus {
+  open
+  answered
+  expired
+}
+
+type DecisionOption {
+  id: ID!
+  label: String!
+  description: String
+  "Signed change in price against the agreement."
+  priceDelta: Money!
+  "The owner's forecast with this option."
+  forecast: Money @private(to: [owner, ops])
+  "The owner's contingency left with this option."
+  contingencyLeft: Money @private(to: [owner, ops])
+  photo: Media
+}
+
+type Decision {
+  id: ID!
+  job: Job!
+  title: String!
+  "Why the contractor needs it by that date."
+  description: String
+  stageNo: Int
+  neededBy: Date!
+  status: DecisionStatus!
+  options: [DecisionOption!]!
+  chosenOption: DecisionOption
+  answeredAt: DateTime
+  "The change order the answer created, when it changes the price."
+  changeOrder: ChangeOrder
+}
+
+input DecisionOptionInput {
+  label: String!
+  description: String
+  priceDelta: Money!
+  mediaId: ID
+}
+
+input CreateDecisionInput {
+  jobId: ID!
+  title: String!
+  description: String
+  stageNo: Int
+  neededBy: Date!
+  "At least 2."
+  options: [DecisionOptionInput!]!
+}
+
+type CreateDecisionPayload {
+  decision: Decision!
+}
+
+union CreateDecisionResult = CreateDecisionPayload | NotFound | InvalidInput
+
+input AnswerDecisionInput {
+  decisionId: ID!
+  optionId: ID!
+  clientRef: ID
+}
+
+type AnswerDecisionPayload {
+  decision: Decision!
+}
+
+union AnswerDecisionResult = AnswerDecisionPayload | NotFound | Conflict | InvalidInput

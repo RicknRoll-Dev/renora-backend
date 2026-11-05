@@ -1,0 +1,89 @@
+extend type Query {
+  "Money sent to the caller: a contractor's releases or a shop's payouts, newest first."
+  payouts(jobId: ID, month: String, first: Int = 20, after: String): PayoutConnection!
+    @allow(roles: [contractor, supplier])
+  payout(id: ID!): Payout
+  "A month's total for the caller (`2026-10`); a month with no payouts reads zeros and no rows."
+  payoutSummary(month: String!): PayoutSummary @allow(roles: [contractor, supplier])
+}
+
+enum PayoutStatus {
+  queued
+  sending
+  retrying
+  arrived
+  failed
+}
+
+enum PayoutKind {
+  stage_release
+  change_order_release
+  retention_release
+  partial_release
+  shop_payout
+}
+
+"BI-FAST up to Rp 250.000.000 per transfer; larger amounts the next working day."
+enum PayoutRail {
+  bi_fast
+  online_transfer
+  next_working_day
+}
+
+type Payout {
+  id: ID!
+  ref: String!
+  kind: PayoutKind!
+  recipient: Person!
+  job: Job
+  jobTitle: String
+  stageNo: Int
+  changeOrder: ChangeOrder
+  order: Order
+  orderRef: String
+  gross: Money!
+  "Shop commission or the P4 match fee. 0 for a contractor's own clients."
+  fee: Money!
+  net: Money!
+  account: BankAccountMasked!
+  trigger: ReleaseTrigger!
+  rail: PayoutRail
+  status: PayoutStatus!
+  "When the release was triggered: owner approval, check-in or site photo."
+  approvedAt: DateTime
+  sentAt: DateTime
+  expectedBy: DateTime
+  arrivedAt: DateTime
+}
+
+type PayoutConnection {
+  edges: [PayoutEdge!]!
+  nodes: [Payout!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  "Fees on every payout in the list, across all pages."
+  feeTotal: Money!
+}
+
+type PayoutEdge {
+  cursor: String!
+  node: Payout!
+}
+
+type PayoutJobTotal {
+  job: Job
+  title: String!
+  net: Money!
+  count: Int!
+}
+
+type PayoutSummary {
+  month: String!
+  gross: Money!
+  fee: Money!
+  net: Money!
+  count: Int!
+  sendingNow: Money
+  jobs: [PayoutJobTotal!]!
+  pdfUrl: String
+}

@@ -3,6 +3,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -12,7 +14,9 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
+	"github.com/renora/renora-api/internal/account"
 	"github.com/renora/renora-api/internal/api"
+	"github.com/renora/renora-api/internal/authn"
 	"github.com/renora/renora-api/internal/config"
 	"github.com/renora/renora-api/internal/graph"
 	"github.com/renora/renora-api/internal/platform/health"
@@ -22,6 +26,7 @@ import (
 	"github.com/renora/renora-api/internal/platform/queue"
 	"github.com/renora/renora-api/internal/platform/redisclient"
 	"github.com/renora/renora-api/internal/platform/telemetry"
+	"github.com/renora/renora-api/internal/ratelimit"
 	"github.com/renora/renora-api/internal/version"
 )
 
@@ -76,19 +81,40 @@ func run() error {
 		"redis":    func(ctx context.Context) error { return rdb.Ping(ctx).Err() },
 	})
 
-	resolver := &graph.Resolver{Queue: inserter, Now: time.Now}
+	secret, err := authSecret(cfg, logger)
+	if err != nil {
+		return err
+	}
+	accounts := account.New(account.Options{
+		Pool:    pool,
+		Limiter: ratelimit.New(rdb),
+		Sender:  account.LogSender{Logger: logger}, // config allows only "log" until a provider is wired
+		Secret:  secret,
+		Logger:  logger,
+	})
+	var sessions authn.SessionStore = accounts
+
+	resolver := &graph.Resolver{
+		Queue:    inserter,
+		Now:      time.Now,
+		Accounts: accounts,
+		Cookies:  authn.CookieConfig{Secure: cfg.Auth.CookieSecure, Domain: cfg.Auth.CookieDomain},
+	}
 	gql := graph.NewHandler(resolver, graph.ServerOptions{
-		Config:   cfg.GraphQL,
-		Logger:   logger,
-		APQCache: graph.NewAPQCache(rdb, cfg.GraphQL.APQTTL),
+		Config:      cfg.GraphQL,
+		Logger:      logger,
+		APQCache:    graph.NewAPQCache(rdb, cfg.GraphQL.APQTTL),
+		Sessions:    sessions,
+		OriginHosts: api.OriginHosts(cfg.HTTP.CORSAllowedOrigins),
 	})
 
 	publicSrv := httpx.NewServer(cfg.HTTP.Addr, api.NewRouter(api.Deps{
-		Config:  cfg,
-		Logger:  logger,
-		Health:  checker,
-		Metrics: httpx.NewMetrics(reg),
-		GraphQL: gql,
+		Config:   cfg,
+		Logger:   logger,
+		Health:   checker,
+		Metrics:  httpx.NewMetrics(reg),
+		Sessions: sessions,
+		GraphQL:  gql,
 	}), cfg.HTTP, logger)
 	adminSrv := httpx.NewServer(cfg.HTTP.AdminAddr, api.NewAdminRouter(reg, checker), cfg.HTTP, logger)
 
@@ -108,6 +134,23 @@ func run() error {
 	g.Go(func() error { return httpx.Serve(gctx, publicSrv, cfg.HTTP.ShutdownTimeout, logger) })
 	g.Go(func() error { return httpx.Serve(gctx, adminSrv, cfg.HTTP.ShutdownTimeout, logger) })
 	return g.Wait()
+}
+
+// authSecret is AUTH_SECRET. In development it may be left out: a random secret
+// is made for this process, so codes sent before a restart stop working.
+func authSecret(cfg config.Config, logger *slog.Logger) ([]byte, error) {
+	if cfg.Auth.Secret != "" {
+		return []byte(cfg.Auth.Secret), nil
+	}
+	if cfg.Env != config.EnvDevelopment {
+		return nil, errors.New("AUTH_SECRET is required") // config.Load already refuses this
+	}
+	logger.Warn("AUTH_SECRET is empty: using a random secret for this process")
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 func flush(shutdown func(context.Context) error, logger *slog.Logger) {

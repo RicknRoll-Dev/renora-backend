@@ -1,0 +1,207 @@
+extend type Query {
+  changeOrder(id: ID!): ChangeOrder
+}
+
+extend type Mutation {
+  """
+  A draft, his own until he signs and sends it. The price change is the sum of the lines; the server prices each
+  typed line as quantity × unit price. With a voice note and no lines, the AI drafts priced lines from what he
+  said; each stays `suggested` until he checks it (R1).
+  """
+  createChangeOrder(input: CreateChangeOrderInput!): CreateChangeOrderResult!
+    @allow(roles: [contractor])
+  """
+  `lines` replaces the draft's lines. A voice note without `lines` never removes or reprices a line: the lines
+  the AI drafts from that note are added as `suggested`. Problems: `not_draft`.
+  """
+  updateChangeOrder(input: UpdateChangeOrderInput!): UpdateChangeOrderResult!
+    @allow(roles: [contractor])
+  "Only an unsent draft. Problems: `not_draft`."
+  deleteChangeOrder(input: DeleteChangeOrderInput!): DeleteChangeOrderResult!
+    @allow(roles: [contractor])
+  """
+  Signs a change order. The contractor signs first (a reason is required), which sends it; it is `agreed`
+  when both have signed. Problems: `already_signed`, `invalid_input` (reason, code).
+  """
+  signChangeOrder(input: SignChangeOrderInput!): SignChangeOrderResult!
+    @allow(roles: [owner, contractor])
+  "Problems: `already_agreed`."
+  declineChangeOrder(input: DeclineChangeOrderInput!): DeclineChangeOrderResult!
+    @allow(roles: [owner])
+  """
+  A change with a price above Rp 0 is funded before the extra work starts. No fee up to 25% of the agreement
+  price per job, 1% above. Problems: `already_funded`, `not_draft` (not agreed yet).
+  """
+  fundChangeOrder(input: FundChangeOrderInput!): FundChangeOrderResult! @allow(roles: [owner])
+}
+
+extend type Job {
+  "Owners never see the contractor's unsent drafts."
+  changeOrders: [ChangeOrder!]!
+}
+
+"\"Found on site\" or \"Owner's choice\"; both draw on the owner's contingency."
+enum ChangeReason {
+  found_on_site
+  owner_choice
+}
+
+enum LineBuyer {
+  contractor
+  owner_via_renora
+}
+
+type ChangeOrderLine {
+  label: String!
+  quantity: Float!
+  unit: Unit!
+  unitPrice: Money!
+  amount: Money!
+  materialsBuyer: LineBuyer
+  "Set when the AI split the description into lines; `suggested` until the contractor checks the line."
+  ai: AiSuggestion
+}
+
+input ChangeOrderLineInput {
+  label: String!
+  quantity: Float!
+  unit: Unit!
+  unitPrice: Money!
+  amount: Money!
+  materialsBuyer: LineBuyer
+}
+
+enum ChangeOrderStatus {
+  draft
+  awaiting_owner
+  awaiting_contractor
+  agreed
+  declined
+  withdrawn
+}
+
+"Extra or changed work, signed by both (R2); priced changes are funded before the work."
+type ChangeOrder {
+  id: ID!
+  job: Job!
+  number: Int!
+  title: String!
+  "Short label for list rows."
+  shortTitle: String
+  description: UserText
+  workItemCodes: [String!]!
+  "The part of the job it touches."
+  areaLabel: String
+  "The stage it is done and released with."
+  stageNo: Int
+  lines: [ChangeOrderLine!]!
+  "Required before the contractor signs and sends it; a draft may have none."
+  reason: ChangeReason
+  "Signed change in price."
+  priceDelta: Money!
+  daysDelta: Int!
+  status: ChangeOrderStatus!
+  fee: Money!
+  "True when the price change is above Rp 0; funded before the work starts."
+  fundingRequired: Boolean!
+  funding: Funding @private(to: [owner, ops])
+  fundedAt: DateTime
+  releasedAt: DateTime
+  agreementVersionLabel: String
+  "The signed change order as a PDF, once both have signed."
+  pdfUrl: String
+  voiceNote: Media
+  "What it is now."
+  currentState: String
+  media: [Media!]!
+  "The owner's forecast after this change."
+  forecastAfter: Money @private(to: [owner, ops])
+  "The owner's contingency left after this change."
+  contingencyLeftAfter: Money @private(to: [owner, ops])
+  signatures: [Signature!]!
+  decision: Decision
+  createdBy: Person
+  createdAt: DateTime!
+}
+
+input CreateChangeOrderInput {
+  jobId: ID!
+  title: String!
+  description: String
+  voiceNoteId: ID
+  mediaIds: [ID!]
+  workItemCodes: [String!]
+  areaLabel: String
+  stageNo: Int
+  lines: [ChangeOrderLineInput!]
+  reason: ChangeReason
+  daysDelta: Int!
+}
+
+type CreateChangeOrderPayload {
+  changeOrder: ChangeOrder!
+}
+
+union CreateChangeOrderResult = CreateChangeOrderPayload | NotFound | InvalidInput
+
+input UpdateChangeOrderInput {
+  changeOrderId: ID!
+  title: String
+  description: String
+  "A voice note to attach. Without `lines`, its lines are drafted from what it says, as on create."
+  voiceNoteId: ID
+  lines: [ChangeOrderLineInput!]
+  reason: ChangeReason
+  daysDelta: Int
+}
+
+type UpdateChangeOrderPayload {
+  changeOrder: ChangeOrder!
+}
+
+union UpdateChangeOrderResult = UpdateChangeOrderPayload | NotFound | Conflict
+
+input DeleteChangeOrderInput {
+  changeOrderId: ID!
+}
+
+type DeleteChangeOrderPayload {
+  deletedId: ID!
+}
+
+union DeleteChangeOrderResult = DeleteChangeOrderPayload | NotFound | Conflict
+
+input SignChangeOrderInput {
+  changeOrderId: ID!
+  signature: SignatureInput!
+}
+
+type SignChangeOrderPayload {
+  changeOrder: ChangeOrder!
+}
+
+union SignChangeOrderResult = SignChangeOrderPayload | NotFound | Conflict | InvalidInput
+
+input DeclineChangeOrderInput {
+  changeOrderId: ID!
+  reason: String
+}
+
+type DeclineChangeOrderPayload {
+  changeOrder: ChangeOrder!
+}
+
+union DeclineChangeOrderResult = DeclineChangeOrderPayload | NotFound | Conflict
+
+input FundChangeOrderInput {
+  idempotencyKey: ID!
+  changeOrderId: ID!
+  bank: Bank!
+}
+
+type FundChangeOrderPayload {
+  funding: Funding!
+  changeOrder: ChangeOrder!
+}
+
+union FundChangeOrderResult = FundChangeOrderPayload | NotFound | Conflict

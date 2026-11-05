@@ -1,0 +1,997 @@
+extend type Query {
+  opsOverview: OpsOverview! @allow(roles: [ops])
+  "Every running clock, soonest first."
+  opsClocks(kind: ClockKind, first: Int = 50, after: String): ClockConnection! @allow(roles: [ops])
+  cases(status: CaseFilter = all, assigneeId: ID, first: Int = 20, after: String): CaseConnection!
+    @allow(roles: [ops])
+  "A case by its id or its issue's id."
+  case(id: ID!): Case @allow(roles: [ops])
+  """
+  Money movements at the partner so far, newest first; `date` is a WIB calendar day. The word \"escrow\" is
+  allowed on ops screens only.
+  """
+  ledger(date: Date, first: Int = 50, after: String): LedgerEntryConnection! @allow(roles: [ops])
+  """
+  The day's reconciliation (default today, on the server's clock), for any day up to today, built from the
+  same movements as `ledger`: `ledger` (in escrow) is the sum of `holdAges`, `opening` is the previous day's
+  close, and `partnerStatement` is the opening plus what came in, less what was sent. `matched` only when
+  the two agree (`difference` 0). Null for a day after today.
+  """
+  reconciliation(date: Date): Reconciliation @allow(roles: [ops])
+  payoutInstructions(
+    status: PayoutStatus
+    first: Int = 50
+    after: String
+  ): PayoutInstructionConnection! @allow(roles: [ops])
+  verificationQueue(
+    status: VerificationCaseStatus
+    first: Int = 20
+    after: String
+  ): VerificationCaseConnection! @allow(roles: [ops])
+  verificationCase(id: ID!): VerificationCase @allow(roles: [ops])
+  opsUsers(role: AccountRole, q: String, first: Int = 20, after: String): OpsUserConnection!
+    @allow(roles: [ops])
+  opsUser(id: ID!): OpsUser @allow(roles: [ops])
+  "The full record of one job, with its hash chain checked."
+  jobInspection(jobId: ID!): JobInspection @allow(roles: [ops])
+  jobEvents(jobId: ID!, first: Int = 50, after: String): JobEventConnection! @allow(roles: [ops])
+  "Where code changed or blocked AI output."
+  aiGuardEvents(
+    feature: AiFeature
+    guard: AiGuard
+    first: Int = 50
+    after: String
+  ): AiGuardEventConnection! @allow(roles: [ops])
+  aiGuardStatus: AiGuardStatus! @allow(roles: [ops])
+  supportTickets(
+    status: TicketStatus
+    mine: Boolean
+    first: Int = 20
+    after: String
+  ): SupportTicketConnection! @allow(roles: [ops])
+  supportTicket(id: ID!): SupportTicket @allow(roles: [ops])
+  cannedAnswers: [CannedAnswer!]! @allow(roles: [ops])
+  "Staff accounts, for assigning cases and tickets."
+  opsStaff: [StaffMember!]! @allow(roles: [ops])
+}
+
+extend type Mutation {
+  "Every view and action in the console is logged with who and when."
+  assignCase(input: AssignCaseInput!): AssignCaseResult! @allow(roles: [ops])
+  """
+  The mediator's suggestion (fix by a date, partial or full release, refund), with who and when. `sent` puts
+  it to both sides: the issue becomes `suggested` and nothing moves until both accept
+  (`answerMediatorSuggestion`). Once either side declines, the issue is back with the mediator and a new
+  suggestion can be sent. Problems: `already_sent`, `invalid_input`.
+  """
+  decideCase(input: DecideCaseInput!): DecideCaseResult! @allow(roles: [ops])
+  "Only a failed or retrying instruction. Problems: `not_retryable`."
+  retryPayoutInstruction(input: RetryPayoutInstructionInput!): RetryPayoutInstructionResult!
+    @allow(roles: [ops])
+  """
+  Approve, or ask for a new photo with a reason. Approving unlocks payouts, so it needs an uploaded document
+  and a compared field, none of which `differs`. Problems: `invalid_input` (`reason` when asking again;
+  `approve` with reason `document_missing`, `nothing_compared` or `field_differs`).
+  """
+  decideVerification(input: DecideVerificationInput!): DecideVerificationResult!
+    @allow(roles: [ops])
+  requestReverification(input: RequestReverificationInput!): RequestReverificationResult!
+    @allow(roles: [ops])
+  updateSupportTicket(input: UpdateSupportTicketInput!): SupportTicketResult! @allow(roles: [ops])
+  replyToSupportTicket(input: ReplyToSupportTicketInput!): SupportTicketResult! @allow(roles: [ops])
+}
+
+enum PilotMetricName {
+  "Median minutes from sign-up to the first agreement sent; target ≤ 10."
+  time_to_first_send_min
+  "Target 35 by day 90."
+  weekly_active_contractors
+  "D30 / D60 / D90 retention, targets 70 / 60 / 50%."
+  retention_d30_bps
+  retention_d60_bps
+  retention_d90_bps
+  "Target ≥ 50 by day 90."
+  activated_contractors
+  "Target ≤ Rp 650.000 each."
+  activation_cost_idr
+  owners_joined_bps
+  "Owners signed within 7 days; target ≥ 40%."
+  owners_signed_7d_bps
+  "Median hours to the first bid; target ≤ 36 h."
+  median_first_bid_hours
+  "Briefs with 2+ bids; target 80%."
+  briefs_two_plus_bids_bps
+  "Jobs with a funded stage; target 3 by day 90."
+  jobs_with_funded_stage
+  "Share of jobs with a funded stage; target ≥ 15% by month 6."
+  jobs_with_funded_stage_bps
+  "Orders per shop in its first 30 days; target 3."
+  shop_orders_first_30d
+  "Switch strategy at ≥ 12% monthly churn."
+  monthly_churn_bps
+}
+
+enum MetricUnit {
+  count
+  minutes
+  hours
+  bps
+  idr
+}
+
+enum MetricState {
+  on_target
+  on_track
+  off_track
+  no_data
+}
+
+type Checkpoint {
+  day: Int!
+  value: Int!
+}
+
+"One pilot metric, with its target."
+type PilotMetric {
+  metric: PilotMetricName!
+  "In `unit`; null until the pilot has the data."
+  value: Int
+  unit: MetricUnit!
+  "Target by the last pilot day (or the month named in the metric)."
+  target: Int
+  "Interim targets before the last pilot day."
+  checkpoints: [Checkpoint!]!
+  "The count or sum behind `value`, e.g. 15 owners signed."
+  numerator: Int
+  "What `value` is measured over, e.g. 34 owners."
+  denominator: Int
+  "Month of a monthly metric, `2026-10`."
+  period: String
+  state: MetricState
+}
+
+enum SystemHealth {
+  normal
+  degraded
+  down
+}
+
+type OpsSystems {
+  partnerApi: SystemHealth!
+  quietContractors: Int!
+  aiGuardsFired: Int!
+  verificationsWaiting: Int!
+  ticketsOpen: Int!
+  payoutsRetrying: Int!
+}
+
+type OpsOverview {
+  asOf: DateTime!
+  activeJobs: Int!
+  protectedJobs: Int!
+  "In escrow now: the same figure as today's `reconciliation.ledger`."
+  safeAtPartner: Money!
+  reconciledAt: DateTime
+  releasesDue24h: Money!
+  openIssues: Int!
+  pauses: Int!
+  pilotDay: Int
+  "Funnel figures count from this day."
+  pilotStartedOn: Date
+  pilotLengthDays: Int
+  pilot: [PilotMetric!]!
+  systems: OpsSystems
+}
+
+enum ClockKind {
+  stage_review
+  next_stage_unfunded
+  pause_notice
+  owner_silent_7d
+  invite_unanswered_24h
+  contractor_quiet_7d
+  issue_reply
+  mediator_decision
+  shop_answer
+  hold_age
+  unfunded_day_14
+}
+
+enum ClockStatus {
+  pending
+  needs_call
+  backup_sent
+  pause_pending
+  overdue
+  in_review
+  paused
+  with_mediator
+}
+
+type Clock {
+  id: ID!
+  kind: ClockKind!
+  job: Job
+  "Set instead of `job` while it is still a brief."
+  brief: Brief
+  jobTitle: String!
+  area: String
+  "Where the clock sits in the job."
+  context: String
+  startedAt: DateTime!
+  "What started the clock."
+  startEvent: String
+  dueAt: DateTime!
+  "When work paused on this job."
+  pausedAt: DateTime
+  amount: Money
+  nextStep: String!
+  status: ClockStatus!
+}
+
+type ClockConnection {
+  edges: [ClockEdge!]!
+  nodes: [Clock!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ClockEdge {
+  cursor: String!
+  node: Clock!
+}
+
+enum MediatorOutcome {
+  fix_by_date
+  partial_release
+  full_release
+  refund
+}
+
+enum DecisionState {
+  draft
+  sent
+}
+
+type MediatorDecision {
+  outcome: MediatorOutcome!
+  fixBy: Date
+  release: Money
+  refund: Money
+  text: String!
+  state: DecisionState!
+  "Who wrote it."
+  decidedBy: Person
+  decidedAt: DateTime
+  sentAt: DateTime
+  "Each side's answer once sent: `accepts` or `disagrees`. Nothing moves until both accept."
+  answers: [Position!]!
+  "When the second acceptance applied it."
+  appliedAt: DateTime
+}
+
+enum HoldState {
+  waits
+  keeps_clock
+}
+
+type Hold {
+  label: String!
+  workItemCode: String
+  note: String
+  amount: Money!
+  state: HoldState!
+}
+
+enum Stance {
+  proposes_fix
+  explains
+  disagrees
+  accepts
+  pending
+}
+
+type Position {
+  party: PartyRole!
+  stance: Stance
+  text: String
+  at: DateTime
+  notifiedAt: DateTime
+}
+
+type CaseAudit {
+  "Entries in this case's audit trail."
+  entryCount: Int!
+  checkedAt: DateTime!
+  latest: [JobEvent!]!
+}
+
+"An issue as the mediator works it: holds, both positions, the evidence chain and the suggestion."
+type Case {
+  id: ID!
+  "The owner's claim in her words, e.g. \"The tile row near the window isn't straight\" (`Issue.title` stays short)."
+  title: String!
+  issue: Issue!
+  job: Job!
+  jobTitle: String!
+  area: String
+  owner: Person!
+  contractor: Person!
+  agreement: AgreementVersion
+  "Text of the clause the issue is raised on."
+  clauseText: String
+  stage: Stage
+  media: [Media!]!
+  assignee: StaffMember
+  assignedAt: DateTime
+  holds: [Hold!]!
+  positions: [Position!]!
+  evidence: [JobEvent!]!
+  suggestion: MediatorDecision
+  auditChainIntact: Boolean!
+  audit: CaseAudit
+}
+
+enum CaseFilter {
+  all
+  open
+  "With the mediator, a suggestion sent to both included."
+  mediator
+  resolved
+}
+
+type CaseCounts {
+  resolvedThisWeek: Int!
+  resolvedFixAccepted: Int!
+  resolvedPartialRelease: Int!
+}
+
+type CaseConnection {
+  edges: [CaseEdge!]!
+  nodes: [Case!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  counts: CaseCounts
+}
+
+type CaseEdge {
+  cursor: String!
+  node: Case!
+}
+
+enum Movement {
+  funded
+  released
+  refunded
+  shop_payout
+  fee
+}
+
+enum LedgerStatus {
+  in_escrow
+  sending
+  arrived
+  failed
+}
+
+type LedgerEntry {
+  id: ID!
+  at: DateTime!
+  ref: String!
+  bankRef: String
+  movement: Movement!
+  label: String!
+  job: Job
+  order: Order
+  "The job or order."
+  title: String
+  detail: String
+  in: Money!
+  out: Money!
+  "Fee to Renora, never held at the partner."
+  fee: Money
+  status: LedgerStatus!
+}
+
+type LedgerEntryConnection {
+  edges: [LedgerEntryEdge!]!
+  nodes: [LedgerEntry!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type LedgerEntryEdge {
+  cursor: String!
+  node: LedgerEntry!
+}
+
+type HoldAge {
+  kind: MoneyRowKind
+  job: Job
+  order: Order
+  label: String!
+  amount: Money!
+  reason: String
+  ageDays: Int!
+}
+
+enum ReconciliationStatus {
+  matched
+  mismatch
+}
+
+type Reconciliation {
+  date: Date!
+  opening: Money!
+  in: Money!
+  released: Money!
+  refunded: Money!
+  "In escrow at the day's close (now, for today): the sum of `holdAges`."
+  ledger: Money!
+  partnerStatement: Money!
+  "Signed: ledger minus the partner's statement."
+  difference: Money!
+  status: ReconciliationStatus!
+  matchedAt: DateTime
+  "Renora's merchant profile at the partner; one sub-account per job sits under it."
+  merchantProfileMasked: String
+  """
+  Everything in escrow at the day's close, oldest first; together they make `ledger`. Holds over 120 days
+  raise an alert; the partner allows at least 150.
+  """
+  holdAges: [HoldAge!]!
+}
+
+enum InstructionKind {
+  release
+  shop_payout
+  refund
+  partial_release
+}
+
+enum RefundReason {
+  declined_no_shop_24h
+  mediator_decision
+  job_cancelled
+}
+
+enum InstructionRail {
+  bi_fast
+  next_day_clearing
+}
+
+type Attempt {
+  n: Int!
+  at: DateTime!
+  result: String!
+  "Staff who retried it, for manual retries."
+  by: Person
+}
+
+type PayoutInstruction {
+  id: ID!
+  ref: String!
+  kind: InstructionKind!
+  job: Job
+  order: Order
+  "The job or order."
+  title: String
+  detail: String
+  to: BankAccountMasked!
+  "Refund to the payer's original account."
+  toSource: Boolean
+  trigger: ReleaseTrigger
+  "Set on refunds instead of `trigger`."
+  refundReason: RefundReason
+  "When the trigger happened (for the 4-day clock, the submission)."
+  triggeredAt: DateTime
+  rail: InstructionRail
+  "What the recipient receives."
+  amount: Money!
+  "Shop commission kept back for Renora."
+  fee: Money
+  status: PayoutStatus!
+  scheduledAt: DateTime
+  arrivedAt: DateTime
+  nextAttemptAt: DateTime
+  "When the held money entered escrow."
+  heldSince: DateTime
+  "Mediator decision due, for a mediated split."
+  decisionDueAt: DateTime
+  "Last reminder to the party yet to sign."
+  remindedAt: DateTime
+  attempts: [Attempt!]!
+  partial: PartialRelease
+}
+
+type PayoutInstructionConnection {
+  edges: [PayoutInstructionEdge!]!
+  nodes: [PayoutInstruction!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  """
+  Released to contractors and shops today (the WIB day on the server's clock) so far: the same figure as
+  `reconciliation.released` for today.
+  """
+  releasedToday: Money!
+}
+
+type PayoutInstructionEdge {
+  cursor: String!
+  node: PayoutInstruction!
+}
+
+enum VerificationCaseStatus {
+  open
+  names_differ
+  pending
+  done
+}
+
+type VerificationDocument {
+  kind: VerificationKind!
+  "Whose document it is, when not the business itself."
+  holderName: String
+  media: Media
+}
+
+enum FieldCheck {
+  same
+  trading_name
+  nib_holder
+  needs_you
+  differs
+}
+
+type VerificationField {
+  field: String!
+  onDocument: String!
+  onDocumentNote: String
+  entered: String!
+  enteredNote: String
+  check: FieldCheck!
+}
+
+enum VerificationRejectReason {
+  name_mismatch
+  blurred_photo
+  nib_other_business
+  other
+}
+
+"Who decided, when, and why."
+type VerificationDecision {
+  approve: Boolean!
+  reason: VerificationRejectReason
+  note: String
+  decidedBy: Person!
+  decidedAt: DateTime!
+}
+
+type VerificationCase {
+  id: ID!
+  subjectName: String!
+  role: Role!
+  kinds: [VerificationKind!]!
+  status: VerificationCaseStatus!
+  submittedBy: Person
+  submittedAt: DateTime
+  address: String
+  dueAt: DateTime
+  documents: [VerificationDocument!]!
+  fields: [VerificationField!]!
+  aiSuggestion: AiSuggestion
+  "What the code checks found."
+  codeCheck: String
+  media: [Media!]!
+  decision: VerificationDecision
+}
+
+type VerificationCaseConnection {
+  edges: [VerificationCaseEdge!]!
+  nodes: [VerificationCase!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type VerificationCaseEdge {
+  cursor: String!
+  node: VerificationCase!
+}
+
+enum AccountRole {
+  owner
+  contractor
+  supplier
+  crew
+  driver
+}
+
+enum AiConsentState {
+  on
+  off
+  not_asked
+}
+
+type UserRecord {
+  handovers: Int!
+  onTimeRate: Bps
+}
+
+type OpsUser {
+  id: ID!
+  name: String!
+  displayName: String
+  businessName: String
+  "The business a crew member or driver works for."
+  worksFor: String
+  trade: String
+  joinedAt: DateTime
+  roles: [AccountRole!]!
+  phoneMasked: String
+  verification: [Verification!]!
+  "Null for people on a personal link only."
+  aiConsent: AiConsentState
+  aiConsentAt: DateTime
+  areas: [String!]!
+  record: UserRecord
+  jobs: [Job!]!
+  payoutAccount: BankAccountMasked
+  jobsSummary: String
+  openTickets: Int
+  lastActiveAt: DateTime!
+}
+
+type UserCounts {
+  all: Int!
+  owner: Int!
+  contractor: Int!
+  supplier: Int!
+  "People on personal links only (crew, drivers)."
+  link: Int!
+}
+
+type OpsUserConnection {
+  edges: [OpsUserEdge!]!
+  nodes: [OpsUser!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  counts: UserCounts!
+}
+
+type OpsUserEdge {
+  cursor: String!
+  node: OpsUser!
+}
+
+enum JobEventKind {
+  agreement
+  signature
+  funding
+  release
+  refund
+  report
+  change_order
+  decision
+  issue
+  message
+  clock
+  handover
+  delivery
+  photo
+  submission
+}
+
+"One link in a job's hash chain."
+type JobEvent {
+  seq: Int!
+  at: DateTime!
+  actor: String
+  kind: JobEventKind!
+  summary: String!
+  refId: ID
+  "SHA-256 over this event and the previous hash."
+  hash: String!
+  prevHash: String
+}
+
+type JobEventConnection {
+  edges: [JobEventEdge!]!
+  nodes: [JobEvent!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type JobEventEdge {
+  cursor: String!
+  node: JobEvent!
+}
+
+type EvidenceCounts {
+  photos: Int!
+  voiceNotes: Int!
+  messages: Int!
+  issues: Int!
+  openIssues: Int!
+}
+
+"Ops reads every field of the job, both sides' money included."
+type JobInspection {
+  job: Job!
+  evidence: EvidenceCounts!
+  eventsCount: Int!
+  firstEventAt: DateTime
+  chainIntact: Boolean!
+  checkedAt: DateTime!
+}
+
+enum AiFeature {
+  agreement_from_chat
+  issue_check
+  rough_budget
+  report_tag
+  bid_normaliser
+  keep_list_check
+  quote_check
+  price_list_read
+  photo_check
+  voice_transcript
+}
+
+enum AiGuard {
+  no_verbatim_quote
+  fault_naming_removed
+  single_figure_blocked
+  hidden_item_cannot_tell
+  number_not_in_source
+  keep_list_conflict
+}
+
+enum GuardReview {
+  auto
+  needs_review
+}
+
+type AiGuardEvent {
+  id: ID!
+  at: DateTime!
+  feature: AiFeature!
+  guard: AiGuard!
+  job: Job
+  jobTitle: String
+  context: String
+  aiWrote: String!
+  "What the AI read or left out."
+  aiContext: String
+  peopleSaw: String!
+  reason: String
+  review: GuardReview!
+}
+
+type AiGuardEventConnection {
+  edges: [AiGuardEventEdge!]!
+  nodes: [AiGuardEvent!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type AiGuardEventEdge {
+  cursor: String!
+  node: AiGuardEvent!
+}
+
+type GuardCount {
+  guard: AiGuard!
+  count: Int!
+}
+
+enum ModelUse {
+  text
+  speech
+  photo
+  image
+}
+
+enum CandidateState {
+  shadow
+  promoted
+  not_promoted
+}
+
+type CandidateReplay {
+  cases: Int!
+  sameResult: Bps!
+  faultNamingSlips: Int!
+}
+
+type ModelPin {
+  use: ModelUse!
+  version: String!
+  candidate: String
+  candidateState: CandidateState
+  candidateReplay: CandidateReplay
+}
+
+type AiQuota {
+  feature: AiFeature!
+  used: Int!
+  limit: Int!
+}
+
+type ImagePilot {
+  moodBoardOnly: Int!
+  withAiPicture: Int!
+  pictures: Int!
+  capPerProject: Int!
+  "Projects that used all their pictures."
+  atCap: Int!
+  consented: Int!
+  eligible: Int!
+}
+
+type AiGuardStatus {
+  fired: Int!
+  total: Int!
+  byGuard: [GuardCount!]!
+  models: [ModelPin!]!
+  quotas: [AiQuota!]!
+  imagePilot: ImagePilot
+}
+
+enum TicketStatus {
+  needs_you
+  in_progress
+  waiting_24h
+  pending
+  closed
+}
+
+enum TicketChannel {
+  app
+  whatsapp
+  email
+}
+
+type PastTickets {
+  count: Int!
+  lastClosedAt: DateTime
+}
+
+type SupportTicket {
+  id: ID!
+  ref: String!
+  user: Person!
+  job: Job
+  subject: String!
+  status: TicketStatus!
+  channel: TicketChannel
+  createdAt: DateTime!
+  firstReplyDueAt: DateTime
+  assignee: StaffMember
+  thread: Thread!
+  "The support thread, oldest first."
+  messages: [Message!]!
+  pastTickets: PastTickets
+}
+
+type TicketCounts {
+  closedToday: Int!
+}
+
+type SupportTicketConnection {
+  edges: [SupportTicketEdge!]!
+  nodes: [SupportTicket!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  counts: TicketCounts
+}
+
+type SupportTicketEdge {
+  cursor: String!
+  node: SupportTicket!
+}
+
+enum Audience {
+  owner
+  contractor
+  supplier
+  "Owner and contractor."
+  both
+  everyone
+}
+
+type CannedAnswer {
+  id: ID!
+  title: String!
+  audience: Audience!
+  text: String!
+}
+
+type StaffMember {
+  id: ID!
+  name: String!
+  email: String
+  staffRole: StaffRole!
+  permissions: [StaffPermission!]!
+  person: Person!
+}
+
+input AssignCaseInput {
+  caseId: ID!
+  staffId: ID!
+}
+
+type CasePayload {
+  case: Case!
+}
+
+union AssignCaseResult = CasePayload | NotFound
+
+input DecideCaseInput {
+  idempotencyKey: ID!
+  caseId: ID!
+  outcome: MediatorOutcome!
+  fixBy: Date
+  release: Money
+  refund: Money
+  text: String!
+  "`draft` saves it; `sent` sends it to both sides."
+  state: DecisionState!
+}
+
+union DecideCaseResult = CasePayload | NotFound | Conflict | InvalidInput
+
+input RetryPayoutInstructionInput {
+  idempotencyKey: ID!
+  instructionId: ID!
+}
+
+type PayoutInstructionPayload {
+  instruction: PayoutInstruction!
+}
+
+union RetryPayoutInstructionResult = PayoutInstructionPayload | NotFound | Conflict
+
+input DecideVerificationInput {
+  verificationId: ID!
+  approve: Boolean!
+  "Required when not approving."
+  reason: VerificationRejectReason
+  note: String
+}
+
+type VerificationCasePayload {
+  verificationCase: VerificationCase!
+}
+
+union DecideVerificationResult = VerificationCasePayload | NotFound | InvalidInput
+
+input RequestReverificationInput {
+  userId: ID!
+  kind: VerificationKind!
+  note: String
+}
+
+type OpsUserPayload {
+  user: OpsUser!
+}
+
+union RequestReverificationResult = OpsUserPayload | NotFound
+
+input UpdateSupportTicketInput {
+  ticketId: ID!
+  status: TicketStatus
+  assigneeId: ID
+}
+
+type SupportTicketPayload {
+  ticket: SupportTicket!
+}
+
+union SupportTicketResult = SupportTicketPayload | NotFound | InvalidInput
+
+input ReplyToSupportTicketInput {
+  ticketId: ID!
+  text: String!
+  cannedAnswerId: ID
+}

@@ -7,16 +7,24 @@ package graph
 
 import (
 	"context"
+	"time"
 
 	"github.com/renora/renora-api/internal/graph/generated"
-	"github.com/renora/renora-api/internal/graph/model"
-	"github.com/renora/renora-api/internal/version"
 )
 
-func (r *queryResolver) ServerInfo(ctx context.Context) (*model.ServerInfo, error) {
-	return &model.ServerInfo{Version: version.Version, Time: r.Now().UTC()}, nil
+func (r *queryResolver) ServerTime(ctx context.Context) (*time.Time, error) {
+	now := r.Now()
+	return &now, nil
 }
+
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-type queryResolver struct{ *Resolver }
+func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
+
+type (
+	mutationResolver     struct{ *Resolver }
+	queryResolver        struct{ *Resolver }
+	subscriptionResolver struct{ *Resolver }
+)

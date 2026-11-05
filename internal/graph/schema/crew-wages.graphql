@@ -1,0 +1,255 @@
+extend type Query {
+  "The contractor's crew. Crew rates are never shown to owners (R6)."
+  crew: [CrewMember!]! @allow(roles: [contractor])
+  "A Monday-to-Saturday week; a week nobody worked is empty, not an error."
+  wageWeek(weekStart: Date!): WageWeek! @allow(roles: [contractor])
+  crewQuestions(jobId: ID, first: Int = 20, after: String): CrewQuestionConnection!
+    @allow(roles: [contractor])
+}
+
+extend type Mutation {
+  addCrewMember(input: CrewMemberInput!): CrewMemberResult! @allow(roles: [contractor])
+  updateCrewMember(input: UpdateCrewMemberInput!): CrewMemberResult! @allow(roles: [contractor])
+  "Kasbon (an advance), taken off the next wages. Replays with the same key return the first result."
+  recordAdvance(input: RecordAdvanceInput!): RecordAdvanceResult! @allow(roles: [contractor])
+  """
+  Wages paid for a week (Saturday). The worker then confirms on his link. Replays with the same key
+  return the first result. Problems: `not_found`.
+  """
+  recordWagePayment(input: RecordWagePaymentInput!): RecordWagePaymentResult!
+    @allow(roles: [contractor])
+  """
+  A question each worker answers on his own personal link (one per worker and job), with no app and no account.
+  A worker with no live link gets a new one for 30 days (`CrewMember.linkExpiresAt`).
+  """
+  sendCrewQuestion(input: SendCrewQuestionInput!): SendCrewQuestionResult!
+    @allow(roles: [contractor])
+  "Replaces a worker's link with a new one for 30 days; the old one reads `replaced`."
+  renewCrewLink(input: RenewCrewLinkInput!): RenewCrewLinkResult! @allow(roles: [contractor])
+  """
+  Records a worker's answer that reached the contractor outside Renora (a WhatsApp reply he forwards).
+  A `yes` to a wage question confirms his latest paid week. Offline-queued by `clientRef`.
+  """
+  recordCrewAnswer(input: RecordCrewAnswerInput!): RecordCrewAnswerResult!
+    @allow(roles: [contractor])
+}
+
+input RenewCrewLinkInput {
+  jobId: ID!
+  crewMemberId: ID!
+}
+
+type RenewCrewLinkPayload {
+  crewMember: CrewMember!
+  linkUrl: String!
+}
+
+union RenewCrewLinkResult = RenewCrewLinkPayload | NotFound
+
+type CrewMember {
+  id: ID!
+  name: String!
+  displayName: String!
+  initials: String!
+  role: CrewRole!
+  dayRate: Money @private(to: [contractor, ops])
+  phoneMasked: String
+  phone: String @private(to: [contractor, ops])
+  active: Boolean!
+  linkExpiresAt: DateTime
+}
+
+input CrewMemberInput {
+  name: String!
+  role: CrewRole!
+  dayRate: Money!
+  phone: String
+}
+
+input UpdateCrewMemberInput {
+  crewMemberId: ID!
+  name: String
+  role: CrewRole
+  dayRate: Money
+  phone: String
+  active: Boolean
+}
+
+type CrewMemberPayload {
+  crewMember: CrewMember!
+}
+
+union CrewMemberResult = CrewMemberPayload | NotFound | InvalidInput
+
+type Advance {
+  id: ID!
+  crewMember: CrewMember!
+  amount: Money!
+  date: Date!
+  note: String
+}
+
+input RecordAdvanceInput {
+  idempotencyKey: ID!
+  crewMemberId: ID!
+  amount: Money!
+  date: Date!
+  note: String
+}
+
+type RecordAdvancePayload {
+  advance: Advance!
+}
+
+union RecordAdvanceResult = RecordAdvancePayload | NotFound | Conflict | InvalidInput
+
+enum WorkDaySource {
+  diary
+  crew_link
+  contractor
+}
+
+type WorkDay {
+  date: Date!
+  worked: Boolean!
+  source: WorkDaySource
+}
+
+enum CrewConfirmation {
+  pending
+  received
+  disputed
+}
+
+type WageRow {
+  crewMember: CrewMember!
+  name: String!
+  role: CrewRole!
+  dayRate: Money @private(to: [contractor, ops])
+  days: [WorkDay!]!
+  daysWorked: Float!
+  wages: Money!
+  advances: Money!
+  net: Money!
+  paidAt: DateTime
+  crewConfirmation: CrewConfirmation
+}
+
+type WageTotals {
+  wages: Money!
+  advances: Money!
+  paid: Money!
+  "Wages minus advances: what the week pays out."
+  net: Money!
+}
+
+type WageWeek {
+  weekStart: Date!
+  weekEnd: Date!
+  "Saturday."
+  payDate: Date!
+  rows: [WageRow!]!
+  totals: WageTotals!
+}
+
+input RecordWagePaymentInput {
+  idempotencyKey: ID!
+  weekStart: Date!
+  crewMemberId: ID!
+  amount: Money!
+  paidAt: DateTime!
+}
+
+type RecordWagePaymentPayload {
+  week: WageWeek!
+}
+
+union RecordWagePaymentResult = RecordWagePaymentPayload | NotFound | Conflict
+
+enum CrewQuestionKind {
+  is_done
+  photo_before_cover
+  headcount
+  worked_today
+  wage_confirm
+  daily_note
+}
+
+enum CrewQuestionStatus {
+  sent
+  opened
+  answered
+}
+
+enum CrewAnswerValue {
+  yes
+  not_yet
+  photo
+}
+
+type CrewRecipient {
+  crewMember: CrewMember!
+  name: String!
+  linkUrl: String!
+  status: CrewQuestionStatus!
+  answer: CrewAnswerValue
+  answeredAt: DateTime
+  photo: Media
+}
+
+type CrewQuestion {
+  id: ID!
+  job: Job!
+  kind: CrewQuestionKind!
+  text: String!
+  "Short subject for lists."
+  label: String
+  workItemCode: String
+  "Repeating question, sent every day at this time (WIB, HH:MM)."
+  dailyAt: String
+  createdAt: DateTime!
+  recipients: [CrewRecipient!]!
+}
+
+type CrewQuestionConnection {
+  edges: [CrewQuestionEdge!]!
+  nodes: [CrewQuestion!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type CrewQuestionEdge {
+  cursor: String!
+  node: CrewQuestion!
+}
+
+input SendCrewQuestionInput {
+  jobId: ID!
+  kind: CrewQuestionKind!
+  text: String
+  workItemCode: String
+  contextMediaId: ID
+  crewMemberIds: [ID!]!
+}
+
+type SendCrewQuestionPayload {
+  question: CrewQuestion!
+}
+
+union SendCrewQuestionResult = SendCrewQuestionPayload | NotFound | InvalidInput
+
+input RecordCrewAnswerInput {
+  clientRef: ID!
+  questionId: ID!
+  crewMemberId: ID!
+  answer: CrewAnswerValue!
+  "The forwarded photo, uploaded with source `whatsapp_forward`."
+  mediaId: ID
+  forwardedFromWhatsapp: Boolean
+}
+
+type RecordCrewAnswerPayload {
+  question: CrewQuestion!
+}
+
+union RecordCrewAnswerResult = RecordCrewAnswerPayload | NotFound | InvalidInput

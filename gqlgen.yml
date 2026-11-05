@@ -1,5 +1,6 @@
+# The schema is the contract's, vendored by `make contract-sync`. Never edit it here.
 schema:
-  - internal/graph/schema/*.graphqls
+  - internal/graph/schema/*.graphql
 
 exec:
   layout: follow-schema
@@ -26,6 +27,19 @@ models:
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.ID
-  Time:
+  Money:
     model:
-      - github.com/99designs/gqlgen/graphql.Time
+      - github.com/renora/renora-api/internal/graph/scalar.Money
+  Bps:
+    model:
+      - github.com/renora/renora-api/internal/graph/scalar.Bps
+  DateTime:
+    model:
+      - github.com/renora/renora-api/internal/graph/scalar.DateTime
+  Date:
+    model:
+      - github.com/renora/renora-api/internal/graph/scalar.Date
+  # Hand-written so that Me's fields beyond the account itself get resolvers.
+  Me:
+    model:
+      - github.com/renora/renora-api/internal/graph/model.Me

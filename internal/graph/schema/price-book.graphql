@@ -1,0 +1,126 @@
+extend type Query {
+  priceBookRows(
+    region: String
+    category: RoomType
+    status: PriceRowStatus
+    q: String
+    first: Int = 50
+    after: String
+  ): PriceBookRowConnection! @allow(roles: [ops])
+  priceBookStatus: PriceBookStatus! @allow(roles: [ops])
+}
+
+extend type Mutation {
+  """
+  A dated price seen in the field. Signed-job prices are opt-in and never the bidder's own; unchosen bids
+  never feed the price book. Problems: `invalid_input` (price, date), `not_found` (the row, or `mediaId` not
+  uploaded).
+  """
+  addPriceBookSource(input: AddPriceBookSourceInput!): AddPriceBookSourceResult!
+    @allow(roles: [ops])
+}
+
+enum PriceRowStatus {
+  fresh
+  stale
+  dropped
+}
+
+enum PriceCheckStatus {
+  on
+  not_enough_data
+  one_source_type
+  no_range
+}
+
+type PriceUsage {
+  job: Job!
+  jobTitle: String!
+  workItemCode: String!
+}
+
+"""
+The dated price book behind every range (R9). A range needs 3+ independent sources (one from a survey or a
+signed job, newest within 90 days, none older than 180). A per-item bid check needs 5+ from 2+ source types.
+News rows never count. Stale at 90 days, dropped at 180.
+"""
+type PriceBookRow {
+  id: ID!
+  item: String!
+  category: RoomType
+  unit: Unit!
+  region: String!
+  low: Money
+  high: Money
+  sourceCount: Int!
+  sources: [SourceCount!]!
+  latestSourceDate: Date
+  ageDays: Int
+  "Agreement items priced against this row."
+  usage: [PriceUsage!]!
+  status: PriceRowStatus!
+  checkStatus: PriceCheckStatus!
+}
+
+type PriceBookRowConnection {
+  edges: [PriceBookRowEdge!]!
+  nodes: [PriceBookRow!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  counts: [RoomCount!]!
+}
+
+type PriceBookRowEdge {
+  cursor: String!
+  node: PriceBookRow!
+}
+
+type RoomCount {
+  category: RoomType!
+  count: Int!
+}
+
+type MaterialIndex {
+  value: Float
+  yearOnYear: Bps!
+  month: String!
+}
+
+type PriceAlert {
+  row: PriceBookRow!
+  item: String!
+  ageDays: Int!
+  dropsInDays: Int
+  "Open briefs that show the item as not priced yet."
+  briefsAffected: Int
+}
+
+type PriceBookStatus {
+  nextSweepOn: Date!
+  materialIndex: MaterialIndex
+  alerts: [PriceAlert!]!
+}
+
+enum NewPriceSourceType {
+  survey_price_list
+  survey_interview
+  signed_job
+  shop_nota
+}
+
+input AddPriceBookSourceInput {
+  rowId: ID!
+  type: NewPriceSourceType!
+  shopName: String
+  area: String
+  price: Money!
+  priceDate: Date!
+  "The price-list photo or nota, uploaded with `createUpload` first."
+  mediaId: ID
+}
+
+type AddPriceBookSourcePayload {
+  row: PriceBookRow!
+}
+
+union AddPriceBookSourceResult = AddPriceBookSourcePayload | NotFound | InvalidInput

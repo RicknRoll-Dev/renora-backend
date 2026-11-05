@@ -1,0 +1,195 @@
+extend type Mutation {
+  "Sets the date or adds items to the handover list."
+  updateHandover(input: UpdateHandoverInput!): UpdateHandoverResult!
+    @allow(roles: [owner, contractor])
+  """
+  One step on an item: accept, flag (with a note and fix-by date), start a timed test (soak test 24 h),
+  pass, fail, mark fixed, or undo. Problems: `invalid_input`, `already_signed` (undo after a signature).
+  """
+  recordHandoverItem(input: RecordHandoverItemInput!): RecordHandoverItemResult!
+    @allow(roles: [owner, contractor])
+  """
+  Signs the handover. When both have signed: the final stage releases, the retention clock starts (90
+  days, day-75 leak check), the warranty starts and the contractor's record gains a verified handover. The
+  success haptic plays here. Problems: `already_signed`, `wrong_code`.
+  """
+  signHandover(input: SignHandoverInput!): SignHandoverResult! @allow(roles: [owner, contractor])
+}
+
+extend type Job {
+  handover: Handover
+}
+
+enum HandoverGroup {
+  kitchen
+  water
+  power
+  other
+}
+
+enum HandoverItemKind {
+  visual
+  tap_test
+  soak_test
+  water_run
+  function
+}
+
+enum HandoverItemStatus {
+  not_checked
+  accepted
+  flagged
+  running
+  fixed_pending
+}
+
+enum HandoverOrigin {
+  agreement
+  issue_cannot_tell
+  added
+  change_order
+}
+
+enum TestResult {
+  pass
+  fail
+}
+
+type HandoverItem {
+  id: ID!
+  group: HandoverGroup!
+  "The owner's wording."
+  title: String!
+  "The wording on the contractor's printed list."
+  listTitle: String!
+  howChecked: String
+  workItemCode: String
+  kind: HandoverItemKind!
+  status: HandoverItemStatus!
+  origin: HandoverOrigin!
+  changeOrder: ChangeOrder
+  startedAt: DateTime
+  "When a timed test can be read (soak test 24 h)."
+  readyAt: DateTime
+  result: TestResult
+  acceptedAt: DateTime
+  flagNote: String
+  fixBy: Date
+  "The contractor's response, from the note on his last result."
+  responseNote: String
+  media: [Media!]!
+}
+
+enum HandoverStatus {
+  scheduled
+  in_progress
+  ready_to_sign
+  signed
+}
+
+type HandoverCounts {
+  total: Int!
+  checked: Int!
+  accepted: Int!
+  flagged: Int!
+  running: Int!
+  "Marked fixed by the contractor, waiting for the owner to check again."
+  fixedPending: Int!
+}
+
+type HandoverGroupCount {
+  group: HandoverGroup!
+  total: Int!
+  checked: Int!
+}
+
+type HandoverReleases {
+  finalStage: Money
+  retention: Money
+  retentionReleaseAt: DateTime
+  leakCheckAt: DateTime
+}
+
+type Completion {
+  finishedInDays: Int
+  daysEarly: Int
+  finalCost: Money @private(to: [owner, ops])
+  contingencyUnused: Money @private(to: [owner, ops])
+  photoCount: Int
+  verifiedHandoversBefore: Int
+  verifiedHandoversAfter: Int
+}
+
+"The handover checklist: one list both sign. Items accepted here are the verified handovers (R3)."
+type Handover {
+  job: Job!
+  scheduledFor: Date
+  status: HandoverStatus!
+  counts: HandoverCounts!
+  groups: [HandoverGroupCount!]!
+  items: [HandoverItem!]!
+  signatures: [Signature!]!
+  signedAt: DateTime
+  releases: HandoverReleases
+  completion: Completion
+  checklistPdfUrl: String
+}
+
+input HandoverItemInput {
+  group: HandoverGroup!
+  title: String!
+  howChecked: String
+  kind: HandoverItemKind!
+  workItemCode: String
+}
+
+input UpdateHandoverInput {
+  jobId: ID!
+  scheduledFor: Date
+  addItems: [HandoverItemInput!]
+}
+
+type UpdateHandoverPayload {
+  handover: Handover!
+}
+
+union UpdateHandoverResult = UpdateHandoverPayload | NotFound
+
+enum HandoverAction {
+  accept
+  flag
+  start_test
+  pass
+  fail
+  mark_fixed
+  "Takes back the caller's last step on the item (the toast's Undo): it is not checked again. Until anyone signs."
+  undo
+}
+
+input RecordHandoverItemInput {
+  jobId: ID!
+  itemId: ID!
+  action: HandoverAction!
+  note: String
+  fixBy: Date
+  mediaIds: [ID!]
+}
+
+type RecordHandoverItemPayload {
+  handover: Handover!
+  item: HandoverItem!
+}
+
+union RecordHandoverItemResult = RecordHandoverItemPayload | NotFound | InvalidInput | Conflict
+
+input SignHandoverInput {
+  idempotencyKey: ID!
+  jobId: ID!
+  signature: SignatureInput!
+}
+
+type SignHandoverPayload {
+  handover: Handover!
+}
+
+union SignHandoverResult = SignHandoverPayload | NotFound | Conflict | InvalidInput

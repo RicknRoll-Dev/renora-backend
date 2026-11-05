@@ -1,0 +1,217 @@
+extend type Query {
+  issue(id: ID!): Issue
+}
+
+extend type Mutation {
+  """
+  The owner raises an issue on a stage, a clause or a handover item. The AI checks the photos against the
+  agreement (matches / does not match / cannot tell, R4); only the flagged items' share of the stage is
+  held (at most 50% without an item split) and the rest keeps its clock. The contractor has 3 days to
+  reply before a mediator joins. Problems: `invalid_input` (text).
+  """
+  raiseIssue(input: RaiseIssueInput!): RaiseIssueResult! @allow(roles: [owner])
+  "Will fix (by a date), explain, or disagree. Problems: `issue_closed`."
+  replyToIssue(input: ReplyToIssueInput!): ReplyToIssueResult! @allow(roles: [contractor])
+  "The owner accepts the fix plan, confirms it fixed (releases the held part), or withdraws."
+  resolveIssue(input: ResolveIssueInput!): ResolveIssueResult! @allow(roles: [owner])
+  """
+  The owner adds photos to an open issue (uploaded with `createUpload` first); the AI check is not re-run.
+  Problems: `issue_closed`, `invalid_input` (`mediaIds`: none uploaded).
+  """
+  addIssueMedia(input: AddIssueMediaInput!): AddIssueMediaResult! @allow(roles: [owner])
+  "Either side asks for the mediator; the decision is due in 5 working days. Problems: `issue_closed`."
+  requestMediation(input: RequestMediationInput!): RequestMediationResult!
+    @allow(roles: [owner, contractor])
+  """
+  Accept or decline the mediator's suggestion. It is a suggestion, not a ruling: nothing moves until both
+  sides accept. The second acceptance applies it: a release or refund moves the money and the issue resolves;
+  a fix by a date waits for the fix. Accepting an outcome that moves money is signed. A decline sends the issue
+  back to the mediator. Problems: `no_suggestion`, `already_answered`, `invalid_input` (`signature`).
+  """
+  answerMediatorSuggestion(input: AnswerMediatorSuggestionInput!): AnswerMediatorSuggestionResult!
+    @allow(roles: [owner, contractor])
+}
+
+extend type Job {
+  issues: [Issue!]!
+}
+
+enum IssueStatus {
+  awaiting_reply
+  replied
+  mediation
+  "The mediator's suggestion is with both sides; nothing moves until both accept."
+  suggested
+  resolved
+  withdrawn
+}
+
+enum IssueResolution {
+  fixed
+  withdrawn
+  mediator_decision
+}
+
+type IssueClauseRef {
+  versionLabel: String
+  clause: Clause
+  workItemCode: String
+  "The clause link is an AI suggestion until the owner confirms it."
+  ai: AiSuggestion
+}
+
+type IssueAiCheck {
+  "When the AI check ran; null until it has."
+  at: DateTime
+  checks: [ItemCheck!]!
+  "Checks photos can't settle, added to the handover list."
+  addedHandoverItems: [HandoverItem!]!
+}
+
+enum IssueReplyKind {
+  will_fix
+  explain
+  disagree
+}
+
+type IssueReply {
+  by: Person!
+  at: DateTime!
+  kind: IssueReplyKind!
+  fixBy: Date
+  text: UserText
+  voiceNote: Media
+}
+
+type Mediator {
+  person: Person
+  name: String!
+  joinedAt: DateTime
+  "5 working days after joining."
+  decisionDueAt: DateTime
+  "The suggestion sent to both sides, with each side's answer. Null until one is sent."
+  suggestion: MediatorDecision
+}
+
+type Issue {
+  id: ID!
+  job: Job!
+  number: Int!
+  ref: String!
+  title: String!
+  claim: UserText!
+  raisedBy: Person!
+  raisedAt: DateTime!
+  stage: Stage
+  "Set when the issue was raised from a handover item."
+  handoverItem: HandoverItem
+  clauseRef: IssueClauseRef
+  "The flagged items; only their share is held."
+  workItemCodes: [String!]!
+  "The photos, with capture time and GPS."
+  media: [Media!]!
+  status: IssueStatus!
+  "3 days after raising."
+  replyDueAt: DateTime!
+  "Held for the flagged items only."
+  held: Money!
+  "The rest of the stage, releasing on time."
+  keepsClock: Money
+  aiCheck: IssueAiCheck!
+  replies: [IssueReply!]!
+  mediator: Mediator
+  thread: Thread
+  resolvedAt: DateTime
+  resolution: IssueResolution
+}
+
+input RaiseIssueInput {
+  jobId: ID!
+  text: String!
+  voiceNoteId: ID
+  mediaIds: [ID!]
+  stageId: ID
+  clauseId: ID
+  handoverItemId: ID
+  "The flagged items; only their share is held."
+  workItemCodes: [String!]
+}
+
+type RaiseIssuePayload {
+  issue: Issue!
+}
+
+union RaiseIssueResult = RaiseIssuePayload | NotFound | InvalidInput
+
+input ReplyToIssueInput {
+  issueId: ID!
+  kind: IssueReplyKind!
+  fixBy: Date
+  text: String
+  voiceNoteId: ID
+}
+
+type ReplyToIssuePayload {
+  issue: Issue!
+}
+
+input AddIssueMediaInput {
+  issueId: ID!
+  mediaIds: [ID!]!
+}
+
+type AddIssueMediaPayload {
+  issue: Issue!
+}
+
+union AddIssueMediaResult = AddIssueMediaPayload | NotFound | Conflict | InvalidInput
+
+union ReplyToIssueResult = ReplyToIssuePayload | NotFound | Conflict
+
+enum IssueResolutionKind {
+  accept_fix_plan
+  fixed_confirmed
+  withdraw
+}
+
+input ResolveIssueInput {
+  issueId: ID!
+  kind: IssueResolutionKind!
+  note: String
+}
+
+type ResolveIssuePayload {
+  issue: Issue!
+}
+
+union ResolveIssueResult = ResolveIssuePayload | NotFound | Conflict
+
+input RequestMediationInput {
+  issueId: ID!
+  note: String
+}
+
+type RequestMediationPayload {
+  issue: Issue!
+}
+
+union RequestMediationResult = RequestMediationPayload | NotFound | Conflict
+
+input AnswerMediatorSuggestionInput {
+  idempotencyKey: ID!
+  issueId: ID!
+  accept: Boolean!
+  "Required to accept a release or a refund."
+  signature: SignatureInput
+  note: String
+}
+
+type AnswerMediatorSuggestionPayload {
+  issue: Issue!
+}
+
+union AnswerMediatorSuggestionResult =
+  | AnswerMediatorSuggestionPayload
+  | NotFound
+  | Conflict
+  | InvalidInput

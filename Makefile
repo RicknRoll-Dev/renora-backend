@@ -11,8 +11,11 @@ VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
 LDFLAGS := -s -w -X github.com/renora/renora-api/internal/version.Version=$(VERSION) -X github.com/renora/renora-api/internal/version.Commit=$(COMMIT)
 GOLANGCI_LINT_VERSION := v2.5.0
+# The contract repo, checked out beside this one (as the web and mobile apps expect it).
+CONTRACT_DIR ?= ../renora-api-contract
+SCHEMA_DIR   := internal/graph/schema
 
-.PHONY: help deps deps-down generate migrate-up migrate-down migrate-status api worker test test-integration lint build image check-generated
+.PHONY: help deps deps-down contract-sync generate migrate-up migrate-down migrate-status api worker test test-integration lint build image check-contract check-generated
 
 help: ## Show targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-18s %s\n", $$1, $$2}'
@@ -23,7 +26,13 @@ deps: ## Start Postgres and Redis
 deps-down: ## Stop local dependencies
 	docker compose down
 
-generate: ## Regenerate GraphQL code from the schema
+contract-sync: ## Copy the schema from $(CONTRACT_DIR) and record its commit
+	@test -d $(CONTRACT_DIR)/schema || { echo "contract not found at $(CONTRACT_DIR); set CONTRACT_DIR"; exit 1; }
+	rm -f $(SCHEMA_DIR)/*.graphql
+	cp $(CONTRACT_DIR)/schema/*.graphql $(SCHEMA_DIR)/
+	git -C $(CONTRACT_DIR) log -1 --format='%H %cs %s' > $(SCHEMA_DIR)/CONTRACT_REF
+
+generate: ## Regenerate GraphQL code from the vendored schema
 	go tool gqlgen generate
 
 migrate-up: ## Apply migrations
@@ -44,11 +53,14 @@ worker: ## Run the worker locally
 test: ## Run unit tests
 	go test -race ./...
 
-test-integration: ## Run tests that need Postgres (uses TEST_DATABASE_URL)
-	TEST_DATABASE_URL=$${TEST_DATABASE_URL:-$(DATABASE_URL)} go test -race -count=1 ./...
+test-integration: ## Run tests that need Postgres and Redis (TEST_DATABASE_URL, TEST_REDIS_URL)
+	TEST_DATABASE_URL=$${TEST_DATABASE_URL:-$(DATABASE_URL)} TEST_REDIS_URL=$${TEST_REDIS_URL:-$(REDIS_URL)} go test -race -count=1 ./...
 
 lint: ## Run golangci-lint
 	go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION) run
+
+check-contract: ## Fail if the vendored schema differs from $(CONTRACT_DIR)
+	diff -r --exclude=CONTRACT_REF $(CONTRACT_DIR)/schema $(SCHEMA_DIR)
 
 check-generated: generate ## Fail if generated code is out of date
 	git diff --exit-code -- internal/graph

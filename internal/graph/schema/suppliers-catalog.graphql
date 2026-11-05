@@ -1,0 +1,447 @@
+extend type Query {
+  shop(id: ID!): Shop
+  priceListImport(id: ID!): PriceListImport @allow(roles: [supplier, ops])
+}
+
+extend type Mutation {
+  "A shop signs up, or claims the shop a first WhatsApp order created (`claimToken`)."
+  createShop(input: CreateShopInput!): CreateShopResult! @allow(roles: [supplier])
+  updateShop(input: UpdateShopInput!): UpdateShopResult! @allow(roles: [supplier])
+  "Goes live once the payout account check passes. Problems: `payout_account_pending`."
+  publishShop(input: PublishShopInput!): PublishShopResult! @allow(roles: [supplier])
+  addShopStaff(input: AddShopStaffInput!): AddShopStaffResult! @allow(roles: [supplier])
+  "Changes a staff member's name, permissions or channel (app, web or WhatsApp mode)."
+  updateShopStaff(input: UpdateShopStaffInput!): AddShopStaffResult! @allow(roles: [supplier])
+  removeShopStaff(input: RemoveShopStaffInput!): RemoveShopRecordResult! @allow(roles: [supplier])
+  addDriver(input: AddDriverInput!): AddDriverResult! @allow(roles: [supplier])
+  "Open trip links keep the driver's details from when they were sent."
+  updateDriver(input: UpdateDriverInput!): AddDriverResult! @allow(roles: [supplier])
+  "Problems: `conflict` (`driver_on_trip`) while the driver has a delivery on the way."
+  removeDriver(input: RemoveDriverInput!): RemoveShopRecordResult! @allow(roles: [supplier])
+  "The new product comes first in `Shop.products`."
+  createProduct(input: CreateProductInput!): ProductResult! @allow(roles: [supplier])
+  "Stock at 0 hides the product from buyers."
+  updateProduct(input: UpdateProductInput!): ProductResult! @allow(roles: [supplier])
+  deleteProduct(input: DeleteProductInput!): DeleteProductResult! @allow(roles: [supplier])
+  "Prices change by signed basis points, rounded to Rp 100."
+  bulkUpdateProducts(input: BulkUpdateProductsInput!): BulkUpdateProductsResult!
+    @allow(roles: [supplier])
+  """
+  A photo of the price list (the AI reads the lines) or a CSV/XLSX spreadsheet (name, unit, price, stock); code
+  checks every number either way (R1, R9). Nothing goes live until the shop ticks each line.
+  """
+  createPriceListImport(input: CreatePriceListImportInput!): PriceListImportResult!
+    @allow(roles: [supplier])
+  updatePriceListImport(input: UpdatePriceListImportInput!): PriceListImportResult!
+    @allow(roles: [supplier])
+  commitPriceListImport(input: CommitPriceListImportInput!): PriceListImportResult!
+    @allow(roles: [supplier])
+}
+
+enum Weekday {
+  mon
+  tue
+  wed
+  thu
+  fri
+  sat
+  sun
+}
+
+type OpeningHours {
+  day: Weekday!
+  closed: Boolean!
+  "HH:MM."
+  open: String
+  close: String
+}
+
+"A closed period, both days included."
+type ClosedDays {
+  from: Date!
+  to: Date!
+  "Why the shop is closed, e.g. Lebaran (`ClosedDaysInput.reason`)."
+  label: String
+}
+
+type DeliverySlot {
+  start: String!
+  end: String!
+}
+
+type Vehicle {
+  kind: String!
+  plate: String!
+}
+
+enum ShopStatus {
+  setup
+  live
+  paused
+}
+
+enum ShopPauseReason {
+  owner_paused
+  "3 missed answer deadlines in 30 days pauses new orders until the shop taps \"I'm back\"."
+  missed_deadlines
+}
+
+"2% of delivered goods, first 5 delivered orders free, rate locked to 31 Dec 2027."
+type ShopFee {
+  commission: Bps!
+  freeOrdersLeft: Int!
+  rateLockedUntil: Date!
+}
+
+type AnswerRate {
+  onTime: Int!
+  total: Int!
+}
+
+enum ShopSetupStep {
+  details
+  delivery
+  payout
+  products
+  go_live
+}
+
+type ShopSetupItem {
+  step: ShopSetupStep!
+  status: StepStatus!
+}
+
+"""
+A building-supply shop. Buyers see the name, area, distance, on-time share and answer time; settings,
+staff, payout account and fees are for the shop's own staff and ops.
+"""
+type Shop {
+  id: ID!
+  slug: String
+  name: String!
+  area: String
+  address: String
+  location: GeoPoint
+  "From the job being shopped for."
+  distanceKm: Float
+  onTimeRate: Bps
+  typicalAnswerMinutes: Int
+  openNow: Boolean
+  "When an order placed now must be answered (open hours only)."
+  answersBy: DateTime
+  status: ShopStatus
+  pausedReason: ShopPauseReason
+  ownerName: String @private(to: [supplier, ops])
+  hours: [OpeningHours!]!
+  closedOnPublicHolidays: Boolean
+  closedDays: [ClosedDays!]!
+  "Hidden from new lists; open orders keep their deadlines."
+  pausedNewOrders: Boolean
+  deliveryRadiusKm: Float
+  minOrderForDelivery: Money
+  deliverySlots: [DeliverySlot!]!
+  vehicles: [Vehicle!] @private(to: [supplier, ops])
+  "Staff answer orders on Renora's WhatsApp number (1 accept, 2 short line, 3 running late, 4 decline). No amounts on WhatsApp."
+  whatsappMode: Boolean @private(to: [supplier, ops])
+  nib: String @private(to: [supplier, ops])
+  payoutAccount: BankAccount @private(to: [supplier, ops])
+  fee: ShopFee @private(to: [supplier, ops])
+  answerRate: AnswerRate @private(to: [supplier, ops])
+  setupSteps: [ShopSetupItem!] @private(to: [supplier, ops])
+  staff: [ShopStaff!] @private(to: [supplier, ops])
+  drivers: [Driver!] @private(to: [supplier, ops])
+  """
+  The shop's own catalogue, newest first, hidden products included for its staff. `categories` matches any of
+  them (a group such as grout and adhesive); `q` matches the name in either language or the SKU.
+  """
+  products(
+    category: ProductCategory
+    categories: [ProductCategory!]
+    q: String
+    first: Int = 20
+    after: String
+  ): ProductConnection!
+  latestPriceListImport: PriceListImport @private(to: [supplier, ops])
+  payouts(month: String, first: Int = 20, after: String): PayoutConnection
+    @private(to: [supplier, ops])
+  "A month's totals (`YYYY-MM`); a month with no payouts reads zeros and no rows."
+  payoutSummary(month: String!): PayoutSummary @private(to: [supplier, ops])
+}
+
+enum ShopPermission {
+  orders
+  products
+  payouts
+  settings
+  messages
+  packing
+}
+
+type ShopStaff {
+  id: ID!
+  name: String!
+  phoneMasked: String
+  permissions: [ShopPermission!]!
+  channel: StepChannel!
+}
+
+enum PriceLineStatus {
+  ok
+  needs_fix
+  skipped
+}
+
+type PriceListLine {
+  id: ID!
+  name: String!
+  price: Money
+  unit: Unit
+  "What the AI read, for example \"26?.000\"."
+  rawPrice: String
+  "Where on the photo: `p1 row 2`."
+  cite: String
+  status: PriceLineStatus!
+  ai: AiSuggestion
+}
+
+enum PriceListImportStatus {
+  reading
+  ready
+  committed
+  failed
+}
+
+type CodeCheck {
+  linesRead: Int!
+  linesShown: Int!
+  numericPrices: Int!
+}
+
+type PriceListImport {
+  id: ID!
+  source: PriceListSource!
+  status: PriceListImportStatus!
+  createdAt: DateTime
+  committedAt: DateTime
+  pages: Int
+  codeCheck: CodeCheck
+  lines: [PriceListLine!]!
+}
+
+input OpeningHoursInput {
+  day: Weekday!
+  closed: Boolean!
+  open: String
+  close: String
+}
+
+"A closed period, both days included."
+input ClosedDaysInput {
+  from: Date!
+  to: Date!
+  "Shown to buyers, e.g. Lebaran."
+  reason: String
+}
+
+input VehicleInput {
+  kind: String!
+  plate: String!
+}
+
+input ShopSettingsInput {
+  name: String
+  ownerName: String
+  address: String
+  location: GeoPointInput
+  hours: [OpeningHoursInput!]
+  closedOnPublicHolidays: Boolean
+  "Replaces the shop's closed periods; `[]` clears them. Problems: `invalid_input` when `to` is before `from`."
+  closedDays: [ClosedDaysInput!]
+  pausedNewOrders: Boolean
+  deliveryRadiusKm: Float
+  minOrderForDelivery: Money
+  "Replaces the shop's vehicles."
+  vehicles: [VehicleInput!]
+  "Replaces the delivery slots buyers pick from. Problems: `invalid_input` when a slot ends before it starts."
+  deliverySlots: [DeliverySlotInput!]
+  whatsappMode: Boolean
+  nib: String
+}
+
+input CreateShopInput {
+  settings: ShopSettingsInput!
+  "From the \"Claim your shop\" link after a first WhatsApp order."
+  claimToken: String
+}
+
+type ShopPayload {
+  shop: Shop!
+}
+
+union CreateShopResult = ShopPayload | InvalidInput
+
+input UpdateShopInput {
+  shopId: ID!
+  settings: ShopSettingsInput!
+}
+
+union UpdateShopResult = ShopPayload | NotFound | InvalidInput
+
+input PublishShopInput {
+  shopId: ID!
+}
+
+union PublishShopResult = ShopPayload | NotFound | Conflict
+
+input AddShopStaffInput {
+  shopId: ID!
+  name: String!
+  phone: String!
+  permissions: [ShopPermission!]!
+  channel: StepChannel!
+}
+
+type AddShopStaffPayload {
+  staff: ShopStaff!
+}
+
+union AddShopStaffResult = AddShopStaffPayload | NotFound | InvalidInput
+
+input UpdateShopStaffInput {
+  staffId: ID!
+  name: String
+  permissions: [ShopPermission!]
+  channel: StepChannel
+}
+
+input RemoveShopStaffInput {
+  staffId: ID!
+}
+
+input UpdateDriverInput {
+  driverId: ID!
+  name: String
+  phone: String
+  plate: String
+  vehicle: String
+}
+
+input RemoveDriverInput {
+  driverId: ID!
+}
+
+type RemoveShopRecordPayload {
+  deletedId: ID!
+}
+
+union RemoveShopRecordResult = RemoveShopRecordPayload | NotFound | Conflict
+
+"Replaces the shop's delivery slots, `HH:MM` in Asia/Jakarta."
+input DeliverySlotInput {
+  start: String!
+  end: String!
+}
+
+input AddDriverInput {
+  shopId: ID!
+  name: String!
+  phone: String!
+  plate: String!
+  vehicle: String!
+}
+
+type AddDriverPayload {
+  driver: Driver!
+}
+
+union AddDriverResult = AddDriverPayload | NotFound | InvalidInput
+
+input ProductInput {
+  sku: String
+  name: String
+  description: String
+  category: ProductCategory
+  unit: Unit
+  price: Money
+  grade: ProductGrade
+  piecesPerBox: Int
+  m2PerBox: Float
+  stock: Int
+  visible: Boolean
+  photoIds: [ID!]
+}
+
+input CreateProductInput {
+  shopId: ID!
+  product: ProductInput!
+}
+
+type ProductPayload {
+  product: Product!
+}
+
+union ProductResult = ProductPayload | NotFound | InvalidInput
+
+input UpdateProductInput {
+  productId: ID!
+  product: ProductInput!
+}
+
+input DeleteProductInput {
+  productId: ID!
+}
+
+type DeleteProductPayload {
+  deletedId: ID!
+}
+
+union DeleteProductResult = DeleteProductPayload | NotFound
+
+input BulkUpdateProductsInput {
+  shopId: ID!
+  productIds: [ID!]!
+  "Signed basis points, −5000 to 5000."
+  priceChange: Bps
+  stock: Int
+  visible: Boolean
+}
+
+type BulkUpdateProductsPayload {
+  products: [Product!]!
+}
+
+union BulkUpdateProductsResult = BulkUpdateProductsPayload | NotFound | InvalidInput
+
+enum PriceListSource {
+  photo
+  spreadsheet
+}
+
+input CreatePriceListImportInput {
+  shopId: ID!
+  "Photos of the pages, or one uploaded `document` (CSV or XLSX) for a spreadsheet."
+  mediaIds: [ID!]!
+  source: PriceListSource = photo
+}
+
+type PriceListImportPayload {
+  priceListImport: PriceListImport!
+}
+
+union PriceListImportResult = PriceListImportPayload | NotFound | InvalidInput | Conflict
+
+input PriceListLineInput {
+  id: ID!
+  price: Money
+  unit: Unit
+  status: PriceLineStatus
+}
+
+input UpdatePriceListImportInput {
+  importId: ID!
+  lines: [PriceListLineInput!]!
+}
+
+input CommitPriceListImportInput {
+  importId: ID!
+}

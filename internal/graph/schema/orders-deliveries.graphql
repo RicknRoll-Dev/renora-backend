@@ -1,0 +1,461 @@
+extend type Query {
+  """
+  A shop's orders board (shop staff), or a job's orders (owner, contractor). `date` keeps orders whose delivery
+  slot starts that day (WIB); `paidAfter` keeps orders paid at or after that instant. `counts` follow both.
+  """
+  orders(
+    jobId: ID
+    status: OrderStatus
+    date: Date
+    paidAfter: DateTime
+    first: Int = 20
+    after: String
+  ): OrderConnection!
+  order(id: ID!): Order
+  "A shop's deliveries board."
+  deliveries(
+    status: DeliveryStatus
+    date: Date
+    first: Int = 20
+    after: String
+  ): DeliveryConnection! @allow(roles: [supplier, ops])
+  delivery(id: ID!): Delivery
+}
+
+extend type Mutation {
+  "Problems: `already_answered`."
+  acceptOrder(input: AcceptOrderInput!): AcceptOrderResult! @allow(roles: [supplier])
+  "Declined or expired orders route to the contractor's backup shop. Problems: `already_answered`."
+  declineOrder(input: DeclineOrderInput!): DeclineOrderResult! @allow(roles: [supplier])
+  "The contractor re-picks a shop in one tap; the owner is refunded in full if none is chosen within 24 h."
+  rerouteOrder(input: RerouteOrderInput!): RerouteOrderResult! @allow(roles: [contractor, owner])
+  "A short line: substitute, split into a second trip, or drop it. Both buyer sides answer within 2 h."
+  proposeStockChange(input: ProposeStockChangeInput!): ProposeStockChangeResult!
+    @allow(roles: [supplier])
+  answerStockProposal(input: AnswerStockProposalInput!): AnswerStockProposalResult!
+    @allow(roles: [owner, contractor])
+  "Packed quantities and the loading photo. Stock goes down here."
+  packOrder(input: PackOrderInput!): PackOrderResult! @allow(roles: [supplier])
+  "Assigns a driver; he gets a personal trip link. Problems: `not_packed`."
+  dispatchOrder(input: DispatchOrderInput!): DispatchOrderResult! @allow(roles: [supplier])
+  reportRunningLate(input: ReportRunningLateInput!): ReportRunningLateResult!
+    @allow(roles: [supplier])
+  """
+  The contractor's site photo confirms the delivery: the shop is paid within 1 h by BI-FAST. Without it,
+  the shop is paid 24 h after the driver's drop-off photo unless a problem is reported.
+  """
+  confirmDelivery(input: ConfirmDeliveryInput!): ConfirmDeliveryResult!
+    @allow(roles: [contractor, owner])
+  "Short, damaged or wrong lines stop the 24 h release for those lines."
+  reportDeliveryProblem(input: ReportDeliveryProblemInput!): ReportDeliveryProblemResult!
+    @allow(roles: [contractor, owner])
+  sendSitePhotoReminder(input: SendSitePhotoReminderInput!): SendSitePhotoReminderResult!
+    @allow(roles: [supplier])
+}
+
+extend type Subscription {
+  "Live position and status while a delivery is on the way (replaces polling every 15 s)."
+  deliveryUpdated(deliveryId: ID!): Delivery!
+}
+
+"""
+`arrived` = driver drop-off photo; `delivered` = contractor site photo; `paid_out` = released to the shop.
+"""
+enum OrderStatus {
+  awaiting_shop
+  accepted
+  packing
+  on_the_way
+  arrived
+  delivered
+  paid_out
+  declined
+  expired
+  rerouted
+  refunded
+}
+
+enum OrderChannel {
+  app
+  whatsapp
+}
+
+enum OrderMoneyState {
+  safe_at_partner
+  released
+  refunded
+  partly_refunded
+}
+
+type OrderLine {
+  id: ID!
+  product: Product
+  sku: String
+  name: String!
+  quantity: Float!
+  unit: Unit!
+  unitPrice: Money!
+  amount: Money!
+  workItemCode: String
+  "Products the shop could offer instead when it is short: same category, enough stock, nearest price."
+  substitutes: [Product!] @private(to: [supplier, ops])
+  "The job's materials-list line this order line buys, when it came from the list."
+  materialLine: MaterialLine @private(to: [owner, contractor, ops])
+  "Live stock while the order waits for its answer."
+  inStock: Int
+  "Stock frozen at accepting."
+  inStockAtAccept: Int
+  packedQuantity: Float
+  note: String
+}
+
+enum StockProposalStatus {
+  pending
+  approved
+  rejected
+  defaulted
+}
+
+enum StockOption {
+  substitute
+  split
+  drop_line
+}
+
+type StockProposalLine {
+  orderLine: OrderLine!
+  needed: Float!
+  inStock: Float!
+  option: StockOption!
+  substitute: Product
+  secondTripSlot: TimeWindow
+  refund: Money
+}
+
+type StockApproval {
+  party: PartyRole!
+  approve: Boolean!
+  at: DateTime!
+}
+
+type StockProposal {
+  id: ID!
+  status: StockProposalStatus!
+  dueAt: DateTime!
+  lines: [StockProposalLine!]!
+  approvalsNeeded: [PartyRole!]!
+  approvals: [StockApproval!]!
+  "What happens with no answer."
+  defaultOutcome: String
+}
+
+enum OrderEventKind {
+  paid
+  accepted
+  packed
+  left
+  arrived
+  site_photo
+  payout_sent
+  payout_arrived
+  declined
+  rerouted
+  refunded
+  running_late
+}
+
+enum StepChannel {
+  app
+  web
+  whatsapp
+}
+
+type OrderEvent {
+  at: DateTime!
+  event: OrderEventKind!
+  "Where the step was taken, such as a WhatsApp reply."
+  via: StepChannel
+  by: String
+}
+
+type OrderSite {
+  area: String
+  distanceKm: Float
+  "Shown to the shop after it accepts."
+  address: String
+  "The job's site point, for directions; shown to the shop after it accepts, like the address."
+  location: GeoPoint
+  gateNote: String
+  receiverName: String
+}
+
+type Order {
+  id: ID!
+  ref: String!
+  job: Job
+  jobTitle: String
+  shop: Shop!
+  buyer: Person!
+  payer: Person!
+  status: OrderStatus!
+  channel: OrderChannel
+  lines: [OrderLine!]!
+  total: Money!
+  "2% of delivered goods; 0 for a shop's first 5 delivered orders."
+  shopFee: Money @private(to: [supplier, ops])
+  shopReceives: Money @private(to: [supplier, ops])
+  funding: Funding @private(to: [owner, ops])
+  paidAt: DateTime
+  moneyState: OrderMoneyState
+  "2 open hours after arrival, never later than the slot start."
+  answerByAt: DateTime
+  acceptedAt: DateTime
+  acceptedBy: String
+  slot: TimeWindow!
+  site: OrderSite
+  backupShop: Shop
+  stockProposal: StockProposal
+  loadingPhoto: Media
+  deliveries: [Delivery!]!
+  thread: Thread
+  "Delivery note PDF."
+  deliveryNoteUrl: String
+  timeline: [OrderEvent!]!
+  payout: Payout @private(to: [supplier, ops])
+}
+
+type OrderConnection {
+  edges: [OrderEdge!]!
+  nodes: [Order!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  "Orders per status across all pages."
+  counts: [OrderStatusCount!]!
+}
+
+type OrderEdge {
+  cursor: String!
+  node: Order!
+}
+
+type OrderStatusCount {
+  status: OrderStatus!
+  count: Int!
+}
+
+enum DeliveryStatus {
+  assigned
+  on_the_way
+  arrived
+  confirmed
+  problem
+  released
+}
+
+enum DriverStatus {
+  free
+  on_the_road
+  at_shop
+}
+
+type Driver {
+  id: ID!
+  name: String!
+  phoneMasked: String
+  "Dialable, for a call only: the shop, the buyer side and ops read it."
+  phone: String
+  plate: String!
+  vehicle: String!
+  status: DriverStatus
+  freeUntil: DateTime
+}
+
+type ItemsCheck {
+  text: String!
+  ai: AiSuggestion!
+}
+
+type RunningLate {
+  newEta: TimeWindow!
+  sentAt: DateTime!
+}
+
+enum ProblemKind {
+  short
+  damaged
+  wrong
+}
+
+type DeliveryProblem {
+  orderLine: OrderLine
+  kind: ProblemKind!
+  quantity: Float
+  note: String
+  media: [Media!]!
+}
+
+type Delivery {
+  id: ID!
+  order: Order!
+  orderRef: String!
+  tripNo: Int!
+  status: DeliveryStatus!
+  slot: TimeWindow!
+  driver: Driver!
+  eta: TimeWindow
+  remainingKm: Float
+  lastPosition: GeoPoint
+  startedAt: DateTime
+  arrivedAt: DateTime
+  dropOffPhoto: Media
+  sitePhoto: Media
+  confirmedAt: DateTime
+  "24 h after the drop-off photo unless a problem is reported."
+  autoReleaseAt: DateTime
+  "AI count of what arrived against the order."
+  itemsCheck: ItemsCheck
+  runningLate: RunningLate
+  problems: [DeliveryProblem!]!
+  payout: Payout @private(to: [supplier, ops])
+}
+
+type DeliveryConnection {
+  edges: [DeliveryEdge!]!
+  nodes: [Delivery!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type DeliveryEdge {
+  cursor: String!
+  node: Delivery!
+}
+
+enum AcceptScope {
+  all
+  in_stock_only
+}
+
+input AcceptOrderInput {
+  orderId: ID!
+  scope: AcceptScope = all
+}
+
+type OrderPayload {
+  order: Order!
+}
+
+union AcceptOrderResult = OrderPayload | NotFound | Conflict
+
+enum DeclineReason {
+  out_of_stock
+  too_far
+  cannot_make_slot
+  other
+}
+
+input DeclineOrderInput {
+  orderId: ID!
+  reason: DeclineReason!
+  note: String
+}
+
+union DeclineOrderResult = OrderPayload | NotFound | Conflict | InvalidInput
+
+input RerouteOrderInput {
+  idempotencyKey: ID!
+  orderId: ID!
+  shopId: ID!
+}
+
+union RerouteOrderResult = OrderPayload | NotFound | Conflict
+
+input StockProposalLineInput {
+  orderLineId: ID!
+  option: StockOption!
+  substituteProductId: ID
+  secondTripSlot: TimeWindowInput
+}
+
+input ProposeStockChangeInput {
+  orderId: ID!
+  lines: [StockProposalLineInput!]!
+}
+
+union ProposeStockChangeResult = OrderPayload | NotFound | InvalidInput
+
+input AnswerStockProposalInput {
+  idempotencyKey: ID!
+  orderId: ID!
+  approve: Boolean!
+}
+
+union AnswerStockProposalResult = OrderPayload | NotFound | Conflict
+
+input PackedLineInput {
+  orderLineId: ID!
+  packedQuantity: Float!
+  note: String
+}
+
+input PackOrderInput {
+  orderId: ID!
+  lines: [PackedLineInput!]!
+  loadingPhotoId: ID
+}
+
+union PackOrderResult = OrderPayload | NotFound | Conflict
+
+input DispatchOrderInput {
+  orderId: ID!
+  driverId: ID!
+  tripNo: Int = 1
+}
+
+type DispatchOrderPayload {
+  order: Order!
+  delivery: Delivery!
+}
+
+union DispatchOrderResult = DispatchOrderPayload | NotFound | Conflict
+
+input ReportRunningLateInput {
+  deliveryId: ID!
+  newEta: TimeWindowInput!
+}
+
+type DeliveryPayload {
+  delivery: Delivery!
+}
+
+union ReportRunningLateResult = DeliveryPayload | NotFound
+
+input ConfirmDeliveryInput {
+  idempotencyKey: ID!
+  deliveryId: ID!
+  sitePhotoId: ID!
+  location: GeoPointInput
+}
+
+union ConfirmDeliveryResult = DeliveryPayload | NotFound | Conflict
+
+input DeliveryProblemInput {
+  orderLineId: ID!
+  kind: ProblemKind!
+  quantity: Float
+  note: String
+  mediaIds: [ID!]
+}
+
+input ReportDeliveryProblemInput {
+  deliveryId: ID!
+  lines: [DeliveryProblemInput!]!
+}
+
+union ReportDeliveryProblemResult = DeliveryPayload | NotFound | InvalidInput
+
+input SendSitePhotoReminderInput {
+  deliveryId: ID!
+}
+
+union SendSitePhotoReminderResult = DeliveryPayload | NotFound

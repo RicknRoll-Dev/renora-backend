@@ -1,0 +1,286 @@
+extend type Query {
+  "Products buyers can see (visible, in stock) across live shops."
+  products(
+    category: ProductCategory
+    categories: [ProductCategory!]
+    q: String
+    first: Int = 20
+    after: String
+  ): ProductConnection!
+  product(id: ID!): Product
+  "One material line with its shop offers, for the job's two sides and ops. Null when it is not visible."
+  materialLine(id: ID!): MaterialLine
+}
+
+extend type Mutation {
+  """
+  Who buys the line (\"Pemilik beli lewat Renora\" or \"Saya beli, termasuk harga saya\") and the chosen shop.
+  The buyer cannot change once the line is in her cart, ordered or delivered. Problems: `in_owner_cart`,
+  `already_ordered`.
+  """
+  updateMaterialLine(input: UpdateMaterialLineInput!): UpdateMaterialLineResult!
+    @allow(roles: [contractor])
+  """
+  Sends a stage's list to the owner: its unsent lines that she buys through Renora become `to_buy`. Lines he buys
+  himself stay with him; with none for her, nothing is sent and she is not notified.
+  """
+  sendMaterialsList(input: SendMaterialsListInput!): SendMaterialsListResult!
+    @allow(roles: [contractor])
+  """
+  Puts a line in the job's cart, which the owner pays: she adds it herself, or the contractor puts a list line
+  she buys through Renora into her cart. Problems: `already_ordered` (the material line is already ordered or
+  delivered), `invalid_input`.
+  """
+  addCartItem(input: AddCartItemInput!): AddCartItemResult! @allow(roles: [owner, contractor])
+  updateCartItem(input: UpdateCartItemInput!): UpdateCartItemResult!
+    @allow(roles: [owner, contractor])
+  removeCartItem(input: RemoveCartItemInput!): RemoveCartItemResult!
+    @allow(roles: [owner, contractor])
+  "Sets the delivery slot (one of the shops' `deliverySlots` on a day) and who receives it; checkout keeps them."
+  updateCart(input: UpdateCartInput!): UpdateCartResult! @allow(roles: [owner, contractor])
+  """
+  One order per shop and one virtual account for all of them. The buyer pays no fee; shops pay 2%. Each shop
+  has 2 open hours to answer (never later than the slot start). Problems: `cart_empty`.
+  """
+  checkoutCart(input: CheckoutCartInput!): CheckoutCartResult! @allow(roles: [owner])
+}
+
+extend type Job {
+  materials(stageNo: Int): [MaterialLine!]!
+  cart: Cart @private(to: [owner, contractor, ops])
+}
+
+enum MaterialLineStatus {
+  list_not_sent
+  to_buy
+  in_cart
+  ordered
+  delivered
+  waiting_decision
+}
+
+type MaterialLine {
+  id: ID!
+  job: Job!
+  "The product at the chosen shop (its photos for the row's thumbnail); null until a shop is chosen."
+  product: Product
+  stageNo: Int!
+  workItemCode: String
+  name: String!
+  quantity: Float!
+  unit: Unit!
+  "\"Pemilik beli lewat Renora\" or \"Saya beli, termasuk harga saya\"."
+  buyer: LineBuyer!
+  "What the owner pays. Never the contractor's buying price (R6)."
+  planned: Money
+  status: MaterialLineStatus!
+  chosenShop: Shop
+  backupShop: Shop
+  order: Order
+  decision: Decision
+  offers: MaterialOffers
+}
+
+enum OfferLabel {
+  contractor_pick
+  lowest
+}
+
+type MaterialOffer {
+  shop: Shop!
+  "The shop's product the price comes from. A product the shop deletes leaves the offers."
+  product: Product!
+  unitPrice: Money!
+  total: Money!
+  inStock: Boolean!
+  "Units in stock at the shop."
+  stock: Int
+  eta: TimeWindow
+  labels: [OfferLabel!]!
+}
+
+"Shops for one line, nearest first; never sorted as a recommendation (R9)."
+type MaterialOffers {
+  line: MaterialLine!
+  quantityNote: String
+  range: PriceRange
+  "Date the shops' prices were read."
+  pricesAsOf: Date
+  offers: [MaterialOffer!]!
+}
+
+enum ProductCategory {
+  tiles
+  grout
+  adhesive
+  plumbing
+  electrical
+  paint
+  wood
+  hardware
+  other
+  cement
+}
+
+enum ProductGrade {
+  KW1
+  KW2
+  KW3
+}
+
+enum StockStatus {
+  in_stock
+  low
+  out
+}
+
+type Product {
+  id: ID!
+  shop: Shop!
+  sku: String
+  name: String!
+  description: String
+  category: ProductCategory!
+  unit: Unit!
+  price: Money!
+  grade: ProductGrade
+  piecesPerBox: Int
+  m2PerBox: Float
+  pricePerM2: Money
+  "Goes down when an order is packed."
+  stock: Int!
+  "`low` at 10 or fewer, `out` at 0."
+  stockStatus: StockStatus!
+  "Out-of-stock products are hidden from buyers."
+  visible: Boolean!
+  photos: [Media!]!
+}
+
+type ProductConnection {
+  edges: [ProductEdge!]!
+  nodes: [Product!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  "Products per category across all pages."
+  counts: [CategoryCount!]!
+}
+
+type ProductEdge {
+  cursor: String!
+  node: Product!
+}
+
+type CategoryCount {
+  category: ProductCategory!
+  count: Int!
+}
+
+type CartItem {
+  id: ID!
+  materialLine: MaterialLine
+  "Null once the shop no longer lists it."
+  product: Product
+  shop: Shop!
+  name: String!
+  quantity: Float!
+  unit: Unit!
+  unitPrice: Money!
+  amount: Money!
+}
+
+"\"Already in your budget plan\"."
+type CartPlan {
+  planned: Money!
+  forecastAfter: Money @private(to: [owner, ops])
+}
+
+type Cart {
+  job: Job!
+  items: [CartItem!]!
+  total: Money!
+  "Always 0; shops pay 2%."
+  buyerFee: Money!
+  shops: [Shop!]!
+  "Delivery slot chosen for checkout (`updateCart`); null while the cart is empty."
+  slot: TimeWindow
+  "Who receives the delivery on site."
+  receiverName: String
+  plan: CartPlan
+}
+
+input UpdateMaterialLineInput {
+  lineId: ID!
+  buyer: LineBuyer
+  chosenShopId: ID
+  backupShopId: ID
+  quantity: Float
+}
+
+type UpdateMaterialLinePayload {
+  line: MaterialLine!
+}
+
+union UpdateMaterialLineResult = UpdateMaterialLinePayload | NotFound | Conflict
+
+input SendMaterialsListInput {
+  jobId: ID!
+  stageNo: Int!
+}
+
+type SendMaterialsListPayload {
+  lines: [MaterialLine!]!
+}
+
+union SendMaterialsListResult = SendMaterialsListPayload | NotFound
+
+input AddCartItemInput {
+  jobId: ID!
+  productId: ID!
+  quantity: Float!
+  materialLineId: ID
+}
+
+type CartPayload {
+  cart: Cart!
+}
+
+union AddCartItemResult = CartPayload | NotFound | Conflict | InvalidInput
+
+input UpdateCartItemInput {
+  jobId: ID!
+  itemId: ID!
+  quantity: Float!
+}
+
+union UpdateCartItemResult = CartPayload | NotFound | InvalidInput
+
+input RemoveCartItemInput {
+  jobId: ID!
+  itemId: ID!
+}
+
+input UpdateCartInput {
+  jobId: ID!
+  slot: TimeWindowInput
+  receiverName: String
+}
+
+union UpdateCartResult = CartPayload | NotFound | InvalidInput
+
+union RemoveCartItemResult = CartPayload | NotFound
+
+input CheckoutCartInput {
+  idempotencyKey: ID!
+  jobId: ID!
+  slot: TimeWindowInput!
+  receiverName: String
+  siteNote: String
+  bank: Bank!
+}
+
+type CheckoutCartPayload {
+  orders: [Order!]!
+  funding: Funding!
+}
+
+union CheckoutCartResult = CheckoutCartPayload | NotFound | Conflict

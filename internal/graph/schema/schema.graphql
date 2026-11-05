@@ -1,0 +1,480 @@
+"""
+Renora API: one record per home renovation job, for owners, contractors, shops, crews, drivers and ops.
+
+The schema is split by domain in this folder; this file is the root. Conventions (money, time, errors,
+idempotency, auth, pagination, uploads, subscriptions, privacy, AI provenance) are in the README.
+"""
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+"""
+Whole rupiah as a JSON integer, never a float or a formatted string (`12125000` is Rp 12.125.000).
+Signed only where the field says it is a change (a delta); everything else is zero or more.
+Values stay below 2^53, so JavaScript numbers hold them exactly. GraphQL `Int` is 32-bit, too small.
+"""
+scalar Money
+
+"Integer basis points: `2000` is 20%, `100` is 1%. Signed only where the field says it is a change."
+scalar Bps
+
+"RFC 3339 instant with an offset, `2026-11-11T10:00:00+07:00`. Clients format in Asia/Jakarta."
+scalar DateTime
+
+"Calendar day, `2026-11-30`."
+scalar Date
+
+"Callable without a session: sign-in, public checks and link pages (the link token is the permission)."
+directive @public on FIELD_DEFINITION
+
+"""
+Only these roles may call this operation. Any other signed-in role gets `FORBIDDEN` in
+`errors[].extensions.code`.
+"""
+directive @allow(roles: [Role!]!) on FIELD_DEFINITION
+
+"""
+Role privacy, enforced by the server: only these roles read this field. For every other role it resolves
+to `null`, without an error, so one query serves every role. The role is the caller's role on the job.
+"""
+directive @private(to: [Role!]!) on FIELD_DEFINITION
+
+"""
+Who is looking. `owner`, `contractor`, `supplier` and `ops` sign in; `crew` and `driver` only ever open
+personal link pages.
+"""
+enum Role {
+  owner
+  contractor
+  supplier
+  ops
+  crew
+  driver
+}
+
+"Where a person appears on a job, a thread or an order."
+enum PartyRole {
+  owner
+  contractor
+  crew
+  supplier
+  driver
+  ops
+  system
+}
+
+enum Language {
+  id
+  en
+}
+
+"The banks a virtual account can be opened at, and payout banks. `other` is payouts only, never a VA bank."
+enum Bank {
+  BCA
+  BRI
+  Mandiri
+  BNI
+  other
+}
+
+enum RoomType {
+  kitchen
+  bathroom
+  floor
+  roof_leaks
+  paint
+  extension
+  whole_house
+  terrace
+}
+
+enum Unit {
+  m2
+  m
+  lot
+  point
+  unit
+  set
+  box
+  bag
+  sheet
+  piece
+  kg
+  day
+  length
+  load
+}
+
+"Each line is labour only or labour plus materials (never a profit line)."
+enum LineScope {
+  labour_only
+  labour_and_materials
+}
+
+enum MaterialsBuyer {
+  owner_via_renora
+  contractor
+  not_sure
+}
+
+"The 8 key terms every agreement and bid must write down."
+enum KeyTerm {
+  price
+  stages
+  finish_date
+  extra_work
+  warranty
+  cancellation
+  materials
+  identity
+}
+
+type Query {
+  "The server's clock. In the mock it is the scenario's moment (canonical: Wed 11 Nov 2026 10:00 WIB)."
+  serverTime: DateTime! @public
+}
+
+type Mutation
+
+type Subscription
+
+"""
+A person as others on the job see them. `displayName` is how people address them, with the honorific
+(Bu Dewi, Pak Joko); `initials` fill the avatar.
+"""
+type Person {
+  id: ID!
+  name: String!
+  displayName: String!
+  initials: String!
+  role: PartyRole!
+  businessName: String
+  phoneMasked: String
+  """
+  Dialable E.164 number (`+6281218804471`), for a call only: talking happens in Renora (R8). Only people
+  who share a job, an order or a delivery with this person (and ops) read it; everyone else reads `null`.
+  """
+  phone: String
+  "The contractor's business in the directory, for a contractor."
+  business: Contractor
+}
+
+type GeoPoint {
+  lat: Float!
+  lng: Float!
+  accuracyM: Float
+  at: DateTime
+}
+
+input GeoPointInput {
+  lat: Float!
+  lng: Float!
+  accuracyM: Float
+  at: DateTime
+}
+
+type TimeWindow {
+  start: DateTime!
+  end: DateTime!
+}
+
+input TimeWindowInput {
+  start: DateTime!
+  end: DateTime!
+}
+
+"User text or a voice transcript, with a machine translation into the reader's language when it differs."
+type UserText {
+  original: String!
+  language: Language!
+  translated: String
+  translatedLanguage: Language
+}
+
+enum ProvenanceKind {
+  chat
+  voice
+  photo
+  chip
+  bid
+  change_order
+  price_book
+  manual
+  default_term
+  form
+  ai
+}
+
+"Where a value came from, quoted word for word when it came from a chat, voice note or bid."
+type Provenance {
+  kind: ProvenanceKind!
+  quote: String
+  by: String
+  at: DateTime
+  "Id of the source message, media or record."
+  ref: ID
+  "Where in a voice note the quote starts."
+  offsetSec: Int
+}
+
+"AI output stays `suggested` until a person confirms it (R1)."
+enum AiStatus {
+  suggested
+  confirmed
+  rejected
+}
+
+enum AiConfidence {
+  low
+  medium
+  high
+}
+
+"""
+Provenance of a value the AI produced (R1: AI proposes, code checks, a person confirms). The AI server is
+called only by the backend; clients only ever read its results through fields like this one. Show it
+labelled "AI suggestion" and "not binding" until `status` is `confirmed`.
+"""
+type AiSuggestion {
+  "Set on free-standing suggestions that a person accepts one by one (a chat import)."
+  id: ID
+  "What the suggestion is for, on free-standing suggestions."
+  field: String
+  "The suggested value as text, when the value is not already a typed field beside this one."
+  value: String
+  status: AiStatus!
+  confidence: AiConfidence
+  "What the AI read: the quote, the photo or the voice note."
+  source: Provenance
+  "The model version that produced it."
+  model: String
+  "Always true while `status` is `suggested`: nothing an AI suggests enters the record until a person confirms it."
+  notBinding: Boolean!
+}
+
+enum MediaKind {
+  photo
+  voice
+  document
+}
+
+"Where a file came from. `whatsapp_forward` is shared into Renora from WhatsApp; it is never `original` or `onSite`."
+enum MediaSource {
+  camera
+  gallery
+  whatsapp_forward
+}
+
+type Media {
+  id: ID!
+  kind: MediaKind!
+  url: String!
+  thumbUrl: String
+  """
+  When the photo was taken, as the device sent it. A gallery photo keeps its own time (EXIF or the file's),
+  never the upload time; null when the device could not tell.
+  """
+  capturedAt: DateTime
+  createdAt: DateTime!
+  location: GeoPoint
+  "Metres from the job's site point to `location`; null without GPS or a site point."
+  distanceM: Int
+  "`distanceM` is within 100 m of the job's site point. False without GPS, without a site point, or when forwarded."
+  onSite: Boolean
+  "Not edited since capture."
+  original: Boolean
+  durationSec: Int
+  transcript: UserText
+  takenBy: String
+  caption: String
+  "The name the file had on the phone (`CreateUploadInput.fileName`)."
+  fileName: String
+  source: MediaSource
+  """
+  A photo's number among the job's photos taken that day (Asia/Jakarta), the number evidence cites it by
+  ("photos 2 and 3, 3 Nov 17:41"). Null for other media and photos taken off a job.
+  """
+  number: Int
+}
+
+type BankAccountMasked {
+  bank: Bank!
+  numberMasked: String!
+  accountName: String!
+}
+
+enum SignatureMethod {
+  otp_whatsapp
+  otp_sms
+  device_biometric
+}
+
+type Signature {
+  party: PartyRole!
+  person: Person!
+  name: String!
+  signedAt: DateTime
+  method: SignatureMethod!
+  "True when the text changed after this signature (R2)."
+  stale: Boolean!
+}
+
+"""
+How a person signs or steps up: the device key after a biometric unlock, or a fresh WhatsApp/SMS code
+(`requestCode` with purpose `sign`) as the fallback on any phone. Exactly one. The device key is Ed25519: a raw
+32-byte public key, and a base64url signature over the `createSigningChallenge` nonce.
+"""
+input SignatureInput @oneOf {
+  device: DeviceAssertionInput
+  code: CodeAnswerInput
+}
+
+"A `createSigningChallenge` nonce signed by the device key after Face ID, fingerprint or the device PIN."
+input DeviceAssertionInput {
+  challengeId: ID!
+  "The `DeviceKey.id` from `registerDeviceKey`."
+  keyId: ID!
+  "Ed25519 signature (64 bytes) over the challenge nonce's UTF-8 bytes, base64url without padding."
+  assertion: String!
+}
+
+input CodeAnswerInput {
+  requestId: ID!
+  code: String!
+}
+
+"A pre-written message with a link. Never contains amounts."
+type ShareCard {
+  url: String!
+  message: String!
+  imageUrl: String
+}
+
+enum ExportKind {
+  summary_pdf
+  evidence_pack
+  statement_pdf
+  handover_checklist_pdf
+  my_data
+}
+
+enum ExportStatus {
+  queued
+  ready
+  failed
+}
+
+type Export {
+  id: ID!
+  kind: ExportKind!
+  status: ExportStatus!
+  url: String
+  expiresAt: DateTime
+}
+
+"Relay cursor pagination. Pass `endCursor` back as `after`; `hasNextPage` is false on the last page."
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+"""
+Stable, machine-readable codes for domain problems returned as data in mutation results. Transport and
+auth problems never appear here: they go in `errors[].extensions.code` (`UNAUTHENTICATED`, `FORBIDDEN`,
+`CSRF_FAILED`, `RATE_LIMITED`, `BAD_USER_INPUT`, `INTERNAL`).
+"""
+enum ProblemCode {
+  "Input failed a rule; `InvalidInput.field` and `reason` say which."
+  invalid_input
+  not_found
+  "A personal link has expired or was replaced. Offer `requestNewLink`."
+  link_expired
+  """
+  Only the worker or driver a link was sent to answers on it. A signed-in owner, contractor or staff member
+  opening it sees it read-only.
+  """
+  not_link_holder
+  "The same idempotency key was sent with a different input."
+  idempotency_mismatch
+  already_funded
+  not_funded
+  not_in_review
+  not_in_progress
+  extension_used
+  not_draft
+  locked
+  already_signed
+  already_agreed
+  already_answered
+  already_seen
+  already_started
+  already_chosen
+  already_sent
+  "No mediator suggestion is waiting for an answer."
+  no_suggestion
+  issue_closed
+  seats_full
+  not_packed
+  not_on_the_way
+  payout_account_pending
+  cart_empty
+  "The material line is in the owner's cart; she removes it first."
+  in_owner_cart
+  "The material line is already ordered or delivered."
+  already_ordered
+  brief_published
+  bidders_full
+  invites_full
+  bid_sent
+  bid_window_closed
+  quota_exhausted
+  not_retryable
+  challenge_expired
+  wrong_code
+  "Not yet allowed by its clock (a pause before 3 days, a second reminder the same day)."
+  too_early
+  "The warranty is not active (before handover, or expired)."
+  not_active
+}
+
+"A domain problem returned as data. Select `... on Problem { code message }` on any mutation result."
+interface Problem {
+  code: ProblemCode!
+  "Safe to show, in the caller's language."
+  message: String!
+}
+
+"Input failed a rule. `field` is the input path (`signature.code`, `lines.0.quantity`)."
+type InvalidInput implements Problem {
+  code: ProblemCode!
+  message: String!
+  field: String!
+  """
+  Why, in a stable word: `required`, `invalid_format`, `out_of_range`, `wrong_code`, `expired`, `terms_missing`,
+  `unknown_option`, `wrong_subject` (a signature made for another action or subject), `challenge_required` (a
+  phone code asked for without its signing challenge), `band_rules`.
+  """
+  reason: String!
+}
+
+"Not found, not visible to the caller, or an expired link."
+type NotFound implements Problem {
+  code: ProblemCode!
+  message: String!
+}
+
+"The thing is in a state that does not allow this (already funded, locked, extension used, key reused)."
+type Conflict implements Problem {
+  code: ProblemCode!
+  message: String!
+}
+
+"A per-project or per-day limit is used up."
+type QuotaReached implements Problem {
+  code: ProblemCode!
+  message: String!
+}

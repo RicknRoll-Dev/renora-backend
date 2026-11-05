@@ -1,0 +1,181 @@
+extend type Query {
+  "Anyone checks a paper agreement by its check code at renora.id/v. Spaces and case are ignored."
+  agreementCheck(checkCode: String!): AgreementCheck @public
+  "The free \"check before the deposit\" result."
+  quoteCheck(id: ID!): QuoteCheck @public
+}
+
+extend type Mutation {
+  "Reports a paper that does not match the record."
+  reportMismatchedPaper(input: ReportMismatchedPaperInput!): ReportMismatchedPaperResult! @public
+  """
+  Checks a contractor's quote before the deposit: the 8 key terms by code, each line against the dated
+  price book (R9). Media needs `aiConsent: true`.
+  """
+  createQuoteCheck(input: CreateQuoteCheckInput!): CreateQuoteCheckResult! @public
+  """
+  Uploads a quote's photo or PDF for `createQuoteCheck` without an account (pb-06): JPG, PNG or PDF, up to
+  10 MB. Like `createUpload`: PUT the bytes, then pass `media.id` in `mediaIds`. Problems: `invalid_input`
+  (`contentType` `invalid_format`, `byteSize` `out_of_range`).
+  """
+  createQuoteUpload(input: CreateQuoteUploadInput!): CreateUploadResult! @public
+  "A link the owner sends the contractor so he answers her questions in Renora (R8)."
+  askAboutQuote(input: AskAboutQuoteInput!): AskAboutQuoteResult! @public
+}
+
+enum CheckMatch {
+  latest_locked
+  older_version
+  draft
+}
+
+type CheckedJob {
+  title: String!
+  area: String!
+  workItemCount: Int
+}
+
+type CheckSigner {
+  role: PartyRole!
+  "Masked, for a public page: `Pak J*** S******`."
+  maskedName: String!
+  "The contractor's registered business name."
+  businessName: String
+  signedAt: DateTime
+}
+
+type CheckedChangeOrder {
+  number: Int!
+  title: String!
+  "Signed change in price."
+  priceDelta: Money!
+  signedAt: DateTime
+}
+
+type ReplacedBy {
+  checkCode: String
+  lockedAt: DateTime
+  reason: String
+}
+
+"What a public check code proves. No owner limit, no fees, no names in full."
+type AgreementCheck {
+  checkCode: String!
+  codeKind: CheckCodeKind!
+  match: CheckMatch!
+  versionLabel: String!
+  job: CheckedJob!
+  signers: [CheckSigner!]!
+  lockedAt: DateTime
+  eMeterai: Boolean
+  price: Money
+  stageShares: [Bps!]!
+  retention: Retention
+  startDate: Date
+  finishDate: Date
+  durationDays: Int
+  termsWritten: Int
+  changeOrders: [CheckedChangeOrder!]!
+  jobStatus: String
+  asOf: DateTime!
+  "For draft or older codes, the version that replaced it."
+  replacedBy: ReplacedBy
+}
+
+input ReportMismatchedPaperInput {
+  checkCode: String!
+  text: String!
+  mediaIds: [ID!]
+  contactPhone: String
+}
+
+type ReportMismatchedPaperPayload {
+  received: Boolean!
+}
+
+union ReportMismatchedPaperResult = ReportMismatchedPaperPayload | NotFound | InvalidInput
+
+"Never \"overpriced\" or \"scam\" (R9): only where a price sits against a dated range."
+enum PriceVerdict {
+  within
+  above
+  below
+  range_only
+  not_enough_data
+  not_priced_yet
+}
+
+enum RangeStatus {
+  ok
+  not_enough_data
+  not_priced_yet
+}
+
+"A price-book range: 3+ independent sources, newest within 90 days (R9)."
+type PriceRange {
+  low: Money
+  high: Money
+  sourceCount: Int!
+  sourceTypeCount: Int
+  latestSourceDate: Date
+  status: RangeStatus!
+}
+
+type QuoteLine {
+  code: String
+  item: String!
+  quantity: Float
+  unit: Unit
+  unitPrice: Money
+  amount: Money
+  scope: LineScope
+  "The quote's own words for the line."
+  quote: String
+  range: PriceRange
+  verdict: PriceVerdict!
+  ai: AiSuggestion
+}
+
+type QuoteCheck {
+  id: ID!
+  terms: TermsCheck!
+  contractorName: String
+  quoteDate: Date
+  total: Money
+  priceBookDate: Date
+  lines: [QuoteLine!]!
+  suggestedQuestions: [String!]!
+  createdAt: DateTime!
+}
+
+input CreateQuoteCheckInput {
+  text: String
+  mediaIds: [ID!]
+  "Required true when media is sent."
+  aiConsent: Boolean
+  area: String
+}
+
+input CreateQuoteUploadInput {
+  "`image/jpeg`, `image/png` or `application/pdf`."
+  contentType: String!
+  byteSize: Int!
+  fileName: String
+}
+
+type CreateQuoteCheckPayload {
+  quoteCheck: QuoteCheck!
+}
+
+union CreateQuoteCheckResult = CreateQuoteCheckPayload | InvalidInput
+
+input AskAboutQuoteInput {
+  quoteCheckId: ID!
+  questions: [String!]!
+}
+
+type AskAboutQuotePayload {
+  shareCard: ShareCard!
+}
+
+union AskAboutQuoteResult = AskAboutQuotePayload | NotFound

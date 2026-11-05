@@ -27,6 +27,7 @@ type Config struct {
 	Redis    Redis
 	GraphQL  GraphQL
 	Worker   Worker
+	Auth     Auth
 }
 
 type Log struct {
@@ -76,11 +77,37 @@ type GraphQL struct {
 	APQTTL        time.Duration `env:"GRAPHQL_APQ_TTL" envDefault:"24h"`
 }
 
+type Auth struct {
+	// Secret keys the HMAC of sign-in codes. At least 32 bytes; required outside
+	// development. Rotating it voids the codes in flight (10 minutes' worth).
+	Secret string `env:"AUTH_SECRET"`
+	// CodeSender delivers sign-in codes. "log" writes them to the log, for
+	// development and staging testers, and is refused in production.
+	CodeSender string `env:"AUTH_CODE_SENDER" envDefault:"log"`
+	// CookieSecure marks the web session cookies Secure. Browsers treat
+	// http://localhost as secure, so it stays on in development.
+	CookieSecure bool `env:"SESSION_COOKIE_SECURE" envDefault:"true"`
+	// CookieDomain is empty for host-only cookies.
+	CookieDomain string `env:"SESSION_COOKIE_DOMAIN"`
+}
+
 type Worker struct {
 	Concurrency int `env:"WORKER_CONCURRENCY" envDefault:"50"`
 }
 
 func Load() (Config, error) {
+	cfg, err := parse()
+	if err != nil {
+		return Config{}, err
+	}
+	if err := cfg.validate(); err != nil {
+		return Config{}, err
+	}
+	return cfg, nil
+}
+
+// parse reads the environment and fills the defaults that depend on APP_ENV.
+func parse() (Config, error) {
 	cfg, err := env.ParseAs[Config]()
 	if err != nil {
 		return Config{}, fmt.Errorf("parse env: %w", err)
@@ -91,9 +118,6 @@ func Load() (Config, error) {
 	}
 	if cfg.GraphQL.Playground == nil {
 		cfg.GraphQL.Playground = &devDefault
-	}
-	if err := cfg.validate(); err != nil {
-		return Config{}, err
 	}
 	return cfg, nil
 }
@@ -121,7 +145,21 @@ func (c Config) validate() error {
 	if c.GraphQL.ComplexityLimit <= 0 || c.GraphQL.DepthLimit <= 0 {
 		errs = append(errs, errors.New("GRAPHQL_COMPLEXITY_LIMIT and GRAPHQL_DEPTH_LIMIT must be positive"))
 	}
+	switch c.Auth.CodeSender {
+	case "log":
+		if c.IsProduction() {
+			errs = append(errs, errors.New("AUTH_CODE_SENDER=log writes codes to the log and is refused in production"))
+		}
+	default:
+		errs = append(errs, fmt.Errorf("AUTH_CODE_SENDER must be log, got %q", c.Auth.CodeSender))
+	}
+	if c.Env != EnvDevelopment && len(c.Auth.Secret) < 32 {
+		errs = append(errs, errors.New("AUTH_SECRET must be at least 32 bytes outside development"))
+	}
 	if c.IsProduction() {
+		if !c.Auth.CookieSecure {
+			errs = append(errs, errors.New("SESSION_COOKIE_SECURE must be on in production"))
+		}
 		if *c.GraphQL.Playground {
 			errs = append(errs, errors.New("GRAPHQL_PLAYGROUND must be off in production"))
 		}

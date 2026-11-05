@@ -1,0 +1,69 @@
+extend type Query {
+  "The caller's notifications, newest first; none from the future."
+  notifications(
+    filter: NotificationFilter = all
+    unreadOnly: Boolean
+    first: Int = 20
+    after: String
+  ): NotificationConnection!
+}
+
+extend type Mutation {
+  "Marks the given notifications read, or all of them."
+  markNotificationsRead(input: MarkNotificationsReadInput!): MarkNotificationsReadResult!
+}
+
+extend type Subscription {
+  "Notifications for the signed-in user as they are created."
+  notificationAdded: Notification!
+}
+
+"Groups: `money` is stage reviews, funding, payouts and statements; `crew` is crew answers and wages."
+enum NotificationFilter {
+  all
+  needs_you
+  money
+  jobs
+  crew
+}
+
+"""
+Never contains amounts (R7). Push payloads carry only `title`, `body` and `deepLink`; Android shows them
+as PRIVATE on the lock screen.
+"""
+type Notification {
+  id: ID!
+  kind: NotificationEvent!
+  title: String!
+  body: String!
+  job: Job
+  refId: ID
+  deepLink: String!
+  needsYou: Boolean!
+  createdAt: DateTime!
+  readAt: DateTime
+}
+
+type NotificationConnection {
+  edges: [NotificationEdge!]!
+  nodes: [Notification!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  unreadCount: Int!
+}
+
+type NotificationEdge {
+  cursor: String!
+  node: Notification!
+}
+
+input MarkNotificationsReadInput {
+  ids: [ID!]
+  all: Boolean
+}
+
+type MarkNotificationsReadPayload {
+  unreadCount: Int!
+}
+
+union MarkNotificationsReadResult = MarkNotificationsReadPayload

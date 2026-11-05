@@ -1,0 +1,283 @@
+extend type Query {
+  "Poll every 2 s while the web sign-in QR is shown."
+  qrSignIn(id: ID!): QrSignIn @public
+}
+
+extend type Mutation {
+  """
+  Sends a 6-digit code over WhatsApp (default) or SMS. Purpose `sign_in` starts a session; purpose `sign`,
+  with the signing challenge's `challengeId`, is the fallback for any signature or step-up when the device
+  key is not set up. Problems: `invalid_input` (phone), `challenge_expired` (`challengeId`).
+  """
+  requestCode(input: RequestCodeInput!): RequestCodeResult! @public
+
+  """
+  Checks the code. Web: the response sets the httpOnly, Secure, SameSite=Lax `renora_session` cookie and the
+  `renora_csrf` cookie; every later mutation sends `X-CSRF-Token` equal to it. Mobile: keep `token` in
+  secure storage and send `Authorization: Bearer <token>`. Problems: `wrong_code`, `challenge_expired`.
+  """
+  verifyCode(input: VerifyCodeInput!): VerifyCodeResult! @public
+
+  "Web sign-in by QR: show `payload`, then poll `qrSignIn` until the phone app approves it."
+  createQrSignIn: CreateQrSignInResult! @public
+
+  "The signed-in phone app approves a web QR sign-in."
+  approveQrSignIn(input: ApproveQrSignInInput!): ApproveQrSignInResult!
+
+  "Staff sign in with their work email, then a security key or an authenticator code."
+  startStaffSignIn(input: StartStaffSignInInput!): StartStaffSignInResult! @public
+
+  verifyStaffSignIn(input: VerifyStaffSignInInput!): VerifyStaffSignInResult! @public
+
+  """
+  Registers this phone's Ed25519 signing key. The app creates it and keeps the private key in the phone's
+  keychain or keystore behind the biometric unlock (a software key, not a Secure Enclave or StrongBox key).
+  Signatures then use `createSigningChallenge` and the key; the phone code stays the fallback.
+  """
+  registerDeviceKey(input: RegisterDeviceKeyInput!): RegisterDeviceKeyResult!
+
+  """
+  A one-time nonce for signing or stepping up with the device key. Sign the nonce's UTF-8 bytes with the
+  Ed25519 device key after the biometric unlock and send the base64url signature as `SignatureInput.device`.
+  When `deviceKeyRegistered` is false, fall back to `requestCode` with purpose `sign` and this challenge's id
+  as `challengeId`, and send `SignatureInput.code`.
+  """
+  createSigningChallenge(input: CreateSigningChallengeInput!): CreateSigningChallengeResult!
+
+  "Ends this session (clears the cookie on web; the bearer token stops working on mobile)."
+  signOut: SignOutResult!
+}
+
+enum CodeChannel {
+  whatsapp
+  sms
+  voice_call
+}
+
+enum CodePurpose {
+  sign_in
+  sign
+}
+
+enum ClientKind {
+  web
+  mobile
+}
+
+input RequestCodeInput {
+  "E.164 Indonesian number. Clients accept 08…, 8…, +62… and 62… with spaces or dashes and normalise."
+  phone: String!
+  channel: CodeChannel = whatsapp
+  purpose: CodePurpose = sign_in
+  """
+  Required for a `sign` code: the `createSigningChallenge` it answers, so it signs only that challenge's
+  purpose and subject, for the same user, once. A `sign` code without it never signs (`invalid_input`,
+  `signature.code`, `challenge_required`). Problems: `challenge_expired` (`challengeId`, not this user's or
+  unknown). Ignored for `sign_in`.
+  """
+  challengeId: ID
+  "WhatsApp one-tap autofill handshake (Android)."
+  androidAppHash: String
+}
+
+type CodeChallenge {
+  requestId: ID!
+  channel: CodeChannel!
+  phoneMasked: String!
+  "10 minutes after sending."
+  expiresAt: DateTime!
+  resendAt: DateTime!
+}
+
+type RequestCodePayload {
+  challenge: CodeChallenge!
+}
+
+union RequestCodeResult = RequestCodePayload | InvalidInput
+
+input VerifyCodeInput {
+  requestId: ID!
+  code: String!
+  client: ClientKind!
+  """
+  Role chosen on sign-up (`owner`, `contractor` or `supplier`); ignored for existing users. A number Renora
+  doesn't know gets `InvalidInput` (`role`, `required`) without it: ask who they are, then send the same code
+  again with the role. The new account's language is the request's.
+  """
+  role: Role
+}
+
+type Session {
+  viewer: Me!
+  expiresAt: DateTime!
+  "Mobile only: the bearer token."
+  token: String
+  "Web only: also set as the `renora_csrf` cookie; send it as `X-CSRF-Token` on every mutation."
+  csrfToken: String
+  "Read-only session from an owner link; signing needs a phone code."
+  guest: Boolean!
+}
+
+type VerifyCodePayload {
+  session: Session!
+}
+
+union VerifyCodeResult = VerifyCodePayload | InvalidInput
+
+enum QrStatus {
+  waiting
+  approved
+  expired
+}
+
+type QrSignIn {
+  id: ID!
+  """
+  What the web page shows as a QR code: `renora://auth/qr/{id}`. The phone app scans it and calls
+  `approveQrSignIn(qrSignInId: id)`. Once approved, the poll of `qrSignIn` that returns `session` also sets
+  the web session cookies, as `verifyCode` does.
+  """
+  payload: String
+  status: QrStatus!
+  expiresAt: DateTime!
+  "Set once approved; the web page continues with this session."
+  session: Session
+}
+
+type CreateQrSignInPayload {
+  qrSignIn: QrSignIn!
+}
+
+union CreateQrSignInResult = CreateQrSignInPayload
+
+input ApproveQrSignInInput {
+  qrSignInId: ID!
+}
+
+type ApproveQrSignInPayload {
+  qrSignIn: QrSignIn!
+}
+
+union ApproveQrSignInResult = ApproveQrSignInPayload | NotFound | Conflict
+
+enum StaffFactor {
+  security_key
+  authenticator
+}
+
+input StartStaffSignInInput {
+  email: String!
+}
+
+type SecurityKey {
+  label: String!
+  addedOn: Date!
+}
+
+type StaffChallenge {
+  challengeId: ID!
+  methods: [StaffFactor!]!
+  "JSON-encoded PublicKeyCredentialRequestOptions."
+  webauthnOptions: String
+  "Keys registered to this staff account, so the right one is used."
+  securityKeys: [SecurityKey!]!
+}
+
+type StartStaffSignInPayload {
+  challenge: StaffChallenge!
+}
+
+union StartStaffSignInResult = StartStaffSignInPayload | InvalidInput
+
+input VerifyStaffSignInInput {
+  challengeId: ID!
+  method: StaffFactor!
+  "JSON-encoded WebAuthn assertion."
+  assertion: String
+  code: String
+}
+
+type VerifyStaffSignInPayload {
+  "Staff sessions end after 30 minutes idle."
+  session: Session!
+}
+
+union VerifyStaffSignInResult = VerifyStaffSignInPayload | InvalidInput
+
+enum DevicePlatform {
+  ios
+  android
+}
+
+input RegisterDeviceKeyInput {
+  platform: DevicePlatform!
+  "The raw 32-byte Ed25519 public key from the secure enclave or keystore, base64url without padding."
+  publicKey: String!
+  label: String
+}
+
+type DeviceKey {
+  id: ID!
+  platform: DevicePlatform!
+  label: String
+  createdAt: DateTime!
+}
+
+type RegisterDeviceKeyPayload {
+  deviceKey: DeviceKey!
+}
+
+union RegisterDeviceKeyResult = RegisterDeviceKeyPayload | InvalidInput
+
+enum SigningPurpose {
+  agreement
+  change_order
+  handover
+  partial_release
+  end_job
+  progress_count
+  "Step-up before releasing money (approving a stage)."
+  release
+  "Accepting a mediator's suggestion that releases or refunds money (`answerMediatorSuggestion`): the issue."
+  mediation
+  "Step-up before adding a payout account (`addBankAccount`): the user, or the shop for a shop's account."
+  bank_account
+  "Giving a team member the owner seat (`updateTeamMember`): the team member."
+  owner_seat
+}
+
+input CreateSigningChallengeInput {
+  purpose: SigningPurpose!
+  """
+  What is being signed: the agreement version, change order, job (handover, end), partial release, stage, the
+  issue (mediation), the user or shop whose payout account is added, or the team member given the owner seat.
+  A challenge signs only this purpose and subject, once, for the user who asked for it; anything else returns
+  `invalid_input` (`signature.device`, `wrong_subject`).
+  """
+  subjectId: ID!
+}
+
+type SigningChallenge {
+  id: ID!
+  purpose: SigningPurpose!
+  subjectId: ID!
+  "Sign this string's UTF-8 bytes with the Ed25519 device key."
+  nonce: String!
+  expiresAt: DateTime!
+  "False when this phone has no device key: use the phone-code fallback."
+  deviceKeyRegistered: Boolean!
+  "Where the fallback code goes."
+  fallback: CodeChannel!
+}
+
+type CreateSigningChallengePayload {
+  challenge: SigningChallenge!
+}
+
+union CreateSigningChallengeResult = CreateSigningChallengePayload | NotFound
+
+type SignOutPayload {
+  signedOut: Boolean!
+}
+
+union SignOutResult = SignOutPayload

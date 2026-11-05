@@ -1,0 +1,126 @@
+extend type Query {
+  warrantyClaim(id: ID!): WarrantyClaim
+}
+
+extend type Mutation {
+  "The owner reports a defect with photos. The contractor visits within 7 days; a claim holds the retention."
+  createWarrantyClaim(input: CreateWarrantyClaimInput!): CreateWarrantyClaimResult!
+    @allow(roles: [owner])
+  updateWarrantyClaim(input: UpdateWarrantyClaimInput!): UpdateWarrantyClaimResult!
+    @allow(roles: [owner, contractor])
+}
+
+extend type Job {
+  warranty: Warranty
+  warrantyClaims: [WarrantyClaim!]!
+}
+
+enum WarrantyStatus {
+  pending
+  active
+  expired
+}
+
+type WarrantyCoverage {
+  label: String!
+  workItemCodes: [String!]!
+}
+
+type WarrantyRetention {
+  amount: Money
+  releaseDueAt: DateTime
+  leakCheckAt: DateTime
+  claimHoldsRetention: Boolean
+}
+
+type Warranty {
+  job: Job!
+  status: WarrantyStatus!
+  months: Int!
+  startsOn: Date
+  until: Date!
+  reminderOn: Date
+  coverage: [WarrantyCoverage!]!
+  exclusions: [String!]!
+  retention: WarrantyRetention
+  cardPdfUrl: String
+}
+
+enum ClaimArea {
+  sink_cabinet
+  wall_tiles
+  floor
+  worktop
+  sockets
+  other
+}
+
+enum ClaimStarted {
+  today
+  this_week
+  earlier
+  not_sure
+}
+
+enum WarrantyClaimStatus {
+  open
+  visit_scheduled
+  fixed
+  confirmed
+  declined
+}
+
+type WarrantyClaim {
+  id: ID!
+  job: Job!
+  area: ClaimArea!
+  startedWhen: ClaimStarted
+  description: UserText!
+  media: [Media!]!
+  "AI suggestion of the work item it falls under."
+  suggestedWorkItemCode: String
+  suggestedWorkItemAi: AiSuggestion
+  status: WarrantyClaimStatus!
+  "7 days after the claim."
+  visitDueAt: DateTime
+  visitAt: DateTime
+  holdsRetention: Boolean!
+  createdAt: DateTime!
+}
+
+input CreateWarrantyClaimInput {
+  jobId: ID!
+  area: ClaimArea!
+  startedWhen: ClaimStarted
+  text: String!
+  voiceNoteId: ID
+  "At least 1."
+  mediaIds: [ID!]!
+}
+
+type CreateWarrantyClaimPayload {
+  claim: WarrantyClaim!
+}
+
+union CreateWarrantyClaimResult = CreateWarrantyClaimPayload | NotFound | Conflict | InvalidInput
+
+enum WarrantyClaimAction {
+  schedule_visit
+  mark_fixed
+  confirm_fixed
+  decline
+}
+
+input UpdateWarrantyClaimInput {
+  claimId: ID!
+  action: WarrantyClaimAction!
+  visitAt: DateTime
+  note: String
+  mediaIds: [ID!]
+}
+
+type UpdateWarrantyClaimPayload {
+  claim: WarrantyClaim!
+}
+
+union UpdateWarrantyClaimResult = UpdateWarrantyClaimPayload | NotFound | InvalidInput

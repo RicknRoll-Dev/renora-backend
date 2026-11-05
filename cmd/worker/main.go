@@ -14,8 +14,10 @@ import (
 	"github.com/riverqueue/river"
 	"golang.org/x/sync/errgroup"
 
+	"github.com/renora/renora-api/internal/account"
 	"github.com/renora/renora-api/internal/api"
 	"github.com/renora/renora-api/internal/config"
+	"github.com/renora/renora-api/internal/idempotency"
 	"github.com/renora/renora-api/internal/platform/health"
 	"github.com/renora/renora-api/internal/platform/httpx"
 	"github.com/renora/renora-api/internal/platform/logging"
@@ -68,7 +70,13 @@ func run() error {
 	// Domain modules register their workers and periodic jobs here as they are built.
 	workers := river.NewWorkers()
 	river.AddWorker(workers, queue.NewHeartbeatWorker(reg))
-	periodic := []*river.PeriodicJob{queue.HeartbeatPeriodicJob()}
+	river.AddWorker(workers, &idempotency.PurgeWorker{Pool: pool})
+	river.AddWorker(workers, &account.PurgeWorker{Pool: pool})
+	periodic := []*river.PeriodicJob{
+		queue.HeartbeatPeriodicJob(),
+		idempotency.PurgePeriodicJob(),
+		account.PurgePeriodicJob(),
+	}
 
 	client, err := queue.NewWorker(pool, logger, workers, periodic, cfg.Worker.Concurrency)
 	if err != nil {

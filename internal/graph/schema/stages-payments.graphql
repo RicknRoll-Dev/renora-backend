@@ -1,0 +1,707 @@
+extend type Query {
+  stage(id: ID!): Stage
+  funding(id: ID!): Funding @allow(roles: [owner, ops])
+}
+
+extend type Mutation {
+  """
+  Issues a virtual account for a stage (the last work stage brings the retention with it). Rolling, one
+  stage ahead: each later stage is funded when the previous one is submitted; the owner may fund further
+  ahead. The protection fee (1%) is collected with each stage. Problems: `already_funded`, `not_found`.
+  """
+  fundStage(input: FundStageInput!): FundStageResult! @allow(roles: [owner])
+  "\"I've paid\": the partner confirms the transfer; the stage then shows Funded. Problems: `not_found`."
+  claimFundingPaid(input: ClaimFundingPaidInput!): ClaimFundingPaidResult! @allow(roles: [owner])
+  """
+  Day-1 site check-in: GPS plus at least 3 \"before\" photos. Releases the Stage 1 down payment.
+  Problems: `not_funded`, `invalid_input`.
+  """
+  checkInStage(input: CheckInStageInput!): CheckInStageResult! @allow(roles: [contractor])
+  """
+  Sends a stage for review with its photo proof. Starts the 4-day clock: it releases automatically at
+  `autoReleaseAt` unless the owner raises an issue; reminders at submission, 48 h, 24 h and 2 h before
+  (never with amounts). Problems: `not_funded`, `not_in_progress`, `invalid_input`.
+  """
+  submitStage(input: SubmitStageInput!): SubmitStageResult! @allow(roles: [contractor])
+  """
+  The owner approves a stage in review: its money is released to the contractor. Optional step-up with the
+  device key or a phone code. Problems: `not_in_review`.
+  """
+  approveStage(input: ApproveStageInput!): ApproveStageResult! @allow(roles: [owner])
+  "\"Need more time\": +3 days, once per stage (worst case 7 days). Problems: `not_in_review`, `extension_used`."
+  extendStageReview(input: ExtendStageReviewInput!): ExtendStageReviewResult! @allow(roles: [owner])
+  "Release part now and the rest on a written condition; both sign it."
+  proposePartialRelease(input: ProposePartialReleaseInput!): ProposePartialReleaseResult!
+    @allow(roles: [owner, contractor])
+  signPartialRelease(input: SignPartialReleaseInput!): SignPartialReleaseResult!
+    @allow(roles: [owner, contractor])
+  "The owner's limit and contingency (±5 points of the tier default). Contractors never see either."
+  updateBudget(input: UpdateBudgetInput!): UpdateBudgetResult! @allow(roles: [owner])
+  "Something she bought outside Renora, so the forecast stays true."
+  addOutsidePurchase(input: AddOutsidePurchaseInput!): AddOutsidePurchaseResult!
+    @allow(roles: [owner])
+  """
+  \"Jeda kerja\": allowed when the next stage is unfunded 3 days after he submitted; takes effect after 48 h
+  notice. Problems: `already_funded`, `conflict`.
+  """
+  sendPauseNotice(input: SendPauseNoticeInput!): SendPauseNoticeResult! @allow(roles: [contractor])
+  "A reminder to the owner to fund the next stage (no amounts in it)."
+  remindOwnerToFund(input: RemindOwnerToFundInput!): RemindOwnerToFundResult!
+    @allow(roles: [contractor])
+  "Ending a job: by both, owner cancels, contractor unresponsive, or owner default after 14 days."
+  proposeEndJob(input: ProposeEndJobInput!): ProposeEndJobResult! @allow(roles: [owner, contractor])
+  signEndJob(input: SignEndJobInput!): SignEndJobResult! @allow(roles: [owner, contractor])
+}
+
+extend type Job {
+  "Work stages in order, then the retention."
+  stages: [Stage!]!
+  """
+  The money on this job at the partner. Owner and ops only. Always set on a protected job that is active,
+  paused or in handover; null on an unprotected job, which says so with `protectedPayment: false`.
+  """
+  money: ProtectedPayment @private(to: [owner, ops])
+  "The owner's budget. Owner and ops only. Present wherever `money` is."
+  budget: Budget @private(to: [owner, ops])
+  partialReleases: [PartialRelease!]!
+  endRequest: EndRequest
+}
+
+"""
+`planned` not funded yet (\"Belum didanai · Jangan mulai dulu\"); `funded` safe at the partner, work may
+start; `in_progress` under way; `submitted` in review, the 4-day clock runs; `released` approved and paid;
+`refunded` returned to the owner. Stage 1 releases at the day-1 check-in, so it shows `in_progress` with
+`releasedAt` set until it is submitted and approved.
+"""
+enum StageStatus {
+  planned
+  funded
+  in_progress
+  submitted
+  released
+  refunded
+}
+
+enum StageKind {
+  work
+  retention
+}
+
+enum ReleaseTrigger {
+  owner_approval
+  auto_clock
+  site_check_in
+  mediator
+  partial_agreement
+  handover_signature
+  retention_clock
+  site_photo
+  driver_photo_24h
+}
+
+enum StageReminderKind {
+  submitted
+  h48
+  h24
+  h2
+}
+
+type StageReminder {
+  kind: StageReminderKind!
+  at: DateTime!
+  sentAt: DateTime
+}
+
+type StageProof {
+  photoCount: Int!
+  voiceNoteCount: Int!
+  allOnSite: Boolean!
+  media: [Media!]!
+  "Who signed this stage's proof."
+  signedBy: [PartyRole!]!
+}
+
+enum CheckVerdict {
+  matches
+  does_not_match
+  cannot_tell
+}
+
+"""
+AI comparison of photos with the agreement. Says only matches, does not match or cannot tell; never names
+fault (R4). Leaks and hollow tiles are always `cannot_tell`.
+"""
+type ItemCheck {
+  workItemCode: String
+  aspect: String!
+  verdict: CheckVerdict!
+  reason: String
+  media: [Media!]!
+  ai: AiSuggestion!
+}
+
+type Stage {
+  id: ID!
+  job: Job!
+  "Retention follows the last work stage with kind `retention`."
+  no: Int!
+  kind: StageKind!
+  name: String!
+  "Short label for tight rows, in English."
+  shortName: String
+  "The name in Bahasa Indonesia, as written in the agreement."
+  nameBahasa: String
+  shortNameBahasa: String
+  share: Bps!
+  amount: Money!
+  isDownPayment: Boolean!
+  status: StageStatus!
+  plannedStart: Date
+  dueDate: Date
+  "Planned window on the schedule; the span is `finishDate − startDate` days."
+  startDate: Date
+  finishDate: Date
+  funding: Funding @private(to: [owner, ops])
+  fundedAt: DateTime
+  "After this the contractor may send a pause notice."
+  fundByAt: DateTime
+  "Protection fee collected with this stage."
+  fee: Money @private(to: [owner, ops])
+  checkInAt: DateTime
+  submittedAt: DateTime
+  "4 days after submission, or 7 when the owner asked for more time."
+  autoReleaseAt: DateTime
+  "The latest it can auto-release: `autoReleaseAt`, plus the one 3-day extension while it is unused."
+  latestAutoReleaseAt: DateTime
+  extensionUsed: Boolean!
+  reminders: [StageReminder!]!
+  releasedAt: DateTime
+  releaseTrigger: ReleaseTrigger
+  released: Money!
+  safeAtPartner: Money!
+  "Part held for flagged items while an issue is open."
+  held: Money!
+  "Retention: 90 days after handover."
+  releaseDueAt: DateTime
+  "Retention: day-75 three-point leak check."
+  leakCheckAt: DateTime
+  proof: StageProof
+  checks: [ItemCheck!]!
+  "Checks photos can't settle, done at handover."
+  movedToHandover: [String!]!
+  payee: BankAccountMasked @private(to: [owner, contractor, ops])
+}
+
+type VirtualAccount {
+  bank: Bank!
+  number: String!
+  "The exact name the owner sees in m-banking, in the payment partner's name."
+  accountName: String!
+  expiresAt: DateTime!
+}
+
+enum FundingLineKind {
+  principal
+  protection_fee
+  fee_minimum_topup
+}
+
+type FundingLine {
+  kind: FundingLineKind!
+  label: String!
+  amount: Money!
+}
+
+enum FundingPurpose {
+  stage
+  change_order
+  order
+  order_difference
+}
+
+enum FundingStatus {
+  awaiting_payment
+  paid
+  expired
+  cancelled
+  refunded
+}
+
+"Money the owner puts in through a virtual account. Owner and ops only."
+type Funding {
+  id: ID!
+  job: Job!
+  purpose: FundingPurpose!
+  stages: [Stage!]!
+  changeOrder: ChangeOrder
+  orders: [Order!]!
+  principal: Money!
+  fee: Money!
+  total: Money!
+  lines: [FundingLine!]!
+  virtualAccount: VirtualAccount
+  status: FundingStatus!
+  createdAt: DateTime!
+  paidAt: DateTime
+  claimedPaidAt: DateTime
+  refundAccount: BankAccountMasked
+}
+
+enum PartialReleaseStatus {
+  proposed
+  signed
+  released
+  withdrawn
+}
+
+type PartialRelease {
+  id: ID!
+  stage: Stage!
+  releaseNow: Money!
+  later: Money!
+  "What releases the rest."
+  condition: String!
+  status: PartialReleaseStatus!
+  signatures: [Signature!]!
+}
+
+type ProtectedPaymentPartner {
+  "\"licensed payment partner\" until the partner contract allows its name."
+  displayName: String!
+  licensedBy: String!
+  subAccountMasked: String
+}
+
+enum MoneyRowKind {
+  stage
+  retention
+  change_order
+  order
+}
+
+enum MoneyRowState {
+  released
+  safe
+  in_review
+  to_fund
+  to_buy
+  refunded
+}
+
+type MoneyRow {
+  kind: MoneyRowKind!
+  refId: ID
+  "Order rows: the order's reference, `RN-118306`."
+  orderRef: String
+  label: String!
+  "Order rows: the shop paid."
+  shopName: String
+  amount: Money!
+  fee: Money
+  fundedAt: DateTime
+  "Rows open for funding: after this the contractor may send a pause notice."
+  fundByAt: DateTime
+  releasedAt: DateTime
+  releaseDueAt: DateTime
+  "What released the money, or what will release it."
+  releaseTrigger: ReleaseTrigger
+  state: MoneyRowState!
+}
+
+type MoneyTotals {
+  released: Money!
+  safeAtPartner: Money!
+  toFund: Money!
+  throughAccount: Money!
+  materialsToBuy: Money!
+  forecast: Money!
+}
+
+type FeeProgress {
+  total: Money!
+  paid: Money!
+}
+
+"""
+The job's money at the licensed payment partner (R5: Renora never holds money). Say \"safe at the
+partner\", never \"held by bank\"; \"Funded\" and \"Released\", never \"Paid\" alone.
+"""
+type ProtectedPayment {
+  asOf: DateTime!
+  partner: ProtectedPaymentPartner!
+  rows: [MoneyRow!]!
+  totals: MoneyTotals!
+  protectionFee: FeeProgress
+  refundAccount: BankAccountMasked
+  "What the partner does if Renora closes."
+  standingInstruction: String
+  statementUrl: String
+}
+
+enum BudgetGroupKind {
+  agreement
+  change_orders
+  materials
+}
+
+enum BudgetLineState {
+  released
+  safe
+  to_pay
+  to_buy
+  in_cart
+}
+
+type BudgetLine {
+  label: String!
+  shopName: String
+  amount: Money!
+  state: BudgetLineState!
+  refId: ID
+}
+
+type BudgetCell {
+  planned: Money!
+  released: Money!
+  safeAtPartner: Money!
+  toPay: Money!
+}
+
+type BudgetGroup {
+  kind: BudgetGroupKind!
+  label: String!
+  planned: Money!
+  released: Money!
+  safeAtPartner: Money!
+  toPay: Money!
+  lines: [BudgetLine!]!
+}
+
+enum ContingencyTier {
+  "10%: surface work."
+  surface
+  "15%: pipes, wiring or wet rooms."
+  wet_or_wired
+  "20%: leaks, roof or structure."
+  hidden_risk
+}
+
+"The owner's own reserve: never funded, never shown to contractors. Change orders draw on it."
+type Contingency {
+  tier: ContingencyTier
+  rate: Bps!
+  amount: Money!
+  used: Money!
+  left: Money!
+  foundOnSite: Money!
+  ownerChoice: Money!
+}
+
+type BudgetFee {
+  total: Money!
+  paid: Money!
+  toPay: Money!
+}
+
+"""
+Owner only. Three groups (the agreement, signed change orders, materials she buys), each Planned / Released
+/ Safe at partner / To pay. Planned materials count from signing, so a checkout never moves the forecast.
+The protection fee sits below the total and is not in the limit check.
+"""
+type Budget {
+  asOf: DateTime!
+  groups: [BudgetGroup!]!
+  total: BudgetCell!
+  limit: Money!
+  planAtSigning: Money
+  "Signed: forecast minus limit; negative means under the limit."
+  overLimit: Money!
+  contingency: Contingency!
+  protectionFee: BudgetFee!
+  allIn: Money
+}
+
+enum EndReason {
+  mutual
+  owner_cancels
+  contractor_unresponsive
+  owner_default
+}
+
+enum EndRequestStatus {
+  proposed
+  agreed
+  mediation
+  settled
+  withdrawn
+}
+
+type Settlement {
+  staysReleased: Money!
+  paysOut: Money!
+  returnsToOwner: Money!
+  notFunded: Money!
+  "Fee refunded pro rata."
+  feeRefund: Money @private(to: [owner, ops])
+}
+
+type EndRequest {
+  id: ID!
+  reason: EndReason!
+  proposedBy: PartyRole!
+  status: EndRequestStatus!
+  settlement: Settlement!
+  signatures: [Signature!]!
+}
+
+enum StatementKind {
+  funding
+  release
+  refund
+  payout
+}
+
+type Statement {
+  id: ID!
+  date: Date!
+  "When the money moved."
+  at: DateTime
+  kind: StatementKind!
+  label: String!
+  amount: Money!
+  fee: Money @private(to: [owner, ops])
+  ref: String
+  pdfUrl: String
+}
+
+type StatementConnection {
+  edges: [StatementEdge!]!
+  nodes: [Statement!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type StatementEdge {
+  cursor: String!
+  node: Statement!
+}
+
+input FundStageInput {
+  idempotencyKey: ID!
+  stageId: ID!
+  bank: Bank!
+}
+
+type FundStagePayload {
+  funding: Funding!
+  stage: Stage!
+}
+
+union FundStageResult = FundStagePayload | NotFound | Conflict
+
+input ClaimFundingPaidInput {
+  fundingId: ID!
+}
+
+type ClaimFundingPaidPayload {
+  funding: Funding!
+}
+
+union ClaimFundingPaidResult = ClaimFundingPaidPayload | NotFound | Conflict
+
+input CheckInStageInput {
+  idempotencyKey: ID!
+  stageId: ID!
+  location: GeoPointInput!
+  "At least 3."
+  beforePhotoIds: [ID!]!
+}
+
+type CheckInStagePayload {
+  stage: Stage!
+}
+
+union CheckInStageResult = CheckInStagePayload | NotFound | Conflict | InvalidInput
+
+input SubmitStageInput {
+  stageId: ID!
+  "At least 1."
+  photoIds: [ID!]!
+  voiceNoteId: ID
+  note: String
+  "Checks that photos can't settle, moved to the handover list."
+  movedToHandover: [String!]
+  "Photos still in the offline queue attach when they arrive."
+  clientRef: ID
+}
+
+type SubmitStagePayload {
+  stage: Stage!
+}
+
+union SubmitStageResult = SubmitStagePayload | NotFound | Conflict | InvalidInput
+
+input ApproveStageInput {
+  idempotencyKey: ID!
+  stageId: ID!
+  "Optional step-up before money moves."
+  stepUp: SignatureInput
+}
+
+type ApproveStagePayload {
+  stage: Stage!
+  payout: Payout
+}
+
+union ApproveStageResult = ApproveStagePayload | NotFound | Conflict | InvalidInput
+
+input ExtendStageReviewInput {
+  stageId: ID!
+}
+
+type ExtendStageReviewPayload {
+  stage: Stage!
+}
+
+union ExtendStageReviewResult = ExtendStageReviewPayload | NotFound | Conflict
+
+input ProposePartialReleaseInput {
+  idempotencyKey: ID!
+  stageId: ID!
+  releaseNow: Money!
+  condition: String!
+}
+
+type ProposePartialReleasePayload {
+  partialRelease: PartialRelease!
+}
+
+union ProposePartialReleaseResult =
+  | ProposePartialReleasePayload
+  | NotFound
+  | Conflict
+  | InvalidInput
+
+input SignPartialReleaseInput {
+  idempotencyKey: ID!
+  partialReleaseId: ID!
+  signature: SignatureInput!
+}
+
+type SignPartialReleasePayload {
+  partialRelease: PartialRelease!
+}
+
+union SignPartialReleaseResult = SignPartialReleasePayload | NotFound | Conflict | InvalidInput
+
+input UpdateBudgetInput {
+  jobId: ID!
+  limit: Money
+  "Within ±500 of the tier default."
+  contingencyRate: Bps
+}
+
+type UpdateBudgetPayload {
+  budget: Budget!
+}
+
+union UpdateBudgetResult = UpdateBudgetPayload | NotFound | InvalidInput
+
+input AddOutsidePurchaseInput {
+  jobId: ID!
+  description: String!
+  shopName: String
+  amount: Money!
+  date: Date!
+  stageNo: Int
+  receiptMediaId: ID
+}
+
+type AddOutsidePurchasePayload {
+  budget: Budget!
+}
+
+union AddOutsidePurchaseResult = AddOutsidePurchasePayload | NotFound | InvalidInput
+
+input SendPauseNoticeInput {
+  jobId: ID!
+}
+
+type SendPauseNoticePayload {
+  job: Job!
+}
+
+union SendPauseNoticeResult = SendPauseNoticePayload | NotFound | Conflict
+
+input RemindOwnerToFundInput {
+  jobId: ID!
+}
+
+type RemindOwnerToFundPayload {
+  sentAt: DateTime!
+}
+
+union RemindOwnerToFundResult = RemindOwnerToFundPayload | NotFound | QuotaReached
+
+input ProposeEndJobInput {
+  idempotencyKey: ID!
+  jobId: ID!
+  reason: EndReason!
+  note: String
+  payOutForWorkDone: Money
+}
+
+type ProposeEndJobPayload {
+  endRequest: EndRequest!
+}
+
+union ProposeEndJobResult = ProposeEndJobPayload | NotFound | Conflict
+
+input SignEndJobInput {
+  idempotencyKey: ID!
+  endRequestId: ID!
+  signature: SignatureInput!
+}
+
+type SignEndJobPayload {
+  endRequest: EndRequest!
+}
+
+union SignEndJobResult = SignEndJobPayload | NotFound | Conflict | InvalidInput
+
+extend type Query {
+  """
+  Renora's fees, for pages with no job in scope: pricing, sign-up, a shop's welcome. A job keeps the terms
+  it was agreed on (`Job.fees`); a shop its own (`Shop.fee`).
+  """
+  feePolicy: FeePolicy! @public
+}
+
+type FeePolicy {
+  protection: ProtectionFeeRule!
+  changeOrders: ChangeOrderFeeRule!
+  match: MatchFeeRule!
+  shop: ShopFeeRule!
+}
+
+type ProtectionFeeRule {
+  rate: Bps!
+  minPerJob: Money!
+  capPerJob: Money!
+  includesPpn: Boolean!
+}
+
+type MatchFeeRule {
+  rate: Bps!
+  cap: Money!
+  "Founding contractors pay no match fee until this day."
+  waivedUntil: Date
+}
+
+type ShopFeeRule {
+  "Of delivered goods."
+  commission: Bps!
+  "A new shop's first orders carry no commission."
+  freeOrders: Int!
+  rateLockedUntil: Date!
+}

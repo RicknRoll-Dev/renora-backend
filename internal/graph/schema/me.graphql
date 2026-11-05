@@ -1,0 +1,557 @@
+extend type Query {
+  "The signed-in user and their roles. Without a session: `UNAUTHENTICATED`."
+  me: Me!
+}
+
+extend type Mutation {
+  updateMe(input: UpdateMeInput!): UpdateMeResult!
+  "Closes the account after the open jobs end; the record stays for the other party."
+  closeAccount: CloseAccountResult!
+  updateConsents(input: UpdateConsentsInput!): UpdateConsentsResult!
+  updateNotificationSettings(input: NotificationSettingsInput!): UpdateNotificationSettingsResult!
+  "Push token for this phone. Push payloads carry only a title, a body and a deep link: never amounts (R7)."
+  registerPushDevice(input: RegisterPushDeviceInput!): RegisterPushDeviceResult!
+  revokeSession(input: RevokeSessionInput!): RevokeSessionResult!
+  requestDataExport: RequestDataExportResult!
+  "Payouts to a new account pause for 24 h while the name is checked."
+  addBankAccount(input: AddBankAccountInput!): AddBankAccountResult!
+  submitVerification(input: SubmitVerificationInput!): SubmitVerificationResult!
+  saveContractorProfile(input: ContractorProfileInput!): SaveContractorProfileResult!
+    @allow(roles: [contractor])
+  "Problems: `seats_full`."
+  inviteTeamMember(input: InviteTeamMemberInput!): InviteTeamMemberResult!
+    @allow(roles: [contractor])
+  "Changes a member's name or seat. Problems: `invalid_input` (`seat`: the account keeps one owner seat)."
+  updateTeamMember(input: UpdateTeamMemberInput!): UpdateTeamMemberResult!
+    @allow(roles: [contractor])
+  "Frees the seat. Problems: `invalid_input` (`teamMemberId`: the account keeps one owner seat)."
+  removeTeamMember(input: RemoveTeamMemberInput!): RemoveTeamMemberResult!
+    @allow(roles: [contractor])
+}
+
+"""
+The signed-in account. One person can be owner, contractor, shop staff and ops staff; `roles` lists every
+role, and each job filters what they see by their role on that job.
+"""
+type Me {
+  id: ID!
+  name: String!
+  displayName: String!
+  initials: String!
+  "Sign-in number. Null for staff accounts, which sign in by email."
+  phone: String
+  email: String
+  language: Language!
+  "Owner: default bank for virtual accounts."
+  preferredVaBank: Bank
+  "Voice help: the app reads its screens aloud with the phone's text-to-speech, in the account's language."
+  voiceHelp: Boolean!
+  roles: [Role!]!
+  "The person others see."
+  person: Person!
+  "The contractor's directory entry."
+  contractor: Contractor
+  "The contractor's own profile, with the setup checklist and seats."
+  contractorProfile: ContractorProfile
+  shops: [ShopMembership!]!
+  staff: StaffProfile
+  consents: Consents!
+  notificationSettings: NotificationSettings!
+  signedInSessions: [SignedInSession!]!
+  bankAccounts: [BankAccount!]!
+  verifications: [Verification!]!
+  "Contractor: seats on the business account."
+  teamMembers: [TeamMember!]!
+  "Contractor: invite another mandor."
+  referral: Referral
+  "Owner: the light home record after handover."
+  home: HomeRecord
+  createdAt: DateTime
+}
+
+enum ShopStaffRole {
+  owner
+  staff
+}
+
+type ShopMembership {
+  shop: Shop!
+  staffRole: ShopStaffRole!
+}
+
+enum StaffRole {
+  mediator
+  support
+  finance
+  lead
+  verification
+}
+
+enum StaffPermission {
+  read_money
+  retry_payouts
+  decide_cases
+  verify_users
+  edit_price_book
+  reply_support
+}
+
+type StaffProfile {
+  staffRole: StaffRole!
+  permissions: [StaffPermission!]!
+}
+
+type Consents {
+  "AI may read my chats, photos and voice notes (processed outside Indonesia under a data agreement)."
+  aiProcessing: Boolean!
+  aiProcessingAt: DateTime
+  "Use my photos to improve Renora's AI. Default off."
+  aiTrainingPhotos: Boolean!
+  "Contractor: share my signed jobs' prices with the price book, without my name. Default off."
+  priceBookSharing: Boolean!
+}
+
+input UpdateMeInput {
+  name: String
+  displayName: String
+  email: String
+  language: Language
+  preferredVaBank: Bank
+  voiceHelp: Boolean
+}
+
+type UpdateMePayload {
+  me: Me!
+}
+
+union UpdateMeResult = UpdateMePayload | InvalidInput
+
+type CloseAccountPayload {
+  closesAt: DateTime!
+}
+
+union CloseAccountResult = CloseAccountPayload | Conflict
+
+input UpdateConsentsInput {
+  aiProcessing: Boolean
+  aiTrainingPhotos: Boolean
+  priceBookSharing: Boolean
+}
+
+type UpdateConsentsPayload {
+  consents: Consents!
+}
+
+union UpdateConsentsResult = UpdateConsentsPayload
+
+"""
+`funding_due` covers funding requests and the confirmation that a stage is funded. Shop events:
+`new_order`, `answer_reminder`, `payout`, `low_stock`, `monthly_statement`.
+"""
+enum NotificationEvent {
+  stage_review
+  funding_due
+  change_or_decision
+  daily_report
+  issue
+  delivery
+  payout
+  crew_answer
+  wage_reminder
+  bids
+  tips
+  message
+  handover
+  new_order
+  answer_reminder
+  low_stock
+  monthly_statement
+}
+
+type NotificationChannel {
+  event: NotificationEvent!
+  app: Boolean!
+  email: Boolean!
+  "The WhatsApp doorbell. At most 1 message per person per day."
+  whatsapp: Boolean!
+}
+
+type EveningDigest {
+  enabled: Boolean!
+  "HH:MM, WIB."
+  time: String
+}
+
+type QuietHours {
+  from: String!
+  to: String!
+}
+
+enum ReminderKind {
+  evening_report
+  wages
+  stage_ready
+}
+
+"Contractor nudges: evening report, Saturday wages, stage ready to submit."
+type Reminder {
+  kind: ReminderKind!
+  enabled: Boolean!
+  "In words, e.g. \"Fridays 17:00\"."
+  schedule: String
+  "HH:MM, Asia/Jakarta."
+  time: String
+  "No reminder between these times."
+  quietHours: QuietHours
+}
+
+type NotificationSettings {
+  "iOS: pushes that need her (stage review, funding due) are sent Time Sensitive and break through Focus. Off by default."
+  timeSensitive: Boolean!
+  channels: [NotificationChannel!]!
+  eveningDigest: EveningDigest
+  quietHours: QuietHours
+  reminders: [Reminder!]!
+}
+
+input NotificationChannelInput {
+  event: NotificationEvent!
+  app: Boolean!
+  email: Boolean!
+  whatsapp: Boolean!
+}
+
+input NotificationSettingsInput {
+  channels: [NotificationChannelInput!]!
+  timeSensitive: Boolean
+  eveningDigestEnabled: Boolean
+  eveningDigestTime: String
+  quietFrom: String
+  quietTo: String
+  reminders: [ReminderInput!]
+}
+
+input ReminderInput {
+  kind: ReminderKind!
+  enabled: Boolean!
+  schedule: ReminderScheduleInput
+}
+
+input ReminderScheduleInput {
+  "HH:MM, Asia/Jakarta."
+  time: String!
+  "HH:MM; no reminder between `quietFrom` and `quietTo`."
+  quietFrom: String
+  quietTo: String
+}
+
+type UpdateNotificationSettingsPayload {
+  notificationSettings: NotificationSettings!
+}
+
+union UpdateNotificationSettingsResult = UpdateNotificationSettingsPayload | InvalidInput
+
+"How the backend sends to the token: straight to FCM or APNs (the apps send raw device tokens), or Expo."
+enum PushProvider {
+  fcm
+  apns
+  expo
+}
+
+"""
+One phone's push token for the signed-in session. Re-register after every sign-in and whenever the token
+changes; `signOut` drops the devices its session registered. Pushes carry a `deepLink` to open on tap.
+"""
+input RegisterPushDeviceInput {
+  platform: DevicePlatform!
+  pushToken: String!
+  "Defaults to `apns` on iOS and `fcm` on Android."
+  provider: PushProvider
+}
+
+type RegisterPushDevicePayload {
+  registered: Boolean!
+}
+
+union RegisterPushDeviceResult = RegisterPushDevicePayload
+
+type SignedInSession {
+  id: ID!
+  label: String!
+  place: String
+  lastActiveAt: DateTime!
+  current: Boolean!
+}
+
+input RevokeSessionInput {
+  sessionId: ID!
+}
+
+type RevokeSessionPayload {
+  sessions: [SignedInSession!]!
+}
+
+union RevokeSessionResult = RevokeSessionPayload | NotFound
+
+type RequestDataExportPayload {
+  export: Export!
+}
+
+union RequestDataExportResult = RequestDataExportPayload
+
+enum BankAccountPurpose {
+  payout
+  refund
+}
+
+enum NameCheck {
+  pending
+  matches_ktp
+  matches_nib
+  mismatch
+}
+
+type BankAccount {
+  id: ID!
+  bank: Bank!
+  numberMasked: String!
+  accountName: String!
+  purpose: BankAccountPurpose!
+  nameCheck: NameCheck!
+  checkedAt: DateTime
+  payoutsPausedUntil: DateTime
+  isDefault: Boolean!
+}
+
+input AddBankAccountInput {
+  bank: Bank!
+  accountNumber: String!
+  accountName: String!
+  "A shop's payout account (the shop's owner only); without it, the signed-in user's own."
+  shopId: ID
+  "Money step-up: required. Problems: `invalid_input` (`signature`, `required`), `wrong_code`."
+  signature: SignatureInput
+}
+
+type AddBankAccountPayload {
+  bankAccount: BankAccount!
+}
+
+union AddBankAccountResult = AddBankAccountPayload | InvalidInput | NotFound
+
+enum VerificationKind {
+  ktp
+  nib
+  bank_account
+  sbu
+  phone
+}
+
+enum VerificationStatus {
+  not_started
+  pending
+  verified
+  rejected
+}
+
+type Verification {
+  kind: VerificationKind!
+  status: VerificationStatus!
+  detail: String
+  checkedAt: DateTime
+  rejectReason: String
+}
+
+input SubmitVerificationInput {
+  kind: VerificationKind!
+  "NIB or SBU number. Never echoed back in full."
+  number: String
+  mediaIds: [ID!]
+}
+
+type SubmitVerificationPayload {
+  verification: Verification!
+}
+
+union SubmitVerificationResult = SubmitVerificationPayload | InvalidInput
+
+enum TeamSeat {
+  owner
+  office
+}
+
+enum TeamMemberStatus {
+  invited
+  active
+}
+
+type TeamMember {
+  id: ID!
+  "The signed-in user's own seat."
+  isYou: Boolean!
+  name: String!
+  phoneMasked: String
+  seat: TeamSeat!
+  status: TeamMemberStatus!
+}
+
+input InviteTeamMemberInput {
+  phone: String!
+  name: String!
+  seat: TeamSeat!
+}
+
+type InviteTeamMemberPayload {
+  teamMember: TeamMember!
+}
+
+union InviteTeamMemberResult = InviteTeamMemberPayload | InvalidInput | Conflict
+
+input UpdateTeamMemberInput {
+  teamMemberId: ID!
+  name: String
+  seat: TeamSeat
+  "Required to give someone the owner seat (it signs agreements and changes the bank)."
+  signature: SignatureInput
+}
+
+type UpdateTeamMemberPayload {
+  teamMember: TeamMember!
+}
+
+union UpdateTeamMemberResult = UpdateTeamMemberPayload | NotFound | InvalidInput
+
+input RemoveTeamMemberInput {
+  teamMemberId: ID!
+}
+
+type RemoveTeamMemberPayload {
+  deletedId: ID!
+}
+
+union RemoveTeamMemberResult = RemoveTeamMemberPayload | NotFound | InvalidInput
+
+enum Skill {
+  tiles
+  plumbing
+  electrical
+  carpentry
+  painting
+  roofs_leaks
+}
+
+enum SetupStep {
+  business
+  areas_skills
+  crew
+  payout_account
+  ktp
+  nib
+}
+
+enum StepStatus {
+  done
+  now
+  later
+}
+
+type SetupChecklistItem {
+  step: SetupStep!
+  status: StepStatus!
+}
+
+type Seats {
+  used: Int!
+  limit: Int!
+}
+
+"The contractor's own business profile. Only he and ops read it; others read `Contractor`."
+type ContractorProfile {
+  id: ID!
+  name: String!
+  businessName: String!
+  slug: String!
+  areas: [String!]!
+  skills: [Skill!]!
+  about: String
+  crewSize: Int
+  publicRecord: Boolean!
+  "Joined in the pilot; the 3% first-job match fee is waived until `foundingWaiverUntil`."
+  foundingContractor: Boolean!
+  foundingWaiverUntil: Date
+  seats: Seats
+  checklist: [SetupChecklistItem!]!
+  listing: Contractor!
+}
+
+input ContractorProfileInput {
+  name: String!
+  businessName: String!
+  areas: [String!]
+  skills: [Skill!]
+  about: String
+  crewSize: Int
+  publicRecord: Boolean
+}
+
+type SaveContractorProfilePayload {
+  contractorProfile: ContractorProfile!
+}
+
+union SaveContractorProfileResult = SaveContractorProfilePayload | InvalidInput
+
+enum ReferralStatus {
+  sent
+  opened
+  registered
+  agreement_sent
+  owner_signed
+}
+
+type ReferralInvitee {
+  name: String!
+  status: ReferralStatus!
+  rewardedAt: DateTime
+}
+
+"Rp 50.000 phone credit or data once the invited mandor's first owner signs. Never cash."
+type Referral {
+  url: String!
+  reward: Money!
+  rewardKind: String!
+  invitees: [ReferralInvitee!]!
+}
+
+enum HomeEventKind {
+  retention_check
+  warranty_end
+  warranty_reminder
+  seasonal_check
+}
+
+enum DatePrecision {
+  day
+  month
+}
+
+type HomeEvent {
+  kind: HomeEventKind!
+  date: Date!
+  "`month` when only the month is known (a seasonal check); the day is then the 1st."
+  datePrecision: DatePrecision!
+  title: String!
+  subtitle: String
+  job: Job
+}
+
+type HomeMaterial {
+  name: String!
+  order: Order
+}
+
+type HomeRecord {
+  area: String
+  jobs: [Job!]!
+  upcoming: [HomeEvent!]!
+  materialsUsed: [HomeMaterial!]!
+}

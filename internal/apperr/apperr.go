@@ -1,52 +1,67 @@
-// Package apperr defines errors that are safe to show to API clients.
-// Anything that is not an *Error is treated as internal and masked.
+// Package apperr defines transport and auth errors, the ones the contract puts in
+// `errors[].extensions.code`. Domain problems are not errors: they are data in a
+// mutation's result union (see package problem). Anything that is neither is
+// treated as internal and masked.
 package apperr
 
 import (
 	"errors"
 	"fmt"
+
+	"github.com/renora/renora-api/internal/i18n"
 )
 
+// Code is one of the contract's transport codes.
 type Code string
 
 const (
 	CodeUnauthenticated Code = "UNAUTHENTICATED"
 	CodeForbidden       Code = "FORBIDDEN"
-	CodeNotFound        Code = "NOT_FOUND"
-	CodeInvalidInput    Code = "INVALID_INPUT"
-	CodeConflict        Code = "CONFLICT"
+	CodeCSRFFailed      Code = "CSRF_FAILED"
 	CodeRateLimited     Code = "RATE_LIMITED"
+	CodeBadUserInput    Code = "BAD_USER_INPUT"
 	CodeInternal        Code = "INTERNAL"
 )
 
 type Error struct {
 	Code    Code
-	Message string   // shown to the client; never include secrets or SQL
-	Field   []string // input path for INVALID_INPUT, e.g. ["input", "stages", "2", "amount"]
-	Err     error    // cause, logged but never shown
+	Message i18n.Text // shown to the client in the request's language; never secrets or SQL
+	Err     error     // cause, logged but never shown
 }
 
 func (e *Error) Error() string {
 	if e.Err != nil {
-		return fmt.Sprintf("%s: %s: %v", e.Code, e.Message, e.Err)
+		return fmt.Sprintf("%s: %s: %v", e.Code, e.Message.EN, e.Err)
 	}
-	return fmt.Sprintf("%s: %s", e.Code, e.Message)
+	return fmt.Sprintf("%s: %s", e.Code, e.Message.EN)
 }
 
 func (e *Error) Unwrap() error { return e.Err }
 
-func New(code Code, msg string) *Error { return &Error{Code: code, Message: msg} }
+func New(code Code, msg i18n.Text) *Error { return &Error{Code: code, Message: msg} }
 
-func Wrap(err error, code Code, msg string) *Error { return &Error{Code: code, Message: msg, Err: err} }
-
-func Invalid(msg string, field ...string) *Error {
-	return &Error{Code: CodeInvalidInput, Message: msg, Field: field}
+// The messages match the contract's mock, so the apps show the same words.
+func Unauthenticated() *Error {
+	return New(CodeUnauthenticated, i18n.T("Sign in first", "Masuk dulu"))
 }
 
-func Unauthenticated() *Error { return New(CodeUnauthenticated, "sign in required") }
-func Forbidden() *Error       { return New(CodeForbidden, "you don't have access to this") }
-func NotFound(what string) *Error {
-	return New(CodeNotFound, what+" not found")
+func Forbidden() *Error {
+	return New(CodeForbidden, i18n.T("Not allowed for your role", "Tidak diizinkan untuk peran Anda"))
+}
+
+func CSRFFailed() *Error {
+	return New(CodeCSRFFailed, i18n.T("Refresh the page and try again", "Muat ulang halaman lalu coba lagi"))
+}
+
+func RateLimited() *Error {
+	return New(CodeRateLimited, i18n.T("Too many tries. Wait a moment and try again", "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi"))
+}
+
+func BadUserInput(msg i18n.Text) *Error { return New(CodeBadUserInput, msg) }
+
+// Internal wraps an unexpected failure; the client sees only a generic message.
+func Internal(err error) *Error {
+	return &Error{Code: CodeInternal, Message: i18n.T("Something went wrong. Try again", "Ada yang salah. Coba lagi"), Err: err}
 }
 
 // As returns the *Error in err's chain, if any.

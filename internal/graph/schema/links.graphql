@@ -1,0 +1,333 @@
+extend type Query {
+  """
+  What a personal link is, even after it expired or was replaced (`status`), so the page can offer a new
+  one. Links are personal and short-lived; the token is the permission, so never log it.
+  """
+  link(token: String!): Link @public
+  "The owner's job page, no account. Null once the link has expired."
+  ownerJobLink(token: String!): OwnerJobLink @public
+  "Fund a stage from the web link on any phone (ln-15)."
+  ownerFundLink(token: String!): OwnerFundLink @public
+  "A worker's questions and his own wages. No names or rates of others."
+  crewLink(token: String!): CrewLink @public
+  "A driver's trip. No prices."
+  driverTrip(token: String!): DriverTrip @public
+}
+
+extend type Mutation {
+  "An owner link starts a read-only guest session; signing still needs a phone code."
+  startLinkSession(token: String!, input: StartLinkSessionInput!): StartLinkSessionResult! @public
+  createLinkUpload(token: String!, input: CreateUploadInput!): CreateUploadResult! @public
+  "People on a link talk in Renora, never by SMS or WhatsApp (R8). Offline-queued by `clientRef`."
+  sendLinkMessage(token: String!, input: SendLinkMessageInput!): SendLinkMessageResult! @public
+  fundStageFromLink(token: String!, input: FundFromLinkInput!): FundFromLinkResult! @public
+  claimLinkFundingPaid(token: String!): ClaimFundingPaidResult! @public
+  """
+  The worker answers yes, not yet, or with a photo (required for `photo_before_cover`). He may change it
+  until the contractor has seen it. Problems: `already_seen`, `invalid_input`.
+  """
+  answerCrewQuestion(token: String!, input: AnswerCrewQuestionInput!): CrewLinkResult! @public
+  "Takes an answer back before the contractor has seen it. Problems: `already_seen`."
+  withdrawCrewAnswer(token: String!, questionId: ID!): CrewLinkResult! @public
+  "Today's note: headcount by role and the work done; it fills the site diary."
+  sendCrewDailyNote(token: String!, input: CrewDailyNoteInput!): CrewLinkResult! @public
+  "\"Ya, sudah terima\" or \"Beda\" for his week's wages, once. Problems: `already_answered`."
+  confirmWages(token: String!, input: ConfirmWagesInput!): CrewLinkResult! @public
+  "Asks the issuer for a fresh link. Works on expired links too."
+  requestNewLink(token: String!): RequestNewLinkResult! @public
+  "Problems: `already_started`."
+  startDriverTrip(token: String!, input: StartDriverTripInput!): DriverTripResult! @public
+  "Every 30 s while on the way; drives `deliveryUpdated`."
+  sendDriverPosition(token: String!, input: GeoPointInput!): DriverTripResult! @public
+  """
+  The drop-off photo: the shop is paid 24 h later unless the buyer reports a problem, or within 1 h of
+  the contractor's site photo. Problems: `not_on_the_way`, `invalid_input` (photo).
+  """
+  dropOffDelivery(token: String!, input: DropOffInput!): DriverTripResult! @public
+}
+
+enum LinkKind {
+  owner_invite
+  owner_job
+  owner_fund
+  crew
+  driver
+  quote_question
+}
+
+enum LinkStatus {
+  active
+  expired
+  replaced
+}
+
+"Who sent the link. The phone is for a call; talking happens in Renora (R8)."
+type LinkIssuer {
+  displayName: String!
+  initials: String!
+  "Dialable E.164 number."
+  phone: String
+}
+
+type Link {
+  kind: LinkKind!
+  status: LinkStatus!
+  "Shown in the page header."
+  shortUrl: String
+  "The job the link belongs to, for deep links into the app. The job itself is read through the link's page."
+  jobId: ID
+  "A driver's link: the delivery it moves."
+  deliveryId: ID
+  jobTitle: String
+  issuer: LinkIssuer!
+  holderName: String
+  language: Language!
+  expiresAt: DateTime!
+  "Shown on every no-account page."
+  trustStrip: String!
+}
+
+type NextFunding {
+  stageNo: Int!
+  fundByAt: DateTime
+}
+
+type OwnerJobLink {
+  job: Job!
+  currentStageName: String
+  dayOfJob: Int
+  durationDays: Int
+  schedule: Schedule
+  needsYou: [NeedsYouItem!]!
+  latestReport: Report
+  nextFunding: NextFunding
+  trustStrip: String!
+}
+
+type FundStageRef {
+  no: Int!
+  name: String!
+  of: Int!
+  plannedStart: Date
+}
+
+type PreviousStage {
+  no: Int!
+  status: StageStatus!
+}
+
+type OwnerFundLink {
+  jobTitle: String!
+  stage: FundStageRef!
+  previousStage: PreviousStage
+  contractorDisplayName: String
+  principal: Money!
+  fee: Money!
+  total: Money!
+  safeAtPartner: Money
+  fundByAt: DateTime
+  funding: Funding
+  trustStrip: String!
+}
+
+enum CrewAnswerOnLink {
+  yes
+  not_yet
+  photo
+  received
+  differs
+}
+
+type CrewLinkAnswer {
+  value: CrewAnswerOnLink!
+  at: DateTime!
+  notifiedAt: DateTime
+  seenByContractor: Boolean!
+  photo: Media
+}
+
+type CrewLinkQuestion {
+  id: ID!
+  index: Int!
+  total: Int!
+  kind: CrewQuestionKind!
+  text: String!
+  "Short subject for lists."
+  label: String
+  yesMeaning: String
+  contextPhoto: Media
+  answer: CrewLinkAnswer
+}
+
+enum WageConfirmation {
+  pending
+  received
+  differs
+}
+
+type CrewLinkDay {
+  date: Date!
+  worked: Boolean!
+}
+
+"His own wages only: his rate is his to see."
+type CrewLinkWages {
+  weekStart: Date!
+  weekEnd: Date!
+  days: [CrewLinkDay!]!
+  daysWorked: Float!
+  dayRate: Money!
+  wages: Money!
+  advances: Money!
+  net: Money!
+  paidOn: Date
+  confirmation: WageConfirmation!
+  confirmedAt: DateTime
+}
+
+"Crew on this job by role, no names or rates; prefills today's note."
+type CrewHeadcount {
+  tukang: Int!
+  kenek: Int!
+}
+
+type CrewLink {
+  crewName: String!
+  jobTitle: String!
+  issuedBy: String!
+  questions: [CrewLinkQuestion!]!
+  wages: CrewLinkWages
+  crewCount: CrewHeadcount
+  "Today's note as he sent it (server clock, WIB); null until he sends it. Sending again replaces it."
+  todayNote: CrewDailyNote
+  expiresAt: DateTime!
+  trustStrip: String!
+}
+
+type CrewDailyNote {
+  date: Date!
+  tukangCount: Int
+  kenekCount: Int
+  workDone: [String!]!
+  noWorkReason: NoWorkReason
+  sentAt: DateTime!
+}
+
+type TripPlace {
+  name: String
+  area: String
+  address: String
+  "Where to drive: the shop's point for the pick-up, the job's site point for the drop-off."
+  location: GeoPoint
+  gateNote: String
+  distanceKm: Float
+  contactName: String
+  contactPhoneMasked: String
+  "Dialable, for a call only."
+  contactPhone: String
+}
+
+type TripItem {
+  name: String!
+  quantity: Float!
+  unit: Unit!
+}
+
+type DriverTrip {
+  orderRef: String!
+  driver: Driver!
+  from: TripPlace!
+  to: TripPlace!
+  slot: TimeWindow!
+  items: [TripItem!]!
+  status: DeliveryStatus!
+  startedAt: DateTime
+  arrivedAt: DateTime
+  dropOffPhoto: Media
+  "The shop is paid then unless the buyer reports a problem."
+  autoReleaseAt: DateTime
+  trustStrip: String!
+}
+
+input StartLinkSessionInput {
+  client: ClientKind!
+}
+
+type StartLinkSessionPayload {
+  session: Session!
+}
+
+union StartLinkSessionResult = StartLinkSessionPayload | NotFound
+
+input SendLinkMessageInput {
+  clientRef: ID!
+  text: String!
+  mediaIds: [ID!]
+}
+
+type SendLinkMessagePayload {
+  message: Message!
+}
+
+union SendLinkMessageResult = SendLinkMessagePayload | NotFound | Conflict | InvalidInput
+
+input FundFromLinkInput {
+  idempotencyKey: ID!
+  bank: Bank!
+}
+
+type FundFromLinkPayload {
+  funding: Funding!
+}
+
+union FundFromLinkResult = FundFromLinkPayload | NotFound | Conflict
+
+input AnswerCrewQuestionInput {
+  questionId: ID!
+  value: CrewAnswerValue!
+  photoId: ID
+  note: String
+  clientRef: ID
+}
+
+type CrewLinkPayload {
+  crewLink: CrewLink!
+}
+
+union CrewLinkResult = CrewLinkPayload | NotFound | Conflict | InvalidInput
+
+input CrewDailyNoteInput {
+  date: Date!
+  tukangCount: Int
+  kenekCount: Int
+  workDone: [String!]
+  noWorkReason: NoWorkReason
+  clientRef: ID
+}
+
+input ConfirmWagesInput {
+  weekStart: Date!
+  received: Boolean!
+  note: String
+}
+
+type RequestNewLinkPayload {
+  requested: Boolean!
+}
+
+union RequestNewLinkResult = RequestNewLinkPayload | NotFound
+
+input StartDriverTripInput {
+  location: GeoPointInput
+}
+
+type DriverTripPayload {
+  trip: DriverTrip!
+}
+
+union DriverTripResult = DriverTripPayload | NotFound | Conflict | InvalidInput
+
+input DropOffInput {
+  photoId: ID!
+  location: GeoPointInput
+}

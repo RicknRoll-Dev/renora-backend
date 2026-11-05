@@ -1,0 +1,277 @@
+extend type Query {
+  report(id: ID!): Report
+  media(id: ID!): Media
+}
+
+extend type Mutation {
+  """
+  Presigned upload: returns a `media.id` and a URL to PUT the bytes to (with `headers`). Reference the media
+  by id in any later write. A replay with the same `clientRef` returns the same media id with a freshly
+  presigned URL and `expiresAt`, never an expired one, so the offline queue can retry safely.
+  """
+  createUpload(input: CreateUploadInput!): CreateUploadResult!
+  """
+  A daily report or a no-work day. Offline-queued: a replay with the same `clientRef` returns the first
+  report. Photos still in the upload queue are named by their `clientRef` and attach when they arrive.
+  """
+  createReport(input: CreateReportInput!): CreateReportResult! @allow(roles: [contractor])
+  "Confirms or corrects the AI stage tag (R1)."
+  updateReport(input: UpdateReportInput!): UpdateReportResult! @allow(roles: [contractor])
+  "The owner's \"Looks good\"."
+  acknowledgeReport(input: AcknowledgeReportInput!): AcknowledgeReportResult! @allow(roles: [owner])
+  "A progress count (rekap): percent per work item, weighted by the agreement; signed by the contractor."
+  createProgressCount(input: CreateProgressCountInput!): CreateProgressCountResult!
+    @allow(roles: [contractor])
+  "Ticks a line of the day plan. Offline-queued by `clientRef`."
+  updateSiteTask(input: UpdateSiteTaskInput!): UpdateSiteTaskResult! @allow(roles: [contractor])
+}
+
+extend type Job {
+  reports(stageNo: Int, first: Int = 20, after: String): ReportConnection!
+  progressCounts: [ProgressCount!]!
+  "The site diary: who was on site and what was done, per day, newest first."
+  diary(from: Date, to: Date): [DiaryEntry!] @private(to: [contractor, ops])
+  "The contractor's plan for a day on site; without `date`, today's (Asia/Jakarta)."
+  siteTasks(date: Date): [SiteTask!] @private(to: [contractor, ops])
+}
+
+enum NoWorkReason {
+  rain
+  waiting_materials
+  sick
+  day_off
+  owner_paused
+  other
+}
+
+enum ReportKind {
+  daily
+  no_work
+  "Photos sent with a stage submission."
+  stage_proof
+  "Photos of a fix; see `issue`."
+  issue_fix
+}
+
+"The AI's stage tag on a report, confirmed by the contractor."
+type StageTag {
+  stageNo: Int!
+  progressPercent: Int
+  ai: AiSuggestion!
+}
+
+enum ReportAck {
+  looks_good
+}
+
+type Report {
+  id: ID!
+  job: Job!
+  "When the owner sees it: her evening summary after it was sent, or at once when she has none."
+  ownerSeesAt: DateTime
+  clientRef: ID
+  author: Person!
+  kind: ReportKind!
+  capturedAt: DateTime!
+  createdAt: DateTime!
+  onSite: Boolean
+  issue: Issue
+  crewCount: Int
+  media: [Media!]!
+  text: UserText
+  noWorkReason: NoWorkReason
+  stageTag: StageTag
+  workItemCodes: [String!]!
+  seenByOwnerAt: DateTime
+  ownerAck: ReportAck
+}
+
+type ReportConnection {
+  edges: [ReportEdge!]!
+  nodes: [Report!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ReportEdge {
+  cursor: String!
+  node: Report!
+}
+
+input CreateUploadInput {
+  kind: MediaKind!
+  """
+  MIME type the PUT will carry: `image/*`, `audio/*`, `video/*` or `application/*` (PDF, a zipped WhatsApp
+  export, an XLSX price list); a `document` may also be `text/plain` (a WhatsApp chat export) or `text/csv` (a
+  price list). Problems: `invalid_input` (`invalid_format`).
+  """
+  contentType: String!
+  byteSize: Int
+  "The file's name on the phone, e.g. \"WhatsApp Chat with Bu Dewi.txt\"."
+  fileName: String
+  """
+  When the photo was taken: the shutter time for `camera`, the photo's own time (EXIF, else the file's) for
+  `gallery`. Never the time of upload. Without it a camera photo takes the server's time and a gallery photo
+  has none.
+  """
+  capturedAt: DateTime
+  "Where the photo was taken (EXIF for `gallery`); `onSite` is checked against the job's site point."
+  location: GeoPointInput
+  job: ID
+  source: MediaSource = camera
+  clientRef: ID
+}
+
+type Upload {
+  "PUT the bytes here before `expiresAt`."
+  url: String!
+  "Headers to send with the PUT, as `name: value` lines."
+  headers: [String!]!
+  expiresAt: DateTime!
+  "The media record to reference by id; it is readable once the PUT has arrived."
+  media: Media!
+}
+
+type CreateUploadPayload {
+  upload: Upload!
+}
+
+union CreateUploadResult = CreateUploadPayload | InvalidInput
+
+enum CreateReportKind {
+  daily
+  no_work
+}
+
+input CreateReportInput {
+  clientRef: ID!
+  jobId: ID!
+  kind: CreateReportKind!
+  capturedAt: DateTime!
+  mediaIds: [ID!]
+  "Photos and voice notes still in the upload queue, by their `clientRef`."
+  mediaClientRefs: [ID!]
+  text: String
+  noWorkReason: NoWorkReason
+  crewCount: Int
+  forwardedFromWhatsapp: Boolean
+}
+
+type CreateReportPayload {
+  report: Report!
+}
+
+union CreateReportResult = CreateReportPayload | NotFound | InvalidInput
+
+input UpdateReportInput {
+  reportId: ID!
+  stageNo: Int
+  progressPercent: Int
+  confirmAiTag: Boolean
+  workItemCodes: [String!]
+}
+
+type UpdateReportPayload {
+  report: Report!
+}
+
+union UpdateReportResult = UpdateReportPayload | NotFound | InvalidInput
+
+input AcknowledgeReportInput {
+  reportId: ID!
+}
+
+type AcknowledgeReportPayload {
+  report: Report!
+}
+
+union AcknowledgeReportResult = AcknowledgeReportPayload | NotFound
+
+type ProgressItem {
+  workItemCode: String!
+  weight: Bps
+  percent: Int!
+}
+
+type ProgressCount {
+  id: ID!
+  date: Date!
+  items: [ProgressItem!]!
+  "Sum of weight × percent."
+  weightedPercent: Int!
+  signatures: [Signature!]!
+}
+
+input ProgressItemInput {
+  workItemCode: String!
+  percent: Int!
+}
+
+input CreateProgressCountInput {
+  jobId: ID!
+  date: Date!
+  items: [ProgressItemInput!]!
+}
+
+type CreateProgressCountPayload {
+  progressCount: ProgressCount!
+}
+
+union CreateProgressCountResult = CreateProgressCountPayload | NotFound | InvalidInput
+
+enum SiteTaskDoneBy {
+  contractor
+  crew_link
+}
+
+"One line of the contractor's plan for a day on site. Crew answers on their links can tick it."
+type SiteTask {
+  id: ID!
+  job: Job!
+  date: Date!
+  "In the contractor's words."
+  title: String!
+  workItemCode: String
+  done: Boolean!
+  doneAt: DateTime
+  doneBy: SiteTaskDoneBy
+  clientRef: ID
+}
+
+input UpdateSiteTaskInput {
+  taskId: ID!
+  done: Boolean!
+  clientRef: ID!
+}
+
+type UpdateSiteTaskPayload {
+  siteTask: SiteTask!
+}
+
+union UpdateSiteTaskResult = UpdateSiteTaskPayload | NotFound
+
+enum CrewRole {
+  tukang
+  kenek
+}
+
+enum PresenceSource {
+  contractor
+  crew_link
+}
+
+type DiaryPresence {
+  crewMember: CrewMember
+  name: String!
+  role: CrewRole!
+  present: Boolean!
+  source: PresenceSource
+}
+
+type DiaryEntry {
+  date: Date!
+  crew: [DiaryPresence!]!
+  workDone: [String!]!
+  noWorkReason: NoWorkReason
+  reports: [Report!]!
+}

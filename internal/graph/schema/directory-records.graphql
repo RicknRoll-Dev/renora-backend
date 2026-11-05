@@ -1,0 +1,209 @@
+extend type Query {
+  """
+  Contractors for a brief, ranked by verified handovers, then distance; never cheapest first (R9). No stars (R3).
+  With an anchor (`briefId` or `near`), `distanceKm` is measured from it and `withinKm` keeps those inside the
+  radius, whatever their areas.
+  """
+  contractors(
+    "Matches whole area or kecamatan names (\"Bintaro, Tangerang Selatan\" matches Bintaro), not a substring. Ignored when `withinKm` has an anchor."
+    area: String
+    roomType: RoomType
+    "Measured from the anchor; without one, ignored."
+    withinKm: Float
+    "Anchor: the brief's site point (her own brief, or ops). Not hers: an empty list."
+    briefId: ID
+    "Anchor: a point, when there is no brief yet."
+    near: GeoPointInput
+    availableFrom: Date
+    verifiedOnly: Boolean
+    first: Int = 20
+    after: String
+  ): ContractorConnection!
+  contractor(id: ID!): Contractor
+}
+
+extend type Mutation {
+  "After handover, the owner recommends the contractor to a neighbour (a share card, no amounts)."
+  createRecommendation(input: CreateRecommendationInput!): CreateRecommendationResult!
+    @allow(roles: [owner])
+  "A past-job photo, labelled \"belum terverifikasi\" (not verified) until an owner signs a handover."
+  addPortfolioItem(input: AddPortfolioItemInput!): AddPortfolioItemResult!
+    @allow(roles: [contractor])
+}
+
+extend type Me {
+  "Contractor: photos from before Renora."
+  portfolio: [PortfolioItem!]!
+}
+
+enum Badge {
+  ktp
+  nib
+  bank_name
+  sbu
+}
+
+type LastJob {
+  label: String!
+  finishedOn: Date
+  itemsAccepted: Int
+  itemsTotal: Int
+  photos: [Media!]!
+}
+
+"A contractor's business in the directory, as owners see it."
+type Contractor {
+  id: ID!
+  "Where he is based, rounded to about 1 km, for a map pin; never his address."
+  approxLocation: GeoPoint
+  "The person behind the business; null for a firm listed under its name only."
+  name: String
+  businessName: String!
+  "How owners address him (Pak Joko), or the business name for a firm."
+  displayName: String!
+  initials: String!
+  slug: String!
+  distanceKm: Float
+  "Items accepted on lists both sides signed. No stars (R3)."
+  verifiedHandovers: Int!
+  onTimeRate: Bps
+  replyHours: Float
+  badges: [Badge!]!
+  sbuCode: String
+  areas: [String!]!
+  skills: [String!]!
+  whyYouSee: String
+  lastJob: LastJob
+  newOnRenora: Boolean
+  "The person, when the business has one on Renora."
+  person: Person
+  record: ContractorRecord
+}
+
+type ContractorConnection {
+  edges: [ContractorEdge!]!
+  nodes: [Contractor!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ContractorEdge {
+  cursor: String!
+  node: Contractor!
+}
+
+enum PortfolioStatus {
+  not_verified
+  verified
+  owner_confirmed_before_renora
+}
+
+type PortfolioItem {
+  id: ID!
+  media: Media!
+  label: String!
+  area: String
+  roomType: RoomType
+  status: PortfolioStatus!
+}
+
+type RecordStats {
+  verifiedHandovers: Int!
+  onTimeRate: Bps
+  medianApprovalDays: Float
+  stagesApproved: Int
+  issuesRaised: Int
+  issuesFixedWithin14Days: Int
+  replyHours: Float
+}
+
+enum RecordCheckStatus {
+  checked
+  not_added
+}
+
+type RecordCheck {
+  kind: Badge!
+  status: RecordCheckStatus!
+  checkedOn: Date
+}
+
+enum RecordJobStatus {
+  in_progress
+  stage_approved
+  handover_signed
+}
+
+enum OwnerRecordChoice {
+  shown
+  kept_private
+  ask_at_handover
+}
+
+type RecordHandover {
+  job: Job
+  label: String!
+  finishedOn: Date
+  dueOn: Date
+  itemsAccepted: Int
+  itemsTotal: Int
+  onTime: Boolean
+  status: RecordJobStatus!
+  "The owner's choice for this job."
+  ownerChoice: OwnerRecordChoice @private(to: [contractor, ops])
+  "Before, then after."
+  photos: [Media!]!
+}
+
+enum RecordIssueStatus {
+  open
+  fixed
+  not_fixed_14_days
+}
+
+type RecordIssue {
+  raisedOn: Date!
+  status: RecordIssueStatus!
+  fixedOn: Date
+  fixDays: Int
+  contractorReply: String
+}
+
+"""
+The public record: verified handovers only (R3). The public lists only jobs the owner agreed to show; the
+contractor himself also sees jobs kept private and jobs in progress.
+"""
+type ContractorRecord {
+  contractor: Contractor!
+  asOf: DateTime!
+  url: String
+  stats: RecordStats!
+  checks: [RecordCheck!]!
+  handovers: [RecordHandover!]!
+  issues: [RecordIssue!]!
+  portfolio: [PortfolioItem!]!
+}
+
+input CreateRecommendationInput {
+  jobId: ID!
+  message: String
+}
+
+type CreateRecommendationPayload {
+  shareCard: ShareCard!
+}
+
+union CreateRecommendationResult = CreateRecommendationPayload | NotFound | Conflict
+
+input AddPortfolioItemInput {
+  mediaId: ID!
+  label: String!
+  area: String
+  roomType: RoomType
+}
+
+type AddPortfolioItemPayload {
+  item: PortfolioItem!
+}
+
+union AddPortfolioItemResult = AddPortfolioItemPayload | NotFound | InvalidInput
